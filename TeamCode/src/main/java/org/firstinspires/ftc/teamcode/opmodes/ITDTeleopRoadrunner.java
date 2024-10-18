@@ -35,6 +35,7 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);

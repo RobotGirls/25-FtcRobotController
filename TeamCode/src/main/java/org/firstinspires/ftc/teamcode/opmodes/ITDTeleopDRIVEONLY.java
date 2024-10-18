@@ -33,6 +33,7 @@ public class ITDTeleopDRIVEONLY extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
