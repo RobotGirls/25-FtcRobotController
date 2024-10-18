@@ -1,17 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
-
-@TeleOp(name = "Teleop Drive Only")
-public class ITDTeleopRoadrunner extends LinearOpMode {
+@TeleOp(name = "Teleop Drive ONLY")
+public class ITDTeleopDRIVEONLY extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor  leftFront   = null;
@@ -36,15 +34,17 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
 
-        lift = hardwareMap.get(DcMotor.class, "lift");
-        liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
-        claw = hardwareMap.servo.get("claw");
-        rotateClaw = hardwareMap.servo.get("rotateClaw");
-
-        liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //lift = hardwareMap.get(DcMotor.class, "lift");
+        //liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
+        //claw = hardwareMap.servo.get("claw");
+        //rotateClaw = hardwareMap.servo.get("rotateClaw");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -60,6 +60,7 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
@@ -78,6 +79,20 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
             rightFront.setPower(frontRightPower);
             rightBack.setPower(backRightPower);
 
+            if (gamepad1.a) {
+                leftFront.setPower(0.5);
+            }
+            else if (gamepad1.b) {
+                leftBack.setPower(0.5);
+            }
+            else if (gamepad1.x) {
+                rightFront.setPower(0.5);
+            }
+            else if (gamepad1.y) {
+                rightBack.setPower(0.5);
+            }
+
+/*
             lift.setPower(gamepad2.left_stick_y);
             liftPivot.setPower(gamepad2.right_stick_y);
 
@@ -93,6 +108,8 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
             else if (gamepad2.x) {
                 rotateClaw.setPosition(0.4);
             }
+
+ */
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
