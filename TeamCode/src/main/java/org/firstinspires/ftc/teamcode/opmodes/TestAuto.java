@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-@Autonomous(name = "TEST_AUTO")
+@Autonomous(name = "TEST_AUTO-anneke")
 public class TestAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
