@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
 @Autonomous(name = "TEST_AUTO_Anneke")
-public class RedLeft extends LinearOpMode {
+public class RedRight extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
