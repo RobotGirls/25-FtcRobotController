@@ -21,11 +21,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-<<<<<<< HEAD
-@Autonomous(name = "TEST_AUTO_Anneke")
-=======
+//<<<<<<< HEAD
+//@Autonomous(name = "TEST_AUTO_Anneke")
+//=======
 @Autonomous(name = "RedRightPark")
->>>>>>> d85fd02e1a0574561e7a4a3e219d32b932d98326
+//>>>>>>> d85fd02e1a0574561e7a4a3e219d32b932d98326
 public class RedRight extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -39,10 +39,11 @@ public class RedRight extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .lineToY(-1)
+                .lineToY(1)
                 .waitSeconds(2)
-                .turn(Math.toRadians(-96.5))
-                .lineToX(-23)
+                .turn(Math.toRadians(96.5))
+                .lineToX(23)
+
 
 
 //                .waitSeconds(2)
