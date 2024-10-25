@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-@Autonomous(name = "TEST_AUTO_Anneke")
+@Autonomous(name = "RedLeftPark")
 public class RedLeft extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -38,7 +38,6 @@ public class RedLeft extends LinearOpMode {
                 .lineToY(-1)
                 .waitSeconds(2)
                 .turn(Math.toRadians(-96.5))
-                .waitSeconds(1)
                 .lineToX(-23)
 
 

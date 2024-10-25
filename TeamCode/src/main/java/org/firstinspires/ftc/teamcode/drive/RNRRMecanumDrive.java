@@ -93,7 +93,7 @@ public final class RNRRMecanumDrive {
 
         // path controller gains
         public double axialGain = 2.3;
-        public double lateralGain = 4.4;
+        public double lateralGain = 4.2;
         public double headingGain = 2; // shared with turn
 
         public double axialVelGain = 0.0;
