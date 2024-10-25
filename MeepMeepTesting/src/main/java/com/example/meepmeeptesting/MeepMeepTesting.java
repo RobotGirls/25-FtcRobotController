@@ -17,10 +17,7 @@ public class MeepMeepTesting {
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 0, 0))
 
                 // RED LEFT
-                .lineToX(30)
-                .turn(Math.toRadians(90))
-                .lineToY(30)
-                .turn(Math.toRadians(90))
+                .lineToYSplineHeading(33, Math.toRadians(0))
 
                 /*
                 // RED RIGHT
