@@ -54,6 +54,7 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
+        telemetry.addData("lift pivot position ", liftPivot.getCurrentPosition());
         telemetry.update();
 
         // Wait for the game to start (driver presses START)

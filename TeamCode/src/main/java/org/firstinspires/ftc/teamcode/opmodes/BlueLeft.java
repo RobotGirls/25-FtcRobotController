@@ -21,17 +21,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-@Autonomous(name = "RedLeftPark")
-public class RedLeft extends LinearOpMode {
-    private boolean first = true;
-    private static final double FIRST_LIFT_DOWN_POS = 50.0;
-    private static final double LAST_LIFT_DOWN_POS = 100.0;
-    private double currLiftPos = 0.0;
-
+//<<<<<<< HEAD
+//@Autonomous(name = "TEST_AUTO_Anneke")
+//=======
+@Autonomous(name = "BlueLeftPark")
+//>>>>>>> d85fd02e1a0574561e7a4a3e219d32b932d98326
+public class BlueLeft extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(89));
+        Pose2d initialPose = new Pose2d(-38, 62, Math.toRadians(-89));
         RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
@@ -40,10 +39,14 @@ public class RedLeft extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .lineToY(-1)
-                .waitSeconds(2)
-                .turn(Math.toRadians(-96.5))
-                .lineToX(-23)
+//
+//                // BLUE LEFT
+                .lineToY(34)
+                .turn(Math.toRadians(-90))
+                .lineToX(-52)
+                .turn(Math.toRadians(90))
+                .lineToY(58)
+
 
 
 //                .waitSeconds(2)
@@ -55,7 +58,6 @@ public class RedLeft extends LinearOpMode {
 //                .turn(Math.toRadians(180))
 //                .lineToX(47.5)
                  .waitSeconds(3);
-
         // ON INIT:
         Actions.runBlocking(claw.closeClaw());
 
@@ -73,7 +75,7 @@ public class RedLeft extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj, // go to the basket
-                        liftPivot.liftPivotDown()
+                        liftPivot.liftPivotUp()
                         //lift.liftUp() // to lvl1 ascent
                       //  claw.openClaw(), // drop the sample
                       //  lift.liftDown()
@@ -187,10 +189,7 @@ public class RedLeft extends LinearOpMode {
         public LiftPivot(HardwareMap hardwareMap) {
             liftPivot = hardwareMap.get(DcMotorEx.class, "liftPivot");
             liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
-            liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftPivot.setTargetPosition(900);
-            liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftPivot.setDirection(DcMotorSimple.Direction.FORWARD);
         }
 
         public class LiftPivotUp implements Action {
@@ -223,40 +222,33 @@ public class RedLeft extends LinearOpMode {
         public Action liftPivotUp() {
             return new LiftPivotUp();
         }
-
-        public class LiftPivotDown implements Action {
+/*
+        public class LiftDown implements Action {
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    liftPivot.setPower(0.8);
+                    lift.setPower(-0.8);
                     initialized = true;
                 }
-                if (first) {
-                    currLiftPos = FIRST_LIFT_DOWN_POS;
-                    first = false;
-                } else {
-                    currLiftPos = LAST_LIFT_DOWN_POS;
-                }
-                double pos = liftPivot.getCurrentPosition();
-               // packet.put("liftPos", pos);
-                telemetry.addData("liftPivotPos",pos);
-                telemetry.update();
 
-                if (pos < currLiftPos) {
+                double pos = lift.getCurrentPosition();
+                packet.put("liftPos", pos);
+                if (pos > 100.0) {
                     return true;
                 } else {
-                    liftPivot.setPower(0);
+                    lift.setPower(0);
                     return false;
                 }
             }
         }
 
-        public Action liftPivotDown() {
-            return new LiftPivotDown();
+        public Action liftDown() {
+            return new LiftDown();
         }
 
+ */
 
     }
 
