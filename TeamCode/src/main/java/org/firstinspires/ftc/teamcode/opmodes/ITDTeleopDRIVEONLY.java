@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "Teleop Drive ONLY")
+@TeleOp(name = "Teleop Drive Only")
 public class ITDTeleopDRIVEONLY extends LinearOpMode {
 
     /* Declare OpMode members. */
