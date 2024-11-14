@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,8 +21,8 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
     public DcMotor  leftBack  = null;
 
     public DcMotor lift = null;
-    public Servo claw;
-    public Servo rotateClaw;
+    public CRServo claw;
+    //public Servo rotateClaw;
     public DcMotor liftPivot;
 
 
@@ -42,8 +43,8 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
 
         lift = hardwareMap.get(DcMotor.class, "lift");
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
-        claw = hardwareMap.servo.get("claw");
-        rotateClaw = hardwareMap.servo.get("rotateClaw");
+        claw = hardwareMap.get(CRServo.class, "claw");
+        //rotateClaw = hardwareMap.servo.get("rotateClaw");
 
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -82,18 +83,21 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
             lift.setPower(gamepad2.left_stick_y);
             liftPivot.setPower(gamepad2.right_stick_y);
 
-            if (gamepad2.left_bumper) {
-                claw.setPosition(0.4);
+            while (gamepad2.left_bumper) {
+                claw.setPower(1);
             }
-            else if (gamepad2.right_bumper) {
-                claw.setPosition(0.1);
+            while (gamepad2.right_bumper) {
+                claw.setPower(-1);
             }
-            else if (gamepad2.a) {
+            /*
+            if (gamepad2.a) {
                 rotateClaw.setPosition(0.1);
             }
             else if (gamepad2.x) {
                 rotateClaw.setPosition(0.4);
             }
+
+             */
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
