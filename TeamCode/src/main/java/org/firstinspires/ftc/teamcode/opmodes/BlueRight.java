@@ -21,12 +21,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-@Autonomous(name = "TEST_AUTO")
-public class BlueLeft extends LinearOpMode {
+@Autonomous(name = "BLUE_RIGHT")
+public class BlueRight extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(35, 60, Math.toRadians(270));
+        Pose2d initialPose = new Pose2d(-16, 60, Math.toRadians(270));
         RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
@@ -34,9 +34,9 @@ public class BlueLeft extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .lineToY(10)
-                .turn(Math.toRadians(-90))
-                .lineToX(30)
+                .lineToY(54)
+                .turn(Math.toRadians(90))
+                .lineToX(-50)
                 .waitSeconds(3);
 
 

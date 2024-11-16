@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 // RR-specific imports
+
 import androidx.annotation.NonNull;
 
-//import com.acmerobotics.dashboard.config.Config;
-
-// Non-RR imports
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -15,21 +13,22 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-@Autonomous(name = "TEST_AUTO")
-public class TestAuto extends LinearOpMode {
+@Autonomous(name = "RED_LEFT")
+public class RedLeft extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(-35, -60, Math.toRadians(90));
         RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
@@ -37,15 +36,9 @@ public class TestAuto extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .lineToYSplineHeading(33, Math.toRadians(0))
-                .waitSeconds(2)
-                .setTangent(Math.toRadians(90))
-                .lineToY(48)
-                .setTangent(Math.toRadians(0))
-                .lineToX(32)
-                .strafeTo(new Vector2d(44.5, 30))
-                .turn(Math.toRadians(180))
-                .lineToX(47.5)
+                .lineToY(-10)
+                .turn(Math.toRadians(-90))
+                .lineToX(-30)
                 .waitSeconds(3);
 
 
@@ -65,10 +58,7 @@ public class TestAuto extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        firstTraj, // go to the basket
-                        lift.liftUp(), // to high basket
-                        claw.openClaw(), // drop the sample
-                        lift.liftDown()
+                        firstTraj // go to the basket
                 )
         );
     }
@@ -141,17 +131,17 @@ public class TestAuto extends LinearOpMode {
     }
 
     public class Claw {
-        private Servo claw;
+        private CRServo claw;
 
         public Claw(HardwareMap hardwareMap) {
-            claw = hardwareMap.get(Servo.class, "claw");
+            claw = hardwareMap.get(CRServo.class, "claw");
         }
 
         public class CloseClaw implements Action {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(0.5);
+                claw.setPower(1);
                 return false;
             }
         }
@@ -163,7 +153,7 @@ public class TestAuto extends LinearOpMode {
         public class OpenClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(0.2);
+                claw.setPower(-1);
                 return false;
             }
         }

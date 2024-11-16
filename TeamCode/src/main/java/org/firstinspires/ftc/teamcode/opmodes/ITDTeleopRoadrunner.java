@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name = "Teleop Drive Only")
+@TeleOp(name = "Teleop LM1")
 public class ITDTeleopRoadrunner extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -20,7 +20,7 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
 
-    public DcMotor lift = null;
+    public DcMotor lift;
     public CRServo claw;
     //public Servo rotateClaw;
     public DcMotor liftPivot;
@@ -47,6 +47,11 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
         //rotateClaw = hardwareMap.servo.get("rotateClaw");
 
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -81,13 +86,16 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
             rightBack.setPower(backRightPower);
 
             lift.setPower(gamepad2.left_stick_y);
-            liftPivot.setPower(gamepad2.right_stick_y);
+            liftPivot.setPower(0.75*(gamepad2.right_stick_y));
 
-            while (gamepad2.left_bumper) {
+            if (gamepad2.a) {
                 claw.setPower(1);
             }
-            while (gamepad2.right_bumper) {
+            else if (gamepad2.x) {
                 claw.setPower(-1);
+            }
+            else {
+                claw.setPower(0);
             }
             /*
             if (gamepad2.a) {

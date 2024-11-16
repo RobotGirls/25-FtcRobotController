@@ -9,10 +9,10 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -22,12 +22,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-@Autonomous(name = "TEST_AUTO")
-public class RedLeft extends LinearOpMode {
+@Autonomous(name = "RED_RIGHT")
+public class RedRight extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-35, -60, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(20, -60, Math.toRadians(90));
         RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
@@ -35,9 +35,9 @@ public class RedLeft extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .lineToY(-10)
+                .lineToY(-53)
                 .turn(Math.toRadians(-90))
-                .lineToX(-30)
+                .lineToX(50)
                 .waitSeconds(3);
 
 
@@ -58,9 +58,7 @@ public class RedLeft extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj, // go to the basket
-                        lift.liftUp(), // to high basket
-                        claw.openClaw(), // drop the sample
-                        lift.liftDown()
+                        lift.liftUp() // to high basket
                 )
         );
     }
@@ -133,35 +131,35 @@ public class RedLeft extends LinearOpMode {
     }
 
     public class Claw {
-        private Servo claw;
+        private CRServo claw;
 
         public Claw(HardwareMap hardwareMap) {
-            claw = hardwareMap.get(Servo.class, "claw");
+            claw = hardwareMap.get(CRServo.class, "claw");
         }
 
         public class CloseClaw implements Action {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(0.5);
+                claw.setPower(1);
                 return false;
             }
         }
 
         public Action closeClaw() {
-            return new CloseClaw();
+            return new RedRight.Claw.CloseClaw();
         }
 
         public class OpenClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(0.2);
+                claw.setPower(-1);
                 return false;
             }
         }
 
         public Action openClaw() {
-            return new CloseClaw();
+            return new RedRight.Claw.CloseClaw();
         }
     }
 }
