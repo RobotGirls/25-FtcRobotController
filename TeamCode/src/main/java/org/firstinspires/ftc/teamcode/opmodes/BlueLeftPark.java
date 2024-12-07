@@ -37,7 +37,7 @@ public class BlueLeftBasket extends LinearOpMode {
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
 
-//                // BLUE LEFT
+//                // RED LEFT
                 .lineToY(53)
                 .waitSeconds(1)
                 .strafeTo(new Vector2d(52,60))

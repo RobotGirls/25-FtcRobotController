@@ -21,8 +21,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-@Autonomous(name = "RedLeftBasket")
-public class RedLeftBasket extends LinearOpMode {
+@Autonomous(name = "RedLeftBasketThenPark")
+public class RedLeftBasketThenPark extends LinearOpMode {
     private boolean first = true;
     private static final double FIRST_LIFT_DOWN_POS = 50.0;
     private static final double LAST_LIFT_DOWN_POS = 100.0;
@@ -31,7 +31,7 @@ public class RedLeftBasket extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-38, -60, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(89));
         RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
@@ -40,12 +40,16 @@ public class RedLeftBasket extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toSub = drive.actionBuilder(initialPose)
+                .lineToY(-52)
+                .turn(Math.toRadians(90))
+                .lineToX(-52)
+                .turn(Math.toRadians(45))
 
-                .lineToY(-1)
-                .waitSeconds(2)
-                .turn(Math.toRadians(-96.5))
-                .lineToX(-23)
-
+// to submersible
+//                .lineToY(-1)
+  //              .waitSeconds(2)
+    //            .turn(Math.toRadians(-96.5))
+      //          .lineToX(-23)
 
 
 //                .waitSeconds(2)
@@ -59,7 +63,7 @@ public class RedLeftBasket extends LinearOpMode {
                  .waitSeconds(3);
 
         // ON INIT:
- //       Actions.runBlocking(claw.closeClaw());
+  //      Actions.runBlocking(claw.closeClaw());
 
         Action firstTraj = toSub.build();
 
@@ -75,8 +79,8 @@ public class RedLeftBasket extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),
-//                        lift.liftUp(),
-//                        claw.openClaw(),
+  //                      lift.liftUp(),
+    //                    claw.openClaw(),
                         firstTraj // go to the basket and then submersible
                         //lift.liftUp() // to lvl1 ascent
                       //  claw.openClaw(), // drop the sample

@@ -22,12 +22,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
 //@Config
-//<<<<<<< HEAD
-//@Autonomous(name = "TEST_AUTO_Anneke")
-//=======
-@Autonomous(name = "BlueLeftPark")
-//>>>>>>> d85fd02e1a0574561e7a4a3e219d32b932d98326
-public class BlueLeft extends LinearOpMode {
+
+@Autonomous(name = "BlueLeftBasket")
+
+public class BlueLeftBasket extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
@@ -55,7 +53,7 @@ public class BlueLeft extends LinearOpMode {
 
                  .waitSeconds(3);
 
-        TrajectoryActionBuilder toSub = drive.actionBuilder()
+//        TrajectoryActionBuilder toSub = drive.actionBuilder(); FIXME
 
         // ON INIT:
         Actions.runBlocking(claw.closeClaw());
