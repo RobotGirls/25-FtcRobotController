@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
@@ -36,17 +37,28 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
+
         mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(-38, -60, Math.toRadians(90)))
+                // red left basket
                 .lineToY(-52)
                 .turn(Math.toRadians(90))
                 .lineToX(-52)
                 .turn(Math.toRadians(45))
-//                .turn(Math.toRadians(90))
-//                .lineToX(30)
-//                .turn(Math.toRadians(90))
-//                .lineToY(30)
-//                .turn(Math.toRadians(90))
+                // samples (push)
+                .turn(Math.toRadians(45))
+      //          .splineTo(new Vector2d(-35,-52),180) wavy'
+                .strafeTo(new Vector2d(-35,-52))
+                .strafeTo(new Vector2d(-35,-10))
+                .strafeTo(new Vector2d(-46,-10))
+                .strafeTo(new Vector2d(-46,-60))
+                .strafeTo(new Vector2d(-46,-10))
+                .turn(Math.toRadians(90))
+                .lineToX(-26)
+
+
+
                 .build());
+
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_LIGHT)
                 .setDarkMode(true)
