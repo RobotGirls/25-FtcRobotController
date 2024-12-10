@@ -22,6 +22,7 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
 
     public DcMotor lift;
     public CRServo claw;
+    public CRServo claw2;
     //public Servo rotateClaw;
     public DcMotor liftPivot;
 
@@ -44,6 +45,7 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
         lift = hardwareMap.get(DcMotor.class, "lift");
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
         claw = hardwareMap.get(CRServo.class, "claw");
+        claw2 = hardwareMap.get(CRServo.class, "claw2");
         //rotateClaw = hardwareMap.servo.get("rotateClaw");
 
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -90,12 +92,15 @@ public class ITDTeleopRoadrunner extends LinearOpMode {
 
             if (gamepad2.a) {
                 claw.setPower(1);
+                claw2.setPower(-1);
             }
             else if (gamepad2.x) {
                 claw.setPower(-1);
+                claw2.setPower(1);
             }
             else {
                 claw.setPower(0);
+                claw2.setPower(0);
             }
             /*
             if (gamepad2.a) {
