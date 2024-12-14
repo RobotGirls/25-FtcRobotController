@@ -20,8 +20,6 @@ public class MeepMeepTesting {
                 .build();
 
         myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(8, -60, Math.toRadians(90)))
-
-
                 .lineToY(-33.5)
               .turn(Math.toRadians(-90))
                 .lineToX(34)
@@ -29,6 +27,26 @@ public class MeepMeepTesting {
                 .strafeTo(new Vector2d(34,-4))
                 .strafeTo(new Vector2d(48,-4))
                 .strafeTo(new Vector2d(48,-58))
+                .strafeTo(new Vector2d(48,-4))
+                .strafeTo(new Vector2d(56,-4))
+                .strafeTo(new Vector2d(56,-58))
+                .strafeTo(new Vector2d(56,-4))
+                .strafeTo(new Vector2d(65,-4))
+                .strafeTo(new Vector2d(65,-58))
+
+
+
+
+
+
+//     // red right speciman and push sample
+//                .lineToY(-33.5)
+//              .turn(Math.toRadians(-90))
+//                .lineToX(34)
+//                .turn(Math.toRadians(-90))
+//                .strafeTo(new Vector2d(34,-4))
+//                .strafeTo(new Vector2d(48,-4))
+//                .strafeTo(new Vector2d(48,-58))
 
 
 //                .turn(Math.toRadians(90))
@@ -44,24 +62,26 @@ public class MeepMeepTesting {
                 .build();
 
 
-        mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(38, 60, Math.toRadians(-90)))
-                // red left basket
-                .lineToY(52)
-                .turn(Math.toRadians(90))
-                .lineToX(52)
-                .turn(Math.toRadians(45))
-                // samples (push)
-                .turn(Math.toRadians(45))
-      //          .splineTo(new Vector2d(-35,-52),180) too wavy
-                .strafeTo(new Vector2d(35,52))
-                .strafeTo(new Vector2d(35,10))
-                .strafeTo(new Vector2d(46,10))
-                .strafeTo(new Vector2d(46,60))
-                .strafeTo(new Vector2d(46,10))
-                .turn(Math.toRadians(90))
-                .lineToX(26)
+        mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(-38, -62, Math.toRadians(89)))
+                // red left park
+                .lineToY(-10)
+                .turn(Math.toRadians(-90))
+                .lineToX(-26)
 
-
+//                // red left basket + samples (push)
+//                .lineToY(-52)
+//                .turn(Math.toRadians(90))
+//                .lineToX(-52)
+//                .turn(Math.toRadians(45))
+//                .turn(Math.toRadians(45))
+//      //          .splineTo(new Vector2d(-35,-52),180) too wavy
+//                .strafeTo(new Vector2d(-35,-52))
+//                .strafeTo(new Vector2d(-35,-10))
+//                .strafeTo(new Vector2d(-46,-10))
+//                .strafeTo(new Vector2d(-46,-60))
+//                .strafeTo(new Vector2d(-46,-10))
+//                .turn(Math.toRadians(90))
+//                .lineToX(-26)
 
                 .build());
 

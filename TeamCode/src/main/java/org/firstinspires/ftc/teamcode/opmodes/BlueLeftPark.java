@@ -21,9 +21,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
 
-@Autonomous(name = "BlueLeftBasket")
+@Autonomous(name = "BlueLeftPark")
 
-public class BlueLeftBasket extends LinearOpMode {
+public class BlueLeftPark extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
