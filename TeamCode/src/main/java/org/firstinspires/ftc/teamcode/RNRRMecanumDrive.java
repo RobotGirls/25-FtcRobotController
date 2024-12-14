@@ -76,7 +76,7 @@ public final class RNRRMecanumDrive {
         public double trackWidthTicks = 0;
 
         // feedforward parameters (in tick units)
-        public double kS = 0;
+        public double kS = 0; // this is just a comment to see if I can commit properly
         public double kV = 0;
         public double kA = 0;
 
