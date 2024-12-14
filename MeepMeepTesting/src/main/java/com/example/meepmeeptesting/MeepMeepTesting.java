@@ -19,15 +19,19 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(0, 0, 0))
-                .lineToX(30)
-                .turn(Math.toRadians(90))
-                .lineToY(30)
-                .turn(Math.toRadians(90))
-                .lineToX(0)
-                .turn(Math.toRadians(90))
-                .lineToY(0)
-                .turn(Math.toRadians(90))
+        myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(8, -60, Math.toRadians(90)))
+                .lineToY(-33.5)
+              .turn(Math.toRadians(-90))
+                .lineToX(34)
+                .turn(Math.toRadians(-90))
+                .strafeTo(new Vector2d(34,-4))
+                .strafeTo(new Vector2d(48,-4))
+                .strafeTo(new Vector2d(48,-58))
+
+
+//                .turn(Math.toRadians(90))
+//                .lineToY(0)
+//                .turn(Math.toRadians(90))
                 .build());
 
         // Declare out second bot
@@ -38,22 +42,22 @@ public class MeepMeepTesting {
                 .build();
 
 
-        mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(-38, -60, Math.toRadians(90)))
+        mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(38, 60, Math.toRadians(-90)))
                 // red left basket
-                .lineToY(-52)
+                .lineToY(52)
                 .turn(Math.toRadians(90))
-                .lineToX(-52)
+                .lineToX(52)
                 .turn(Math.toRadians(45))
                 // samples (push)
                 .turn(Math.toRadians(45))
-      //          .splineTo(new Vector2d(-35,-52),180) wavy'
-                .strafeTo(new Vector2d(-35,-52))
-                .strafeTo(new Vector2d(-35,-10))
-                .strafeTo(new Vector2d(-46,-10))
-                .strafeTo(new Vector2d(-46,-60))
-                .strafeTo(new Vector2d(-46,-10))
+      //          .splineTo(new Vector2d(-35,-52),180) too wavy
+                .strafeTo(new Vector2d(35,52))
+                .strafeTo(new Vector2d(35,10))
+                .strafeTo(new Vector2d(46,10))
+                .strafeTo(new Vector2d(46,60))
+                .strafeTo(new Vector2d(46,10))
                 .turn(Math.toRadians(90))
-                .lineToX(-26)
+                .lineToX(26)
 
 
 
@@ -64,8 +68,8 @@ public class MeepMeepTesting {
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
-       //         .addEntity(myFirstBot)
-                .addEntity(mySecondBot)
+                .addEntity(myFirstBot)
+        //        .addEntity(mySecondBot)
                 .start();
     }
 }

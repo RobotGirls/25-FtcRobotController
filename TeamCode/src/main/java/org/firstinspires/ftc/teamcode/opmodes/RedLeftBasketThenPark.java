@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -40,10 +41,21 @@ public class RedLeftBasketThenPark extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toSub = drive.actionBuilder(initialPose)
+                // red left basket
                 .lineToY(-52)
                 .turn(Math.toRadians(90))
                 .lineToX(-52)
                 .turn(Math.toRadians(45))
+                // samples (push)
+                .turn(Math.toRadians(45))
+                //          .splineTo(new Vector2d(-35,-52),180) too wavy
+                .strafeTo(new Vector2d(-35,-52))
+                .strafeTo(new Vector2d(-35,-10))
+                .strafeTo(new Vector2d(-46,-10))
+                .strafeTo(new Vector2d(-46,-60))
+                .strafeTo(new Vector2d(-46,-10))
+                .turn(Math.toRadians(90))
+                .lineToX(-26)
 
 // to submersible
 //                .lineToY(-1)
