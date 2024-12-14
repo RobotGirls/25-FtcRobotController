@@ -20,6 +20,8 @@ public class MeepMeepTesting {
                 .build();
 
         myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(8, -60, Math.toRadians(90)))
+
+
                 .lineToY(-33.5)
               .turn(Math.toRadians(-90))
                 .lineToX(34)
@@ -69,7 +71,7 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
                 .addEntity(myFirstBot)
-        //        .addEntity(mySecondBot)
+                .addEntity(mySecondBot)
                 .start();
     }
 }
