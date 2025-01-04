@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "BlueRightSpeciman")
+@Autonomous(name = "BlueRightSpeciman2")
 public class BlueRightSpeciman extends LinearOpMode {
     private boolean first = true;
     private static final double FIRST_LIFT_DOWN_POS = 50.0;

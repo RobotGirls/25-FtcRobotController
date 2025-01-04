@@ -40,13 +40,19 @@ public class RedLeftBasketThenPark extends LinearOpMode {
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
 
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .lineToY(-52)
-                .turn(Math.toRadians(90))
-                .lineToX(-58)
-                .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(-62,-55))
+//        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
+//                .lineToY(-52)
+//                .turn(Math.toRadians(90))
+//                .lineToX(-58)
+//                .turn(Math.toRadians(45))
+//                .strafeTo(new Vector2d(-62,-55))
+//                .waitSeconds(1.5);
+
+        // CINDY Testing =================================
+                TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
+                .splineTo(new Vector2d(-55,-58), Math.toRadians(220))
                 .waitSeconds(1.5);
+        //=======================================
 
         Action toSub = toBasket.endTrajectory().fresh()
                 // samples (push)
