@@ -20,6 +20,12 @@ public class MeepMeepTesting {
                 .build();
 
         myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(8, -60, Math.toRadians(90)))
+                .lineToY(-35)
+                .waitSeconds(1)
+                .lineToY(-60)
+                        .strafeTo(new Vector2d(60,-60))
+                .waitSeconds(1)
+                /* triple specimen push
                 .lineToY(-33.5)
               .turn(Math.toRadians(-90))
                 .lineToX(34)
@@ -34,10 +40,7 @@ public class MeepMeepTesting {
                 .strafeTo(new Vector2d(65,-4))
                 .strafeTo(new Vector2d(65,-58))
 
-
-
-
-
+                 */
 
 //     // red right speciman and push sample
 //                .lineToY(-33.5)
@@ -63,9 +66,17 @@ public class MeepMeepTesting {
 
 
         mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(-38, -62, Math.toRadians(89)))
-                // red left park
-                .lineToY(-10)
-                .turn(Math.toRadians(-90))
+                // red left sample in basket (no pushing in net zone) + park
+                .lineToY(-52)
+                .turn(Math.toRadians(90))
+                .lineToX(-58)
+                .turn(Math.toRadians(45))
+                .strafeTo(new Vector2d(-62,-55))
+                .waitSeconds(1.5)
+                .turn(Math.toRadians(45))
+                .strafeTo(new Vector2d(-45,-55))
+                .strafeTo(new Vector2d(-45,-15))
+                .turn(Math.toRadians(90))
                 .lineToX(-26)
 
 //                // red left basket + samples (push)
