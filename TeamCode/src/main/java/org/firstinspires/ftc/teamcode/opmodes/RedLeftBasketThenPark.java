@@ -29,17 +29,18 @@ import java.util.Timer;
 public class RedLeftBasketThenPark extends LinearOpMode {
     private boolean first = true;
     private double currLiftPos = 0.0;
-    ElapsedTime liftTimer = new ElapsedTime();
+
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        liftTimer.reset();
+
         // instantiating the robot at a specific pose
         Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(89));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
+        lift.resetTimer();
         Claw claw = new Claw(hardwareMap);
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
 
@@ -92,233 +93,6 @@ public class RedLeftBasketThenPark extends LinearOpMode {
         );
     }
 
-    public class Lift {
-        private DcMotorEx lift;
 
-        public Lift(HardwareMap hardwareMap) {
-            lift = hardwareMap.get(DcMotorEx.class, "lift");
-            lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            lift.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-
-        public class LiftUp implements Action {
-            // checks if the lift motor has been powered on
-            private boolean initialized = false;
-
-            // actions are formatted via telemetry packets as below
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-
-                // powers on motor, if it is not on
-                if (!initialized) {
-                    lift.setPower(-1);
-                    initialized = true;
-                }
-                // checks lift's current position
-                double pos = lift.getCurrentPosition();
-                packet.put("liftPivotPos", pos);
-                telemetry.addData("Lift pivot pos: ", pos);
-                if (pos < 2700.0 && liftTimer.seconds()<20) {
-                    // true causes the action to rerun
-                    return true;
-                } else {
-                    // false stops action rerun
-                    lift.setPower(0);
-                    return false;
-                }
-                // overall, the action powers the lift until it surpasses
-                // 3000 encoder ticks, then powers it off
-            }
-                // overall, the action powers the lift until it surpasses
-                // 3000 encoder ticks, then powers it off
-
-        }
-        public Action liftUp() {
-            return new LiftUp();
-        }
-
-        public class LiftUpLittle implements Action {
-            // checks if the lift motor has been powered on
-            private boolean initialized = false;
-
-            // actions are formatted via telemetry packets as below
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                // powers on motor, if it is not on
-                if (!initialized) {
-                    lift.setPower(1);
-                    initialized = true;
-                }
-                // checks lift's current position
-                double pos = lift.getCurrentPosition();
-                packet.put("liftPos", pos);
-                telemetry.addData("Lift pos: ", pos);
-                if (pos > 500.0) {
-                    // true causes the action to rerun
-                    return true;
-                } else {
-                    // false stops action rerun
-                    lift.setPower(0);
-                    return false;
-                }
-                // overall, the action powers the lift until it surpasses
-                // 3000 encoder ticks, then powers it off
-            }
-
-        }
-        public Action liftUpLittle() {
-            return new LiftUpLittle();
-        }
-
-        public class LiftDown implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    lift.setPower(0.8);
-                    initialized = true;
-                }
-
-                double pos = lift.getCurrentPosition();
-                packet.put("liftPos", pos);
-                if (pos > 100.0) {
-                    return true;
-                } else {
-                    lift.setPower(0);
-                    return false;
-                }
-            }
-        }
-
-        public Action liftDown() {
-            return new LiftDown();
-        }
-
-    }
-
-    public class Claw {
-        private CRServo claw;
-        private CRServo claw2;
-
-        public Claw(HardwareMap hardwareMap) {
-            claw = hardwareMap.get(CRServo.class, "claw");
-            claw2 = hardwareMap.get(CRServo.class, "claw2");
-        }
-
-        public class CloseClaw implements Action {
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPower(1);
-                claw2.setPower(-1);
-                sleep(2000);
-                claw.setPower(0);
-                claw2.setPower(0);
-                return false;
-            }
-        }
-
-        public Action closeClaw() {
-            return new CloseClaw();
-        }
-
-        public class OpenClaw implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPower(-1);
-                claw2.setPower(1);
-                sleep(3000);
-                claw.setPower(0);
-                claw2.setPower(0);
-                return false;
-            }
-        }
-
-        public Action openClaw() {
-            return new OpenClaw();
-        }
-    }
-
-    public class LiftPivot {
-        private DcMotorEx liftPivot;
-
-        public LiftPivot(HardwareMap hardwareMap) {
-            liftPivot = hardwareMap.get(DcMotorEx.class, "liftPivot");
-            liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        }
-
-        public class LiftPivotUp implements Action {
-            // checks if the lift motor has been powered on
-            private boolean initialized = false;
-
-            // actions are formatted via telemetry packets as below
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                // powers on motor, if it is not on
-                if (!initialized) {
-                    liftPivot.setPower(1);
-                    initialized = true;
-                }
-                // checks lift's current position
-                double pos = liftPivot.getCurrentPosition();
-                packet.put("liftPivotPos", pos);
-                if (pos < 1710.0) {
-                    // true causes the action to rerun
-                    return true;
-                } else {
-                    // false stops action rerun
-                    liftPivot.setPower(0);
-                    return false;
-                }
-                // overall, the action powers the lift until it surpasses
-                // 3000 encoder ticks, then powers it off
-            }
-        }
-        public Action liftPivotUp() {
-            return new LiftPivotUp();
-        }
-
-        public class LiftPivotDown implements Action {
-            private boolean initialized = false;
-
-            // actions are formatted via telemetry packets as below
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                // powers on motor, if it is not on
-                if (!initialized) {
-                    liftPivot.setPower(-1);
-                    initialized = true;
-                }
-                // checks lift's current position
-                double pos = liftPivot.getCurrentPosition();
-                packet.put("liftPivotPos", pos);
-                if (pos > 500.0) {
-                    // true causes the action to rerun
-                    return true;
-                } else {
-                    // false stops action rerun
-                    liftPivot.setPower(0);
-                    return false;
-                }
-                // overall, the action powers the lift until it surpasses
-                // 3000 encoder ticks, then powers it off
-            }
-        }
-
-        public Action liftPivotDown() {
-            return new LiftPivotDown();
-        }
-
-
-    }
 
 }
