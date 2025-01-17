@@ -43,16 +43,17 @@ public class RedRightTripleSpeciman extends LinearOpMode {
                 .lineToY(-33.5)
                 .turn(Math.toRadians(-90))
                 .lineToX(34)
+                .splineTo(new Vector2d(34,-4),Math.toRadians(0))
                 .turn(Math.toRadians(-90))
-                .strafeTo(new Vector2d(34,-4))
-                .strafeTo(new Vector2d(44,-4))
-                .strafeTo(new Vector2d(44,-58))
-                .strafeTo(new Vector2d(44,-4))
+                //  .strafeTo(new Vector2d(34,-4))
+                .strafeTo(new Vector2d(48,-4))
+                .strafeTo(new Vector2d(48,-58))
+                .strafeTo(new Vector2d(48,-4))
                 .strafeTo(new Vector2d(56,-4))
                 .strafeTo(new Vector2d(56,-58))
                 .strafeTo(new Vector2d(56,-4))
-                .strafeTo(new Vector2d(65,-4))
-                .strafeTo(new Vector2d(65,-58));
+                .strafeTo(new Vector2d(61,-4))
+                .strafeTo(new Vector2d(61,-58));
 
         // ON INIT:
   //      Actions.runBlocking(claw.closeClaw());
