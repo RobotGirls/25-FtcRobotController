@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class Lift {
+public class Lift{
     private DcMotorEx lift;
     ElapsedTime liftTimer = new ElapsedTime();
     private final double LIFT_PWR_OFF = 0.0;
