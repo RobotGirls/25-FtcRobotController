@@ -39,23 +39,22 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .waitSeconds(1)
-                .lineToX(-60)
-                .turn(Math.toRadians(45))
-                .waitSeconds(0.3)
-                .turn(Math.toRadians(45))
-                .lineToY(-15)
-                .turn(Math.toRadians(90))
-                .lineToX(-30);
+                .lineToY(-33.5)
+                .turn(Math.toRadians(-90))
+                .lineToX(34)
+                .splineTo(new Vector2d(34,-4),Math.toRadians(0))
+                .turn(Math.toRadians(-90))
+                //  .strafeTo(new Vector2d(34,-4))
+                .strafeTo(new Vector2d(48,-4))
+                .strafeTo(new Vector2d(48,-58))
+                .strafeTo(new Vector2d(48,-4))
+                .strafeTo(new Vector2d(56,-4))
+                .strafeTo(new Vector2d(56,-58))
+                .strafeTo(new Vector2d(56,-4))
+                .strafeTo(new Vector2d(61,-4))
+                .strafeTo(new Vector2d(61,-58));
 
-        Action toSub = toBasket.endTrajectory().fresh()
-                // samples (push)
-                .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(-45,-55))
-                .strafeTo(new Vector2d(-45,-15))
-                .turn(Math.toRadians(90))
-                .lineToX(-26)
-                .build();
+
 
 
         // ON INIT:
@@ -80,7 +79,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
-                        toSub, // push samples, go to submersible
+                         // push samples, go to submersible
                         liftPivot.liftPivotUp(),
                         lift.liftUp()
                 )
