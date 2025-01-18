@@ -30,7 +30,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(179));
+        Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(89));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
@@ -74,7 +74,8 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),
-                        firstTraj, // go to the basket, push samples, and then submersible
+                        firstTraj // go to the basket, push samples, and then submersible
+                        /*
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
@@ -82,6 +83,8 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                          // push samples, go to submersible
                         liftPivot.liftPivotUp(),
                         lift.liftUp()
+
+                         */
                 )
         );
     }
