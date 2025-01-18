@@ -107,25 +107,36 @@ public class ITDTeleopLM2NoEncoder extends LinearOpMode {
                 claw2.setPower(0);
             }
 
+            // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all teh way down
             if (gamepad2.right_stick_button) {
                 lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
+            // lift up to high basket
             if (gamepad2.dpad_up) {
-                lift.setTargetPosition(2600); // FIXME change encoder value
-                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+               // lift.setTargetPosition(2600); // FIXME change encoder value
+               // lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                liftPivot.setPower(-0.9);
                 liftPivot.setTargetPosition(1710);
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             }
+            //
             else if (gamepad2.dpad_down) {
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
+            // alternative to dpad down: if there is joystick input, override the run to position mode
             if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+            // if the lift and lift pivot are all the way in and we want to go out into the submersible to get a sample, lift the pivot slightly so the intake doesn't get stuck and then extend
+            if (gamepad2.dpad_left && liftPivot.getCurrentPosition() < 50 && lift.getCurrentPosition() < 30) {
+                liftPivot.setPower(-0.9);
+                liftPivot.setTargetPosition(150);
+                liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
             // Pace this loop so jaw action is reasonable speed.
