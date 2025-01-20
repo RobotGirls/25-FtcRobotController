@@ -43,6 +43,7 @@ public class ITDTeleopLM2NoEncoder extends LinearOpMode {
         claw2 = hardwareMap.get(CRServo.class, "claw2");
 
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -114,9 +115,10 @@ public class ITDTeleopLM2NoEncoder extends LinearOpMode {
             }
             // lift up to high basket
             if (gamepad2.dpad_up) {
-               // lift.setTargetPosition(2600); // FIXME change encoder value
+                //lift.setTargetPosition(2600); // FIXME change encoder value
                // lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                liftPivot.setPower(-0.9);
+                liftPivot.setPower(1);
+
                 liftPivot.setTargetPosition(1710);
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
