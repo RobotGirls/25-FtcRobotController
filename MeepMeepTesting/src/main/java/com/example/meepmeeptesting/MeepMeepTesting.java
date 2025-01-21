@@ -65,19 +65,28 @@ public class MeepMeepTesting {
                 .build();
 
 
-        mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(-38, -62, Math.toRadians(89)))
+        mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(-38, -62, Math.toRadians(179)))
                 // red left sample in basket (no pushing in net zone) + park
-                .lineToY(-52)
-                .turn(Math.toRadians(90))
-                .lineToX(-58)
+                //.strafeTo(new Vector2d(-38, -55))
+
+                //.lineToX(-40)
+                //.turn(Math.toRadians(45))
+                .splineToConstantHeading(new Vector2d(-56,-57), Math.toRadians(225))
                 .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(-62,-55))
                 .waitSeconds(1.5)
-                .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(-45,-55))
-                .strafeTo(new Vector2d(-45,-15))
-                .turn(Math.toRadians(90))
-                .lineToX(-26)
+                //.turn(Math.toRadians(44))
+                .setTangent(Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(-36,-39, Math.toRadians(270)), Math.toRadians(225))
+                .strafeTo(new Vector2d(-36, -10))
+                .setTangent(Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-48,-15),Math.toRadians(225))
+                .waitSeconds(0.5)
+                .setTangent(Math.toRadians(270))
+                .splineTo(new Vector2d(-56,-57), Math.toRadians(225))
+                .waitSeconds(0.5)
+                .setTangent(Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(-43, -10,Math.toRadians(0)),Math.toRadians(225))
+                .strafeTo(new Vector2d(-28,-10))
 
 //                // red left basket + samples (push)
 //                .lineToY(-52)
@@ -97,7 +106,7 @@ public class MeepMeepTesting {
                 .build());
 
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_LIGHT)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 // Add both of our declared bot entities
