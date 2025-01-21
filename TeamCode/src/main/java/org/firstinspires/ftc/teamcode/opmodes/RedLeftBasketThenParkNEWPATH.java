@@ -36,27 +36,20 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
         Lift lift = new Lift(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
-
+        
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .splineToConstantHeading(new Vector2d(-56,-57), Math.toRadians(225))
-                .turn(Math.toRadians(45));
-
-        TrajectoryActionBuilder toSampleOne = toBasket.endTrajectory().fresh()
-                .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(-36,-39, Math.toRadians(270)), Math.toRadians(225))
-                .strafeTo(new Vector2d(-36, -10))
-                .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-48,-15),Math.toRadians(225));
-
-        TrajectoryActionBuilder toBasketAgain = toSampleOne.endTrajectory().fresh()
-                .setTangent(Math.toRadians(270))
                 .splineTo(new Vector2d(-56,-57), Math.toRadians(225));
 
+        TrajectoryActionBuilder toSampleOne = toBasket.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-48,-37), Math.toRadians(90));
+
+        TrajectoryActionBuilder toBasketAgain = toSampleOne.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-56,-57), Math.toRadians(225));
+
         Action backToSub = toBasketAgain.endTrajectory().fresh()
-                .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(-43, -10,Math.toRadians(0)),Math.toRadians(225))
-                .strafeTo(new Vector2d(-28,-10))
+                .strafeToLinearHeading(new Vector2d(-31,-10),Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-25,-10),Math.toRadians(0))
                 .build();
 
 
