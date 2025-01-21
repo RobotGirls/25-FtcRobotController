@@ -13,71 +13,59 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.RNRRMecanumDrive;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+
+import java.util.Timer;
 
 //@Config
 @Autonomous(name = "RedLeftBasketThenPark")
 public class RedLeftBasketThenPark extends LinearOpMode {
     private boolean first = true;
-    private static final double FIRST_LIFT_DOWN_POS = 50.0;
-    private static final double LAST_LIFT_DOWN_POS = 100.0;
     private double currLiftPos = 0.0;
+    ElapsedTime liftTimer = new ElapsedTime();
+
 
     @Override
     public void runOpMode() throws InterruptedException {
+        liftTimer.reset();
         // instantiating the robot at a specific pose
         Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(89));
-        RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, initialPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
 
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toSub = drive.actionBuilder(initialPose)
-                // red left basket
+        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
                 .lineToY(-52)
                 .turn(Math.toRadians(90))
-                .lineToX(-52)
+                .lineToX(-58)
                 .turn(Math.toRadians(45))
+                .strafeTo(new Vector2d(-62,-55))
+                .waitSeconds(1.5);
+
+
+        Action toSub = toBasket.endTrajectory().fresh()
                 // samples (push)
                 .turn(Math.toRadians(45))
-                //          .splineTo(new Vector2d(-35,-52),180) too wavy
-                .strafeTo(new Vector2d(-35,-52))
-                .strafeTo(new Vector2d(-35,-10))
-                .strafeTo(new Vector2d(-46,-10))
-                .strafeTo(new Vector2d(-46,-60))
-                .strafeTo(new Vector2d(-46,-10))
+                .strafeTo(new Vector2d(-45,-55))
+                .strafeTo(new Vector2d(-45,-15))
                 .turn(Math.toRadians(90))
                 .lineToX(-26)
-
-// to submersible
-//                .lineToY(-1)
-  //              .waitSeconds(2)
-    //            .turn(Math.toRadians(-96.5))
-      //          .lineToX(-23)
-
-
-//                .waitSeconds(2)
-//                .setTangent(Math.toRadians(90))
-//                .lineToY(48)
-//                .setTangent(Math.toRadians(0))
-//                .lineToX(32)
-//                .strafeTo(new Vector2d(44.5, 30))
-//                .turn(Math.toRadians(180))
-//                .lineToX(47.5)
-                 .waitSeconds(3);
+                .build();
 
         // ON INIT:
   //      Actions.runBlocking(claw.closeClaw());
 
-        Action firstTraj = toSub.build();
+        Action firstTraj = toBasket.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -91,12 +79,15 @@ public class RedLeftBasketThenPark extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),
-  //                      lift.liftUp(),
-    //                    claw.openClaw(),
-                        firstTraj // go to the basket and then submersible
-                        //lift.liftUp() // to lvl1 ascent
-                      //  claw.openClaw(), // drop the sample
-                      //  lift.liftDown()
+                        firstTraj, // go to the basket, push samples, and then submersible
+                        liftPivot.liftPivotUp(),
+                        lift.liftUp(),
+                        claw.openClaw(), // drop the sample
+                        lift.liftDown(),
+                        toSub, // push samples, go to submersible
+                        liftPivot.liftPivotUp(),
+                        lift.liftUpLittle(),
+                        liftPivot.liftPivotDown()
                 )
         );
     }
@@ -107,7 +98,10 @@ public class RedLeftBasketThenPark extends LinearOpMode {
         public Lift(HardwareMap hardwareMap) {
             lift = hardwareMap.get(DcMotorEx.class, "lift");
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            lift.setDirection(DcMotorSimple.Direction.FORWARD);
+            lift.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         public class LiftUp implements Action {
@@ -117,15 +111,17 @@ public class RedLeftBasketThenPark extends LinearOpMode {
             // actions are formatted via telemetry packets as below
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
+
                 // powers on motor, if it is not on
                 if (!initialized) {
-                    lift.setPower(0.8);
+                    lift.setPower(-1);
                     initialized = true;
                 }
                 // checks lift's current position
                 double pos = lift.getCurrentPosition();
-                packet.put("liftPos", pos);
-                if (pos < 500.0) {
+                packet.put("liftPivotPos", pos);
+                telemetry.addData("Lift pivot pos: ", pos);
+                if (pos < 2700.0 && liftTimer.seconds()<20) {
                     // true causes the action to rerun
                     return true;
                 } else {
@@ -136,9 +132,45 @@ public class RedLeftBasketThenPark extends LinearOpMode {
                 // overall, the action powers the lift until it surpasses
                 // 3000 encoder ticks, then powers it off
             }
+                // overall, the action powers the lift until it surpasses
+                // 3000 encoder ticks, then powers it off
+
         }
         public Action liftUp() {
             return new LiftUp();
+        }
+
+        public class LiftUpLittle implements Action {
+            // checks if the lift motor has been powered on
+            private boolean initialized = false;
+
+            // actions are formatted via telemetry packets as below
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                // powers on motor, if it is not on
+                if (!initialized) {
+                    lift.setPower(1);
+                    initialized = true;
+                }
+                // checks lift's current position
+                double pos = lift.getCurrentPosition();
+                packet.put("liftPos", pos);
+                telemetry.addData("Lift pos: ", pos);
+                if (pos > 500.0) {
+                    // true causes the action to rerun
+                    return true;
+                } else {
+                    // false stops action rerun
+                    lift.setPower(0);
+                    return false;
+                }
+                // overall, the action powers the lift until it surpasses
+                // 3000 encoder ticks, then powers it off
+            }
+
+        }
+        public Action liftUpLittle() {
+            return new LiftUpLittle();
         }
 
         public class LiftDown implements Action {
@@ -147,7 +179,7 @@ public class RedLeftBasketThenPark extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    lift.setPower(-0.8);
+                    lift.setPower(0.8);
                     initialized = true;
                 }
 
@@ -169,17 +201,23 @@ public class RedLeftBasketThenPark extends LinearOpMode {
     }
 
     public class Claw {
-        private Servo claw;
+        private CRServo claw;
+        private CRServo claw2;
 
         public Claw(HardwareMap hardwareMap) {
-            claw = hardwareMap.get(Servo.class, "claw");
+            claw = hardwareMap.get(CRServo.class, "claw");
+            claw2 = hardwareMap.get(CRServo.class, "claw2");
         }
 
         public class CloseClaw implements Action {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(0.5);
+                claw.setPower(1);
+                claw2.setPower(-1);
+                sleep(2000);
+                claw.setPower(0);
+                claw2.setPower(0);
                 return false;
             }
         }
@@ -191,13 +229,17 @@ public class RedLeftBasketThenPark extends LinearOpMode {
         public class OpenClaw implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                claw.setPosition(0.2);
+                claw.setPower(-1);
+                claw2.setPower(1);
+                sleep(3000);
+                claw.setPower(0);
+                claw2.setPower(0);
                 return false;
             }
         }
 
         public Action openClaw() {
-            return new CloseClaw();
+            return new OpenClaw();
         }
     }
 
@@ -208,9 +250,10 @@ public class RedLeftBasketThenPark extends LinearOpMode {
             liftPivot = hardwareMap.get(DcMotorEx.class, "liftPivot");
             liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
+
             liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftPivot.setTargetPosition(900);
-            liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         }
 
         public class LiftPivotUp implements Action {
@@ -222,13 +265,13 @@ public class RedLeftBasketThenPark extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket packet) {
                 // powers on motor, if it is not on
                 if (!initialized) {
-                    liftPivot.setPower(0.8);
+                    liftPivot.setPower(1);
                     initialized = true;
                 }
                 // checks lift's current position
                 double pos = liftPivot.getCurrentPosition();
                 packet.put("liftPivotPos", pos);
-                if (pos < 500.0) {
+                if (pos < 1710.0) {
                     // true causes the action to rerun
                     return true;
                 } else {
@@ -247,29 +290,27 @@ public class RedLeftBasketThenPark extends LinearOpMode {
         public class LiftPivotDown implements Action {
             private boolean initialized = false;
 
+            // actions are formatted via telemetry packets as below
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
+                // powers on motor, if it is not on
                 if (!initialized) {
-                    liftPivot.setPower(0.8);
+                    liftPivot.setPower(-1);
                     initialized = true;
                 }
-                if (first) {
-                    currLiftPos = FIRST_LIFT_DOWN_POS;
-                    first = false;
-                } else {
-                    currLiftPos = LAST_LIFT_DOWN_POS;
-                }
+                // checks lift's current position
                 double pos = liftPivot.getCurrentPosition();
-               // packet.put("liftPos", pos);
-                telemetry.addData("liftPivotPos",pos);
-                telemetry.update();
-
-                if (pos < currLiftPos) {
+                packet.put("liftPivotPos", pos);
+                if (pos > 500.0) {
+                    // true causes the action to rerun
                     return true;
                 } else {
+                    // false stops action rerun
                     liftPivot.setPower(0);
                     return false;
                 }
+                // overall, the action powers the lift until it surpasses
+                // 3000 encoder ticks, then powers it off
             }
         }
 
@@ -281,4 +322,3 @@ public class RedLeftBasketThenPark extends LinearOpMode {
     }
 
 }
-
