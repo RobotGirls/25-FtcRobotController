@@ -19,23 +19,16 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(8, -60, Math.toRadians(90)))
+        myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(new Pose2d(8, -60, Math.toRadians(89)))
                 .lineToY(-33.5)
-                .turn(Math.toRadians(-90)).lineToX(34)
-                .turn(Math.toRadians(-90))
-                .strafeTo(new Vector2d(34,-4))
-//     .strafeTo(new Vector2d(25,-4))
+                .strafeTo(new Vector2d(34,-33.5))
+                .strafeTo(new Vector2d(40,-4))
+                .strafeTo(new Vector2d(45,-54))
+                .turn(Math.toRadians(180))
+                .strafeTo(new Vector2d(45, -59))
 
-
-                .strafeTo(new Vector2d(48,-4))
-                .strafeTo(new Vector2d(48,-54))
-
-
-                .splineToConstantHeading(new Vector2d(34,-50),Math.toRadians(-90))
-                .strafeTo(new Vector2d(54,-50))
-                .splineToConstantHeading(new Vector2d(8,-50),Math.toRadians(-180))
-                .turn(Math.toRadians(-180))
-                .lineToY(-34)
+                .strafeToLinearHeading(new Vector2d(8,-50),Math.toRadians(89))
+                .strafeTo(new Vector2d(8,-34))
 //                .lineToY(-35)
 //                .waitSeconds(1)
 //                .lineToY(-60)
@@ -66,7 +59,6 @@ public class MeepMeepTesting {
 //                .strafeTo(new Vector2d(34,-4))
 //                .strafeTo(new Vector2d(48,-4))
 //                .strafeTo(new Vector2d(48,-58))
-
 
 //                .turn(Math.toRadians(90))
 //                .lineToY(0)
