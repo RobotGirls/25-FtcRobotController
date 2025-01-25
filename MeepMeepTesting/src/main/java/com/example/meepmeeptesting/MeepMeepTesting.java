@@ -82,27 +82,20 @@ public class MeepMeepTesting {
 
 
         mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(-38, -62, Math.toRadians(179)))
-                // red left sample in basket (no pushing in net zone) + park
-                //.strafeTo(new Vector2d(-38, -55))
+                // red left: 2 samples in basket + park
 
-                //.lineToX(-40)
-                //.turn(Math.toRadians(45))
-                .splineToConstantHeading(new Vector2d(-56,-57), Math.toRadians(225))
-                .turn(Math.toRadians(45))
-                .waitSeconds(1.5)
-                //.turn(Math.toRadians(44))
-                .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(-36,-39, Math.toRadians(270)), Math.toRadians(225))
-                .strafeTo(new Vector2d(-36, -10))
-                .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(-48,-15),Math.toRadians(225))
-                .waitSeconds(0.5)
-                .setTangent(Math.toRadians(270))
                 .splineTo(new Vector2d(-56,-57), Math.toRadians(225))
-                .waitSeconds(0.5)
-                .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(-43, -10,Math.toRadians(0)),Math.toRadians(225))
-                .strafeTo(new Vector2d(-28,-10))
+                .waitSeconds(1) // DROP PRELOAD IN HIGH BASKET
+                .strafeToLinearHeading(new Vector2d(-48,-37), Math.toRadians(90))
+                .waitSeconds(1) // PICK UP SAMPLE FROM THE GROUND
+                .strafeToLinearHeading(new Vector2d(-56,-57), Math.toRadians(225))
+                .waitSeconds(0.5) // DROP 2ND SAMPLE IN HIGH BASKET
+                .setTangent(Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-31,-10),Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-25,-10),Math.toRadians(0))
+
+                //.strafeToLinearHeading(new Vector2d(-43, -10),Math.toRadians(0))
+               // .strafeTo(new Vector2d(-28,-10)) // L1 ASCENT
 
 //                // red left basket + samples (push)
 //                .lineToY(-52)
