@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "Teleop LM3 BUTTONS")
-public class ITDTeleopLM2NoEncoder extends LinearOpMode {
+@TeleOp(name = "Teleop ILT BUTTONS")
+public class ITDTeleop extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor  leftFront   = null;
@@ -34,16 +34,12 @@ public class ITDTeleopLM2NoEncoder extends LinearOpMode {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        //drive.setPoseEstimate(startPose);
-
         lift = hardwareMap.get(DcMotor.class, "lift");
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
         claw = hardwareMap.get(CRServo.class, "claw");
         claw2 = hardwareMap.get(CRServo.class, "claw2");
 
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -56,7 +52,6 @@ public class ITDTeleopLM2NoEncoder extends LinearOpMode {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
@@ -118,7 +113,6 @@ public class ITDTeleopLM2NoEncoder extends LinearOpMode {
                 //lift.setTargetPosition(2600); // FIXME change encoder value
                // lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 liftPivot.setPower(1);
-
                 liftPivot.setTargetPosition(1710);
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -136,6 +130,7 @@ public class ITDTeleopLM2NoEncoder extends LinearOpMode {
             }
             // if the lift and lift pivot are all the way in and we want to go out into the submersible to get a sample, lift the pivot slightly so the intake doesn't get stuck and then extend
             if (gamepad2.dpad_left && liftPivot.getCurrentPosition() < 50 && lift.getCurrentPosition() < 30) {
+                liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
                 liftPivot.setPower(-0.9);
                 liftPivot.setTargetPosition(150);
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);

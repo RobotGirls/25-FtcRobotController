@@ -36,7 +36,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
         Lift lift = new Lift(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
-        
+
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
                 .splineTo(new Vector2d(-56,-57), Math.toRadians(225));
@@ -88,7 +88,6 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         lift.liftDown(),
                         backToSub, // head back to the submersible to park
                         lift.liftUpLittle()
-
                 )
         );
     }
