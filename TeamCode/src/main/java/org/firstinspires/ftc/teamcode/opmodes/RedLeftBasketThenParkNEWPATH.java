@@ -39,7 +39,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .splineTo(new Vector2d(-56,-57), Math.toRadians(225));
+                .splineTo(new Vector2d(-60,-57), Math.toRadians(225));
 
         TrajectoryActionBuilder toSampleOne = toBasket.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-48,-37), Math.toRadians(90));
@@ -61,8 +61,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
         Action thirdTraj = toBasketAgain.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
-            telemetry.addData("Robot position: ", drive.updatePoseEstimate());
-            telemetry.update();
+
         }
         waitForStart();
         if (isStopRequested()) return;
@@ -74,7 +73,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         firstTraj,  // get to basket to drop preload
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
-                        claw.openClaw(), // drop the sample
+                        claw.closeClaw(), // drop the sample
                         lift.liftDown(),
                         liftPivot.liftPivotDown(),
                         secondTraj, // get to the first sample to intake

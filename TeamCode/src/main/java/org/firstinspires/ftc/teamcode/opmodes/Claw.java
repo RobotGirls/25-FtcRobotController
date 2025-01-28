@@ -15,12 +15,6 @@ public class Claw {
     private CRServo claw;
     private CRServo claw2;
 
-    private final double POWER_CLAW_OFF = 0.0;
-    private final double POWER_CLAW_1_CLOSE = 1.0;
-    private final double POWER_CLAW_2_CLOSE = -1.0;
-    private final double POWER_CLAW_1_OPEN = -1.0;
-    private final double POWER_CLAW_2_OPEN = 1.0;
-
     public Claw(HardwareMap hardwareMap) {
         claw = hardwareMap.get(CRServo.class, "claw");
         claw2 = hardwareMap.get(CRServo.class, "claw2");
@@ -30,15 +24,15 @@ public class Claw {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            claw.setPower(POWER_CLAW_1_CLOSE);
-            claw2.setPower(POWER_CLAW_2_CLOSE);
+            claw.setPower(1);
+            claw2.setPower(-1);
             try {
-                Thread.sleep(2000);
+                sleep(2000);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();;
+                throw new RuntimeException(e);
             }
-            claw.setPower(POWER_CLAW_OFF);
-            claw2.setPower(POWER_CLAW_OFF);
+            claw.setPower(0);
+            claw2.setPower(0);
             return false;
         }
     }
@@ -50,15 +44,15 @@ public class Claw {
     public class OpenClaw implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            claw.setPower(POWER_CLAW_1_OPEN);
-            claw2.setPower(POWER_CLAW_2_OPEN);
+            claw.setPower(-1);
+            claw2.setPower(1);
             try {
-                Thread.sleep(3000);
+                sleep(3000);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();;
+                throw new RuntimeException(e);
             }
-            claw.setPower(POWER_CLAW_OFF);
-            claw2.setPower(POWER_CLAW_OFF);
+            claw.setPower(0);
+            claw2.setPower(0);
             return false;
         }
     }
@@ -66,5 +60,4 @@ public class Claw {
     public Action openClaw() {
         return new OpenClaw();
     }
-
 }

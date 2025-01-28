@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import androidx.annotation.NonNull;
 
@@ -18,9 +17,9 @@ public class Lift{
     private final double LIFT_PWR_OFF = 0.0;
     private final double LIFT_PWR_FAST = 1.0;
     private final double LIFT_PWR_SLOWER = 0.8;
-    private final double POS_HIGH_BASKET = 2700.0;
+    private final double POS_HIGH_BASKET = 2600.0;
     private final double POS_LIFT_TO_RUNG = 500.0;
-    private final double POS_LIFT_DOWN = 100.0;
+    private final double POS_LIFT_DOWN = 10.0;
     private final double MAX_LIFT_TIMER = 20.0;
 
     public Lift(HardwareMap hardwareMap) {
@@ -49,7 +48,6 @@ public class Lift{
             // checks lift's current position
             double pos = lift.getCurrentPosition();
             packet.put("liftPos", pos);
-            telemetry.addData("Lift pos: ", pos);
             if (pos < POS_HIGH_BASKET && liftTimer.seconds()<MAX_LIFT_TIMER) {
                 // true causes the action to rerun
                 return true;
@@ -87,7 +85,6 @@ public class Lift{
             // checks lift's current position
             double pos = lift.getCurrentPosition();
             packet.put("liftPos", pos);
-            telemetry.addData("Lift pos: ", pos);
             if (pos > POS_LIFT_TO_RUNG) {
                 // true causes the action to rerun
                 return true;

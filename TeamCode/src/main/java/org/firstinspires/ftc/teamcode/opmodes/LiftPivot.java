@@ -14,7 +14,7 @@ public class LiftPivot {
     private final double LIFT_PIVOT_POWER_UP = 1.0;
     private final double LIFT_PIVOT_POWER_DOWN = -1.0;
     private final double LIFT_PIVOT_POWER_OFF = 0.0;
-    private final double POS_LIFT_PIVOT_UP = 1710.0;
+    private final double POS_LIFT_PIVOT_UP = 1750.0;
     private final double POS_LIFT_PIVOT_DOWN = 500.0;
 
 
