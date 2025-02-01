@@ -49,17 +49,16 @@ public class BlueLeftBasketThenPark extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .lineToX(58)
                 .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(62, 58))
-                .waitSeconds(1.5);
+                .strafeToLinearHeading(new Vector2d(62,58), Math.toRadians(0));
 
 
-        Action toSub = toBasket.endTrajectory().fresh()
+
+        TrajectoryActionBuilder toSub = toBasket.endTrajectory().fresh()
                 .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(-45, -55))
-                .strafeTo(new Vector2d(-45, -15))
+                .strafeToLinearHeading(new Vector2d(-45,-37), Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-45,-15), Math.toRadians(0))
                 .turn(Math.toRadians(90))
-                .lineToX(-26)
-                .build();
+                .lineToX(-26);
 
         // ON INIT:
         //      Actions.runBlocking(claw.closeClaw());
