@@ -44,10 +44,10 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                 .splineTo(new Vector2d(-60,-57), Math.toRadians(225));
 
         TrajectoryActionBuilder toSampleOne = toBasket.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-48,-43), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-52,-43), Math.toRadians(90));
 
         TrajectoryActionBuilder toBasketAgain = toSampleOne.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-56,-57), Math.toRadians(225));
+                .strafeToLinearHeading(new Vector2d(-60,-57), Math.toRadians(225));
 
         Action backToSub = toBasketAgain.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-31,-10),Math.toRadians(0))
@@ -77,12 +77,13 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
                         claw.closeClaw(), // drop the sample
-                        lift.liftDown()
-                        /*
+                        lift.liftDown(),
                         liftPivot.liftPivotDown(),
                         secondTraj, // get to the first sample to intake
+                        liftPivot.liftPivotUpLittle(),
                         lift.liftUpLittle(),
-                        claw.closeClaw(), // lift out lift a little and intake the sample
+                        claw.openClaw(), // lift out lift a little and intake the sample
+                        liftPivot.liftPivotUpLittle(),
                         lift.liftDown(),
                         thirdTraj, // get back to the basket to drop other sample
                         liftPivot.liftPivotUp(),
@@ -92,7 +93,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         backToSub, // head back to the submersible to park
                         lift.liftUpLittle()
 
-                         */
+
                 )
         );
     }

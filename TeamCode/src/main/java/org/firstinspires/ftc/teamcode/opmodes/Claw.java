@@ -47,7 +47,7 @@ public class Claw {
             claw.setPower(-1);
             claw2.setPower(1);
             try {
-                sleep(3000);
+                sleep(4000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
