@@ -39,22 +39,25 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
+                .strafeTo(new Vector2d(-38, -61))
+                .waitSeconds(0.5)
                 .splineTo(new Vector2d(-60,-57), Math.toRadians(225));
 
         TrajectoryActionBuilder toSampleOne = toBasket.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-48,-37), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-48,-43), Math.toRadians(90));
 
         TrajectoryActionBuilder toBasketAgain = toSampleOne.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-56,-57), Math.toRadians(225));
 
         Action backToSub = toBasketAgain.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-31,-10),Math.toRadians(0))
-                .strafeToLinearHeading(new Vector2d(-25,-10),Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-25,-20),Math.toRadians(0))
                 .build();
 
 
         // ON INIT:
   //      Actions.runBlocking(claw.closeClaw())
+       // lift.setModeOnInit();
 
         Action firstTraj = toBasket.build();
         Action secondTraj = toSampleOne.build();
@@ -74,7 +77,8 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
                         claw.closeClaw(), // drop the sample
-                        lift.liftDown(),
+                        lift.liftDown()
+                        /*
                         liftPivot.liftPivotDown(),
                         secondTraj, // get to the first sample to intake
                         lift.liftUpLittle(),
@@ -87,6 +91,8 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         lift.liftDown(),
                         backToSub, // head back to the submersible to park
                         lift.liftUpLittle()
+
+                         */
                 )
         );
     }

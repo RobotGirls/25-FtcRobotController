@@ -42,7 +42,6 @@ public class ITDTeleop extends LinearOpMode {
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -81,7 +80,7 @@ public class ITDTeleop extends LinearOpMode {
             rightBack.setPower(0.8*backRightPower);
 
             lift.setPower(-gamepad2.left_stick_y);
-            liftPivot.setPower(0.7*gamepad2.right_stick_y);
+            liftPivot.setPower(gamepad2.right_stick_y);
 
             telemetry.addData("Lift encoder ticks: ", lift.getCurrentPosition());
             telemetry.update();
@@ -104,18 +103,16 @@ public class ITDTeleop extends LinearOpMode {
             }
 
             // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all teh way down
+            /*
             if (gamepad2.right_stick_button) {
                 lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
             // lift up to high basket
             if (gamepad2.dpad_up) {
-                //lift.setTargetPosition(2600); // FIXME change encoder value
-               // lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 liftPivot.setPower(1);
                 liftPivot.setTargetPosition(1710);
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
             }
             //
             else if (gamepad2.dpad_down) {
@@ -135,6 +132,8 @@ public class ITDTeleop extends LinearOpMode {
                 liftPivot.setTargetPosition(150);
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
+
+             */
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
