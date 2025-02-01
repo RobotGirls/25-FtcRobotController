@@ -17,15 +17,15 @@ public class Lift{
     private final double LIFT_PWR_OFF = 0.0;
     private final double LIFT_PWR_FAST = 1.0;
     private final double LIFT_PWR_SLOWER = 0.8;
-    private final double POS_HIGH_BASKET = 2600.0;
-    private final double POS_LIFT_TO_RUNG = 500.0;
-    private final double POS_LIFT_DOWN = 10.0;
-    private final double MAX_LIFT_TIMER = 20.0;
+    private final double POS_HIGH_BASKET = 3150.0;
+    private final double POS_LIFT_TO_RUNG = 570.0;
+    private final double POS_LIFT_DOWN = 100.0;
+    private final double MAX_LIFT_TIMER = 15.0;
 
     public Lift(HardwareMap hardwareMap) {
         lift = hardwareMap.get(DcMotorEx.class, "lift");
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        //lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -42,13 +42,13 @@ public class Lift{
 
             // powers on motor, if it is not on
             if (!initialized) {
-                lift.setPower(-LIFT_PWR_FAST);
+                lift.setPower(LIFT_PWR_FAST);
                 initialized = true;
             }
             // checks lift's current position
             double pos = lift.getCurrentPosition();
             packet.put("liftPos", pos);
-            if (pos < POS_HIGH_BASKET && liftTimer.seconds()<MAX_LIFT_TIMER) {
+            if (pos < POS_HIGH_BASKET && liftTimer.seconds() < MAX_LIFT_TIMER) {
                 // true causes the action to rerun
                 return true;
             } else {
@@ -85,7 +85,7 @@ public class Lift{
             // checks lift's current position
             double pos = lift.getCurrentPosition();
             packet.put("liftPos", pos);
-            if (pos > POS_LIFT_TO_RUNG) {
+            if (pos < POS_LIFT_TO_RUNG) {
                 // true causes the action to rerun
                 return true;
             } else {
@@ -108,16 +108,16 @@ public class Lift{
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                lift.setPower(LIFT_PWR_SLOWER);
+                lift.setPower(-0.8);
                 initialized = true;
             }
 
             double pos = lift.getCurrentPosition();
-            packet.put("liftPos", pos);
             if (pos > POS_LIFT_DOWN) {
+                // true causes the action to rerun
                 return true;
             } else {
-                lift.setPower(LIFT_PWR_OFF);
+                lift.setPower(0);
                 return false;
             }
         }

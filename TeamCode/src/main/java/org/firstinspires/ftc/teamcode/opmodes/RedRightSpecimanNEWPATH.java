@@ -64,7 +64,7 @@ public class RedRightSpecimanNEWPATH extends LinearOpMode {
         if (isStopRequested()) return;
 
         // IN RUNTIME
-        // running the action sequence!
+        // running the action sequence
         Actions.runBlocking(
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),

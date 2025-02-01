@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-
-@TeleOp(name = "Teleop ILT BUTTONS")
-public class ITDTeleop extends LinearOpMode {
+@Disabled
+@TeleOp(name = "Teleop ILT TWO MOTORS")
+public class ITDTeleopTWOMOTORS extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor  leftFront   = null;
@@ -19,6 +20,7 @@ public class ITDTeleop extends LinearOpMode {
     public DcMotor lift;
     public CRServo claw;
     public DcMotor liftPivot;
+    public DcMotor liftPivot2;
     public CRServo claw2;
 
 
@@ -36,10 +38,12 @@ public class ITDTeleop extends LinearOpMode {
 
         lift = hardwareMap.get(DcMotor.class, "lift");
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
+        liftPivot2 = hardwareMap.get(DcMotor.class, "liftPivot2");
         claw = hardwareMap.get(CRServo.class, "claw");
         claw2 = hardwareMap.get(CRServo.class, "claw2");
 
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftPivot2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -80,7 +84,8 @@ public class ITDTeleop extends LinearOpMode {
             rightBack.setPower(0.8*backRightPower);
 
             lift.setPower(-gamepad2.left_stick_y);
-            liftPivot.setPower(gamepad2.right_stick_y);
+            liftPivot.setPower(0.7*gamepad2.right_stick_y);
+            liftPivot2.setPower(-0.7*gamepad2.right_stick_y);
 
             telemetry.addData("Lift encoder ticks: ", lift.getCurrentPosition());
             telemetry.update();
