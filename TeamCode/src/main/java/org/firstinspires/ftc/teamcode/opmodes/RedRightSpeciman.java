@@ -53,6 +53,8 @@ public class RedRightSpeciman extends LinearOpMode {
         // ON INIT:
   //      Actions.runBlocking(claw.closeClaw());
 
+        liftPivot.liftPivotUpInit();
+
         Action firstTraj = toChamber.build();
 
         while (!isStopRequested() && !opModeIsActive()) {

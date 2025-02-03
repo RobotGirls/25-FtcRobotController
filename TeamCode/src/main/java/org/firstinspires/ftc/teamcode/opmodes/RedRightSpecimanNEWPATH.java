@@ -50,6 +50,7 @@ public class RedRightSpecimanNEWPATH extends LinearOpMode {
                 .strafeTo(new Vector2d(8,-34)) // NOT UPDATED
                 .build();
 
+        Actions.runBlocking(liftPivot.liftPivotUpInit());
 
         Action firstTraj = toChamber.build();
         Action getSpec = toWall.build();
@@ -70,8 +71,8 @@ public class RedRightSpecimanNEWPATH extends LinearOpMode {
 //                        liftPivot.liftPivotDown(),
                         firstTraj, // go to the chamber, push sample, park in observation zone
                         liftPivot.liftPivotUp(),
-                        lift.liftUpLittle(), // to lvl1 ascent
-                        liftPivot.liftPivotDown(),
+                        lift.liftUpLittle(),
+                        //liftPivot.liftPivotDown(),
                         lift.liftDown(),
                         getSpec,
                         lift.liftUpLittle(),

@@ -57,10 +57,13 @@ public class ITDTeleop extends LinearOpMode {
         telemetry.update();
 
         // Wait for the game to start (driver presses START)
+
+
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
@@ -83,7 +86,13 @@ public class ITDTeleop extends LinearOpMode {
             liftPivot.setPower(gamepad2.right_stick_y);
 
             telemetry.addData("Lift encoder ticks: ", lift.getCurrentPosition());
+            telemetry.addData("Lift pivot encoder ticks: ", liftPivot.getCurrentPosition());
             telemetry.update();
+
+            if (gamepad2.right_bumper) {
+                liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
+
             if (gamepad2.a) {
                 claw.setPower(1);
                 claw2.setPower(-1);
