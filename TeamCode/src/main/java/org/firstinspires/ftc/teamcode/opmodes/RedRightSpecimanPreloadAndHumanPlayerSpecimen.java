@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
 @Autonomous(name = "Red Right Specimen NEWPATH")
-public class RedRightSpecimanNEWPATH extends LinearOpMode {
+public class RedRightSpecimanPreloadAndHumanPlayerSpecimen extends LinearOpMode {
     private boolean first = true;
     private static final double FIRST_LIFT_DOWN_POS = 50.0;
     private static final double LAST_LIFT_DOWN_POS = 100.0;

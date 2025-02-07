@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 // RR-specific imports
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -13,17 +10,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
 @Autonomous(name = "RedLeftBasketThenParkNEWPATH")
-public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
+public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
     private boolean first = true;
     private double currLiftPos = 0.0;
 
@@ -77,25 +69,22 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj,  // get to basket to drop preload
-                        liftPivot.liftPivotUp(),
-                        lift.liftUpNoTimer(),
+                        liftPivot.liftPivotUp(), // lift the pivot
+                        lift.liftUpNoTimer(), // lift the lift (w/ timer debug)
                         claw.closeClaw(), // drop the sample
-                        lift.liftDown(),
-                        liftPivot.liftPivotDown(),
+                        lift.liftDown(), // lift down
+                        liftPivot.liftPivotDown(), // lift pivot down
                         secondTraj, // get to the first sample to intake
-                        liftPivot.liftPivotUpLittle(),
-                        lift.liftUpLittle(),
-                        claw.openClaw(), // lift out lift a little and intake the sample
-                        liftPivot.liftPivotUpLittle(),
+                        lift.liftUpLittle(), // lift the lift slightly to touch the ground to reach sample
+                        claw.openClaw(), // intake the sample
+                        liftPivot.liftPivotDown(),
                         thirdTraj, // get back to the basket to drop other sample
-                        liftPivot.liftPivotUpLittle(),
-                        lift.liftDown(),
                         liftPivot.liftPivotUp(),
                         lift.liftUpNoTimer(),
                         claw.closeClaw(), // drop the sample
-                        lift.liftDown()
-                        //backToSub, // head back to the submersible to park
-                        //lift.liftUpLittle()
+                        lift.liftDown(), // lift down
+                        // backToSub, // head back to the submersible to park
+                        lift.liftUpLittle()
 
 
                 )
