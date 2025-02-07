@@ -64,6 +64,7 @@ public class BlueLeftBasketThenPark extends LinearOpMode {
         //      Actions.runBlocking(claw.closeClaw());
 
         Action firstTraj = toBasket.build();
+        Action toSubmerible = toSub.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -82,7 +83,7 @@ public class BlueLeftBasketThenPark extends LinearOpMode {
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
-                        toSub, // push samples, go to submersible
+                        toSubmerible, // push samples, go to submersible
                         liftPivot.liftPivotUp(),
                         lift.liftUpLittle(),
                         liftPivot.liftPivotDown()

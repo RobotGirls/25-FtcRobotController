@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 // RR-specific imports
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -66,26 +67,39 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
 
         // IN RUNTIME
         // running the action sequence!
+        // now presenting: concurrance!!! (hopefully0
         Actions.runBlocking(
                 new SequentialAction(
-                        firstTraj,  // get to basket to drop preload
-                        liftPivot.liftPivotUp(), // lift the pivot
-                        lift.liftUpNoTimer(), // lift the lift (w/ timer debug)
+                        new ParallelAction(
+                                firstTraj,
+                                liftPivot.liftPivotUp(),
+                                lift.liftUpNoTimer()
+                                ), // get to basket to drop preload, lift the pivot, lift the lift (w/ timer debug)
+                        claw.closeClaw(),
+                        // drop the sample
+                        new ParallelAction(
+                                  claw.closeClaw(),
+                                  lift.liftDown(),
+                                  liftPivot.liftPivotDown()
+                          ), // lift down, lift pivot down
+                        new ParallelAction(
+                                secondTraj,
+                                lift.liftUpLittle()
+                        ), // get to the first sample to intake, lift the lift slightly to touch the ground to reach sample, intake the sample
+                        claw.openClaw(),
+                        lift.liftDown(),
+                        new ParallelAction(
+                                thirdTraj,
+                                liftPivot.liftPivotUp(),
+                                lift.liftUpNoTimer()
+                        ),
+                        // get back to the basket to drop other sample
                         claw.closeClaw(), // drop the sample
-                        lift.liftDown(), // lift down
-                        liftPivot.liftPivotDown(), // lift pivot down
-                        secondTraj, // get to the first sample to intake
-                        lift.liftUpLittle(), // lift the lift slightly to touch the ground to reach sample
-                        claw.openClaw(), // intake the sample
-                        liftPivot.liftPivotDown(),
-                        thirdTraj, // get back to the basket to drop other sample
-                        liftPivot.liftPivotUp(),
-                        lift.liftUpNoTimer(),
-                        claw.closeClaw(), // drop the sample
-                        lift.liftDown(), // lift down
-                        // backToSub, // head back to the submersible to park
-                        lift.liftUpLittle()
-
+                        new ParallelAction(
+                                lift.liftDown(), // lift down
+                                backToSub
+                        ), // lift down, head back to the submersible to park
+                         lift.liftUpLittle()
 
                 )
         );
