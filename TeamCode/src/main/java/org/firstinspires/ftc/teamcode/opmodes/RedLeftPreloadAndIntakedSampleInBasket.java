@@ -100,7 +100,6 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
                                 backToSub
                         ), // lift down, head back to the submersible to park
                          lift.liftUpLittle()
-
                 )
         );
     }

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -70,10 +71,14 @@ public class RedRightSpeciman extends LinearOpMode {
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),
                         firstTraj, // go to the chamber, push sample, park in observation zone
-                        liftPivot.liftPivotUp(),
-                        lift.liftUp(), // to lvl1 ascent
-                        liftPivot.liftPivotDown(),
-                        lift.liftDown(),
+                        new ParallelAction(
+                                liftPivot.liftPivotUp(),
+                                lift.liftUp()
+                        ),
+                        new ParallelAction(
+                                liftPivot.liftPivotDown(),
+                                lift.liftDown()
+                        ),
                         toPark
                 )
         );

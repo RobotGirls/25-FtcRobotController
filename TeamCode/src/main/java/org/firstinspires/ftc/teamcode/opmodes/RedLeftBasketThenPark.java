@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 // RR-specific imports
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -70,13 +71,17 @@ public class RedLeftBasketThenPark extends LinearOpMode {
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),
                         firstTraj, // go to the basket, push samples, and then submersible
-                        liftPivot.liftPivotUp(),
-                        lift.liftUp(),
+                        new ParallelAction(
+                                liftPivot.liftPivotUp(),
+                                lift.liftUp()
+                        ),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
                         toSub, // push samples, go to submersible
-                        liftPivot.liftPivotUp(),
-                        lift.liftUpLittle(),
+                        new ParallelAction(
+                                liftPivot.liftPivotUp(),
+                                lift.liftUpLittle()
+                        ),
                         liftPivot.liftPivotDown()
                 )
         );

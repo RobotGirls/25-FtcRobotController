@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 // RR-specific imports
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -68,22 +69,30 @@ public class RedRightSpecimanPreloadAndHumanPlayerSpecimen extends LinearOpMode 
         // running the action sequence
         Actions.runBlocking(
                 new SequentialAction(
-//                        liftPivot.liftPivotDown(),
-                        firstTraj, // go to the chamber, push sample, park in observation zone
-                        liftPivot.liftPivotUp(),
-                        lift.liftUpLittle(),
-                        //liftPivot.liftPivotDown(),
+                        new ParallelAction(
+                                firstTraj,
+                                liftPivot.liftPivotUp(),
+                                lift.liftUpLittle()
+                                ), // go to the chamber, push sample, park in observation zone
                         lift.liftDown(),
                         getSpec,
-                        lift.liftUpLittle(),
-                        claw.closeClaw(),
+                        new ParallelAction(
+                                lift.liftUpLittle(),
+                                claw.closeClaw()
+                         ),
+                        new ParallelAction(
+                                lift.liftDown(),
+                                scoreSpec2
+                        ),
+                        new ParallelAction(
+                                liftPivot.liftPivotUp(),
+                                lift.liftUpLittle()
+                        ),
                         lift.liftDown(),
-                        scoreSpec2,
-                        liftPivot.liftPivotUp(),
-                        lift.liftUpLittle(),
-                        lift.liftDown(),
-                        liftPivot.liftPivotDown(),
-                        park
+                        new ParallelAction(
+                                liftPivot.liftPivotDown(),
+                                park
+                        )
                 )
         );
     }

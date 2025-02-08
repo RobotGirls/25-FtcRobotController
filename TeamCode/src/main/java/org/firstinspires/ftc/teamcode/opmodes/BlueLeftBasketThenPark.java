@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -77,16 +78,19 @@ public class BlueLeftBasketThenPark extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-//                        liftPivot.liftPivotDown(),
-                        firstTraj, // go to the basket, push samples, and then submersible
-                        liftPivot.liftPivotUp(),
-                        lift.liftUp(),
+                        firstTraj,
+                        new ParallelAction(
+                                liftPivot.liftPivotUp(),
+                                lift.liftUp()
+                        ),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
                         toSubmerible, // push samples, go to submersible
                         liftPivot.liftPivotUp(),
-                        lift.liftUpLittle(),
-                        liftPivot.liftPivotDown()
+                        new ParallelAction(
+                                lift.liftUpLittle(),
+                                liftPivot.liftPivotDown()
+                        )
                 )
         );
     }

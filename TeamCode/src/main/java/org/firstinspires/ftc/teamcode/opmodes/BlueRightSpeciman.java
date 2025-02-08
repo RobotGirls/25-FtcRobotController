@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -45,7 +46,6 @@ public class BlueRightSpeciman extends LinearOpMode {
         Action toPark = toChamber.endTrajectory().fresh()
                 .lineToY(60)
                 .strafeTo(new Vector2d(-60,60))
-                .waitSeconds(1)
                 .build();
 
         // ON INIT:
@@ -64,11 +64,15 @@ public class BlueRightSpeciman extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                  firstTraj, // go to the chamber, push sample, park in observation zone
-                        liftPivot.liftPivotUp(),
-                        lift.liftUp(), // to lvl1 ascent
-                        liftPivot.liftPivotDown(),
-                        lift.liftDown(),
+                  firstTraj,
+                        new ParallelAction(
+                                liftPivot.liftPivotUp(),
+                                lift.liftUp()
+                        ),
+                        new ParallelAction(
+                                liftPivot.liftPivotDown(),
+                                lift.liftDown()
+                        ),
                         toPark
                 )
         );
