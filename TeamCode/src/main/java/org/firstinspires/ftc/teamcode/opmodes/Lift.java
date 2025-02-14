@@ -59,8 +59,6 @@ public class Lift{
             // overall, the action powers the lift until it surpasses
             // 3000 encoder ticks, then powers it off
         }
-        // overall, the action powers the lift until it surpasses
-        // 3000 encoder ticks, then powers it off
 
     }
 
