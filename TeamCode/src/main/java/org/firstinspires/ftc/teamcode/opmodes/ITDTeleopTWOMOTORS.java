@@ -23,6 +23,25 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
     public DcMotor liftPivot2;
     public CRServo claw2;
 
+    public enum LiftState {
+        LIFT_START,
+        LIFT_EXTEND_BASKET,
+        LIFT_RESET_ENCODER,
+        LIFT_RUN_WITH_ENCODER,
+        LIFT_CHECK
+    }
+    public enum LiftPivotState {
+        PIVOT_CHECK,
+        PIVOT_START,
+        PIVOT_INTO_SUBMERSIBLE,
+        PIVOT_SUBMERSIBLE_OVERIRDE,
+        PIVOT_RUN_ENCODER
+    }
+
+
+    LiftState liftState = LiftState.LIFT_CHECK;
+    LiftPivotState liftPivotState = LiftPivotState.PIVOT_CHECK;
+
 
     @Override
     public void runOpMode() {
@@ -82,8 +101,6 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
             leftBack.setPower(0.8*backLeftPower);
             rightFront.setPower(0.8*frontRightPower);
             rightBack.setPower(0.8*backRightPower);
-
-            lift.setPower(-gamepad2.left_stick_y);
             liftPivot.setPower(0.7*gamepad2.right_stick_y);
             liftPivot2.setPower(-0.7*gamepad2.right_stick_y);
 
@@ -107,29 +124,166 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                 claw2.setPower(0);
             }
 
-            // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all teh way down
-            /*
-            if (gamepad2.right_stick_button) {
-                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
-            // lift up to high basket
-            if (gamepad2.dpad_up) {
-                liftPivot.setPower(1);
-                liftPivot.setTargetPosition(1710);
-                liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-            //
-            else if (gamepad2.dpad_down) {
-                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
 
-            // alternative to dpad down: if there is joystick input, override the run to position mode
-            if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
+            // welcome to the wonderful world of switch-cases! Allow us to begin...
+            switch (liftState) {
+                case LIFT_CHECK:
+                    if (gamepad2.right_stick_button) {
+                        liftState = LiftState.LIFT_RESET_ENCODER;
+                    } else if (gamepad2.dpad_up) {
+                        liftState = LiftState.LIFT_EXTEND_BASKET;
+                    } else if (gamepad2.dpad_down) {
+                        liftState = LiftState.LIFT_RUN_WITH_ENCODER;
+                    } else {
+                        liftState = LiftState.LIFT_START;
+                    }
+                    break;
+
+                case LIFT_START:
+                    if (gamepad2.left_stick_y != 0 ) {
+                        lift.setPower(-gamepad2.left_stick_y);
+                    } else {
+                        liftState = LiftState.LIFT_CHECK;
+                    }
+                    break;
+            case LIFT_EXTEND_BASKET:
+                if (gamepad2.dpad_up) {
+                    liftPivot.setPower(1);
+                    liftPivot.setTargetPosition(1710);
+                    liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                } else if (gamepad2.dpad_down) {
+                    liftState = LiftState.LIFT_RUN_WITH_ENCODER;
+                } else if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
+                    liftState = LiftState.LIFT_RUN_WITH_ENCODER;
+                } else {
+                    liftState = LiftState.LIFT_CHECK;
+                }
+                break;
+                case LIFT_RUN_WITH_ENCODER:
+                            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                            liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                            liftState = LiftState.LIFT_CHECK;
+                        break;
+
+                        case LIFT_RESET_ENCODER:
+                            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            liftState = LiftState.LIFT_CHECK;
+                                break;
+
+                                default:
+                                    // should never be reached, as liftState should never be null
+                                    liftState = LiftState.LIFT_START;
+                            }
+
+
+        // small optimization, instead of repeating ourselves in each
+        // lift state case besides LIFT_START for the cancel action,
+        // it's just handled here
+//        if (gamepad2.y && liftState != LiftState.LIFT_START) {
+//            liftState = LiftState.LIFT_START;
+//        }
+
+        // mecanum drive code goes here
+        // But since none of the stuff in the switch case stops
+        // the robot, this will always run!
+        // updateDrive(gamepad1, gamepad2);
+    }
+
+        switch (liftPivotState) {
+            case PIVOT_CHECK:
+                if (gamepad2.dpad_left && liftPivot.getCurrentPosition() < 50 && lift.getCurrentPosition() < 30) {
+                    liftPivotState = LiftPivotState.PIVOT_INTO_SUBMERSIBLE;
+                }  else {
+                    liftPivotState = LiftPivotState.PIVOT_START;
+                }
+                break;
+
+            case PIVOT_START:
+                if (gamepad2.right_stick_y != 0 ) {
+                    liftPivot.setPower(gamepad2.right_stick_y);
+                    liftPivot2.setPower(gamepad2.right_stick_y);
+                } else {
+                    liftState = LiftState.LIFT_CHECK;
+                }
+                break;
+            case PIVOT_INTO_SUBMERSIBLE:
+                if (gamepad2.dpad_up) {
+                    liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
+                    liftPivot2.setDirection(DcMotorSimple.Direction.REVERSE);
+                    liftPivot.setPower(-0.9);
+                    liftPivot2.setPower(-0.9);
+                    liftPivot.setTargetPosition(150);
+                    liftPivot2.setTargetPosition(150);
+                    liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                } else if (gamepad2.dpad_down) {
+                    liftPivotState = LiftPivotState.PIVOT_SUBMERSIBLE_OVERIRDE;
+                } else if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
+                    liftPivotState = LiftPivotState.PIVOT_SUBMERSIBLE_OVERIRDE;
+                } else {
+                    liftPivotState = LiftPivotState.PIVOT_CHECK;
+                }
+                break;
+            case PIVOT_SUBMERSIBLE_OVERIRDE:
+                    lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    liftPivotState = LiftPivotState.PIVOT_CHECK;
+                    break;
+
+            case PIVOT_RUN_ENCODER:
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
+                liftPivotState = LiftPivotState.PIVOT_CHECK;
+                break;
+
+            default:
+                // should never be reached, as liftState should never be null
+                liftPivotState = LiftPivotState.PIVOT_START;
+        }
+
+
+        // small optimization, instead of repeating ourselves in each
+        // lift state case besides LIFT_START for the cancel action,
+        // it's just handled here
+//        if (gamepad2.y && liftState != LiftState.LIFT_START) {
+//            liftState = LiftState.LIFT_START;
+//        }
+
+        // mecanum drive code goes here
+        // But since none of the stuff in the switch case stops
+        // the robot, this will always run!
+        // updateDrive(gamepad1, gamepad2);
+
+
+
+
+
+//            // old code - dispersed into the state machine, kept here just in case
+            // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all the way down)
+
+//            if (gamepad2.right_stick_button) {
+//                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            }
+//            // lift up to high basket
+//            if (gamepad2.dpad_up) {
+//                liftPivot.setPower(1);
+//                liftPivot.setTargetPosition(1710);
+//                liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            }
+            //
+//            else if (gamepad2.dpad_down) {
+//                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            }
+
+//            // alternative to dpad down: if there is joystick input, override the run to position mode
+//            if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
+//                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            }
+
             // if the lift and lift pivot are all the way in and we want to go out into the submersible to get a sample, lift the pivot slightly so the intake doesn't get stuck and then extend
             if (gamepad2.dpad_left && liftPivot.getCurrentPosition() < 50 && lift.getCurrentPosition() < 30) {
                 liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -138,10 +292,9 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
-             */
+
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
         }
     }
-}
