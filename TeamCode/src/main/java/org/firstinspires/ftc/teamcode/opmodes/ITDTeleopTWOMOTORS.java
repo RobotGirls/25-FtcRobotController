@@ -37,10 +37,18 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
         PIVOT_SUBMERSIBLE_OVERIRDE,
         PIVOT_RUN_ENCODER
     }
+    public enum ClawState {
+        CLAW_CHECK,
+        CLAW_INTAKE,
+        CLAW_OUTTAKE,
+        CLAW_OUTTAKE_SLOW,
+        CLAW_ZERO_POWER
+    }
 
 
     LiftState liftState = LiftState.LIFT_CHECK;
     LiftPivotState liftPivotState = LiftPivotState.PIVOT_CHECK;
+    ClawState clawState = ClawState.CLAW_CHECK;
 
 
     @Override
@@ -106,26 +114,28 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
 
             telemetry.addData("Lift encoder ticks: ", lift.getCurrentPosition());
             telemetry.update();
-            if (gamepad2.a) {
-                claw.setPower(1);
-                claw2.setPower(-1);
-            }
-            else if (gamepad2.x) {
-                claw.setPower(-1);
-                claw2.setPower(1);
-            }
-            // outtake slowly to slowly let out a specimen so the hook is exposed
-            else if (gamepad2.b) {
-                claw.setPower(-0.35);
-                claw2.setPower(0.35);
-            }
-            else {
-                claw.setPower(0);
-                claw2.setPower(0);
-            }
 
+//         //   old claw code
+//            if (gamepad2.a) {
+//                claw.setPower(1);
+//                claw2.setPower(-1);
+//            }
+//            else if (gamepad2.x) {
+//                claw.setPower(-1);
+//                claw2.setPower(1);
+//            }
+//            // outtake slowly to slowly let out a specimen so the hook is exposed
+//            else if (gamepad2.b) {
+//                claw.setPower(-0.35);
+//                claw2.setPower(0.35);
+//            }
+//            else {
+//                claw.setPower(0);
+//                claw2.setPower(0);
+//            }
+//
 
-            // welcome to the wonderful world of switch-cases! Allow us to begin...
+            // welcome to the wonderful world of switch-cases/state machines! Allow us to begin...
             switch (liftState) {
                 case LIFT_CHECK:
                     if (gamepad2.right_stick_button) {
@@ -162,6 +172,7 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                 case LIFT_RUN_WITH_ENCODER:
                             lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                             liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                            liftPivot2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                             liftState = LiftState.LIFT_CHECK;
                         break;
 
@@ -173,22 +184,9 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
 
                                 default:
                                     // should never be reached, as liftState should never be null
-                                    liftState = LiftState.LIFT_START;
+                                    liftState = LiftState.LIFT_CHECK;
                             }
-
-
-        // small optimization, instead of repeating ourselves in each
-        // lift state case besides LIFT_START for the cancel action,
-        // it's just handled here
-//        if (gamepad2.y && liftState != LiftState.LIFT_START) {
-//            liftState = LiftState.LIFT_START;
-//        }
-
-        // mecanum drive code goes here
-        // But since none of the stuff in the switch case stops
-        // the robot, this will always run!
-        // updateDrive(gamepad1, gamepad2);
-    }
+                        }
 
         switch (liftPivotState) {
             case PIVOT_CHECK:
@@ -204,7 +202,7 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                     liftPivot.setPower(gamepad2.right_stick_y);
                     liftPivot2.setPower(gamepad2.right_stick_y);
                 } else {
-                    liftState = LiftState.LIFT_CHECK;
+                    liftPivotState = LiftPivotState.PIVOT_CHECK;
                 }
                 break;
             case PIVOT_INTO_SUBMERSIBLE:
@@ -228,12 +226,15 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
             case PIVOT_SUBMERSIBLE_OVERIRDE:
                     lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    liftPivot2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     liftPivotState = LiftPivotState.PIVOT_CHECK;
                     break;
 
             case PIVOT_RUN_ENCODER:
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+               /*  liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+               liftPivot2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+               */
                 liftPivotState = LiftPivotState.PIVOT_CHECK;
                 break;
 
@@ -255,8 +256,53 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
         // the robot, this will always run!
         // updateDrive(gamepad1, gamepad2);
 
+        switch (clawState) {
+            case CLAW_CHECK:
+                if (gamepad2.a) {
+                    clawState = ClawState.CLAW_INTAKE;
+                } else if (gamepad2.x) {
+                    clawState = ClawState.CLAW_OUTTAKE;
+                } else if (gamepad2.b) {
+                    clawState = ClawState.CLAW_OUTTAKE_SLOW;
+                } else {
+                    clawState = ClawState.CLAW_ZERO_POWER;
+                }
+                break;
+            case CLAW_INTAKE:
+                if (gamepad2.a) {
+                    claw.setPower(1);
+                    claw2.setPower(-1);
+                } else {
+                    clawState = ClawState.CLAW_CHECK;
+                }
+                break;
+            case CLAW_OUTTAKE:
+                if (gamepad2.x) {
+                    claw.setPower(-1);
+                    claw2.setPower(1);
+                } else {
+                    clawState = ClawState.CLAW_CHECK;
+                }
+                break;
+            case CLAW_OUTTAKE_SLOW:
+                if (gamepad2.b) {
+                    claw.setPower(-0.35);
+                    claw2.setPower(0.35);
+                } else {
+                    clawState = ClawState.CLAW_CHECK;
+                }
+                break;
 
+            case CLAW_ZERO_POWER:
+                claw.setPower(0);
+                claw2.setPower(0);
+                clawState = ClawState.CLAW_CHECK;
+                break;
 
+            default:
+                // should never be reached, as liftState should never be null
+                liftPivotState = LiftPivotState.PIVOT_START;
+        }
 
 
 //            // old code - dispersed into the state machine, kept here just in case
