@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static org.firstinspires.ftc.teamcode.opmodes.ITDTeleop.State.LIFT_PIVOT;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -9,8 +11,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name = "Teleop ILT BUTTONS")
 public class ITDTeleop extends LinearOpMode {
+        public enum State {
+            LIFT_PIVOT,
+            OPEN_CLAW,
+            CLOSE_CLAW,
+            SLOW_CLOSE_CLAW
+        };
 
-    /* Declare OpMode members. */
+        /* Declare OpMode members. */
     public DcMotor  leftFront   = null;
     public DcMotor  rightFront  = null;
     public DcMotor  rightBack  = null;
@@ -58,7 +66,6 @@ public class ITDTeleop extends LinearOpMode {
 
         // Wait for the game to start (driver presses START)
 
-
         waitForStart();
 
         // run until the end of the match (driver presses STOP)
@@ -89,27 +96,55 @@ public class ITDTeleop extends LinearOpMode {
             telemetry.addData("Lift pivot encoder ticks: ", liftPivot.getCurrentPosition());
             telemetry.update();
 
-            if (gamepad2.right_bumper) {
-                liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            ITDTeleop.State State1 = State.LIFT_PIVOT;
+
+            switch (State1) {
+                case LIFT_PIVOT:
+                    if (gamepad2.right_bumper) {
+                        liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        State1 = State.OPEN_CLAW;
+                    }
+                    break;
+                case OPEN_CLAW:
+                    if (gamepad2.a) {
+                        claw.setPower(1);
+                        claw2.setPower(-1);
+                        State1 = State.CLOSE_CLAW;
+                    }
+                    break;
+                case CLOSE_CLAW:
+                    if (gamepad2.x) {
+                        claw.setPower(-1);
+                        claw2.setPower(1);
+                        State1 = State.SLOW_CLOSE_CLAW;
+                    }
+                    break;
+                default:
+                    claw.setPower(0);
+                    claw2.setPower(0);
             }
 
-            if (gamepad2.a) {
-                claw.setPower(1);
-                claw2.setPower(-1);
-            }
-            else if (gamepad2.x) {
-                claw.setPower(-1);
-                claw2.setPower(1);
-            }
-            // outtake slowly to slowly let out a specimen so the hook is exposed
-            else if (gamepad2.b) {
-                claw.setPower(-0.35);
-                claw2.setPower(0.35);
-            }
-            else {
-                claw.setPower(0);
-                claw2.setPower(0);
-            }
+//            if (gamepad2.right_bumper) {
+//                liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            }
+//
+//            if (gamepad2.a) {
+//                claw.setPower(1);
+//                claw2.setPower(-1);
+//            }
+//            else if (gamepad2.x) {
+//                claw.setPower(-1);
+//                claw2.setPower(1);
+//            }
+//            // outtake slowly to slowly let out a specimen so the hook is exposed
+//            else if (gamepad2.b) {
+//                claw.setPower(-0.35);
+//                claw2.setPower(0.35);
+//            }
+//            else {
+//                claw.setPower(0);
+//                claw2.setPower(0);
+//            }
 
             // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all teh way down
             /*
