@@ -46,7 +46,7 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
     }
 
 
-    LiftState liftState = LiftState.LIFT_CHECK;
+    LiftState liftState = LiftState.LIFT_RESET_ENCODER;
     LiftPivotState liftPivotState = LiftPivotState.PIVOT_CHECK;
     ClawState clawState = ClawState.CLAW_CHECK;
 
@@ -144,7 +144,7 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                         liftState = LiftState.LIFT_EXTEND_BASKET;
                     } else if (gamepad2.dpad_down) {
                         liftState = LiftState.LIFT_RUN_WITH_ENCODER;
-                    } else {
+                    } else if (gamepad2.left_stick_y != 0) {
                         liftState = LiftState.LIFT_START;
                     }
                     break;
@@ -159,8 +159,10 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
             case LIFT_EXTEND_BASKET:
                 if (gamepad2.dpad_up) {
                     liftPivot.setPower(1);
-                    liftPivot.setTargetPosition(1710);
-                    liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot2.setPower(1);
+                    lift.setTargetPosition(1710);
+                    lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftState = LiftState.LIFT_CHECK;
                 } else if (gamepad2.dpad_down) {
                     liftState = LiftState.LIFT_RUN_WITH_ENCODER;
                 } else if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
