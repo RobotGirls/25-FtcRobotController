@@ -34,8 +34,8 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
         PIVOT_CHECK,
         PIVOT_START,
         PIVOT_INTO_SUBMERSIBLE,
-        PIVOT_SUBMERSIBLE_OVERIRDE,
-        PIVOT_RUN_ENCODER
+        PIVOT_SUBMERSIBLE_OVERIRDE_RUN_ENCODER,
+        PIVOT_RESET_ENCODER
     }
     public enum ClawState {
         CLAW_CHECK,
@@ -47,7 +47,7 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
 
 
     LiftState liftState = LiftState.LIFT_RESET_ENCODER;
-    LiftPivotState liftPivotState = LiftPivotState.PIVOT_CHECK;
+    LiftPivotState liftPivotState = LiftPivotState.PIVOT_RESET_ENCODER;
     ClawState clawState = ClawState.CLAW_CHECK;
 
 
@@ -157,16 +157,15 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                     }
                     break;
             case LIFT_EXTEND_BASKET:
-                if (gamepad2.dpad_up) {
+                if (gamepad2.dpad_down || gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y != 0) {
+                    liftState = LiftState.LIFT_RUN_WITH_ENCODER;
+                }
+                else if (gamepad2.dpad_up ) {
                     liftPivot.setPower(1);
                     liftPivot2.setPower(1);
                     lift.setTargetPosition(1710);
                     lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     liftState = LiftState.LIFT_CHECK;
-                } else if (gamepad2.dpad_down) {
-                    liftState = LiftState.LIFT_RUN_WITH_ENCODER;
-                } else if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
-                    liftState = LiftState.LIFT_RUN_WITH_ENCODER;
                 } else {
                     liftState = LiftState.LIFT_CHECK;
                 }
@@ -194,8 +193,12 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
             case PIVOT_CHECK:
                 if (gamepad2.dpad_left && liftPivot.getCurrentPosition() < 50 && lift.getCurrentPosition() < 30) {
                     liftPivotState = LiftPivotState.PIVOT_INTO_SUBMERSIBLE;
-                }  else {
+                }  else if (gamepad2.right_stick_y != 0) {
                     liftPivotState = LiftPivotState.PIVOT_START;
+                } else if (gamepad2.right_stick_button) {
+                    liftPivotState = LiftPivotState.PIVOT_RESET_ENCODER;
+                } else if (gamepad2.dpad_down) {
+                    liftPivotState = LiftPivotState.PIVOT_SUBMERSIBLE_OVERIRDE_RUN_ENCODER;
                 }
                 break;
 
@@ -208,40 +211,42 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                 }
                 break;
             case PIVOT_INTO_SUBMERSIBLE:
-                if (gamepad2.dpad_up) {
-                    liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
-                    liftPivot2.setDirection(DcMotorSimple.Direction.REVERSE);
-                    liftPivot.setPower(-0.9);
-                    liftPivot2.setPower(-0.9);
-                    liftPivot.setTargetPosition(150);
-                    liftPivot2.setTargetPosition(150);
-                    liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    liftPivot2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                } else if (gamepad2.dpad_down) {
-                    liftPivotState = LiftPivotState.PIVOT_SUBMERSIBLE_OVERIRDE;
-                } else if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
-                    liftPivotState = LiftPivotState.PIVOT_SUBMERSIBLE_OVERIRDE;
-                } else {
-                    liftPivotState = LiftPivotState.PIVOT_CHECK;
-                }
+                 if (gamepad2.dpad_down) {
+                liftPivotState = LiftPivotState.PIVOT_SUBMERSIBLE_OVERIRDE_RUN_ENCODER;
+            } else if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
+                     liftPivotState = LiftPivotState.PIVOT_SUBMERSIBLE_OVERIRDE_RUN_ENCODER;
+                 } else if (gamepad2.dpad_up) {
+                         liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
+                         liftPivot2.setDirection(DcMotorSimple.Direction.REVERSE);
+                         liftPivot.setPower(-0.9);
+                         liftPivot2.setPower(-0.9);
+                         liftPivot.setTargetPosition(150);
+                         liftPivot2.setTargetPosition(150);
+                         liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                         liftPivot2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        liftPivotState = LiftPivotState.PIVOT_CHECK;
+                 } else {
+                         liftPivotState = LiftPivotState.PIVOT_CHECK;
+                     }
+
                 break;
-            case PIVOT_SUBMERSIBLE_OVERIRDE:
+            case PIVOT_SUBMERSIBLE_OVERIRDE_RUN_ENCODER:
                     lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     liftPivot2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     liftPivotState = LiftPivotState.PIVOT_CHECK;
                     break;
 
-            case PIVOT_RUN_ENCODER:
-                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-               /*  liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-               liftPivot2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-               */
+            case PIVOT_RESET_ENCODER:
+                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+               liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+               liftPivot2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
                 liftPivotState = LiftPivotState.PIVOT_CHECK;
                 break;
 
             default:
-                // should never be reached, as liftState should never be null
+                // should never be reached, as liftPivotState should never be null
                 liftPivotState = LiftPivotState.PIVOT_START;
         }
 
