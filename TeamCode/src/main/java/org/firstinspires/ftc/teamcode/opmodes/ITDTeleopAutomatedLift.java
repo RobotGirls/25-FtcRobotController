@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name = "Teleop ILT TWO MOTORS")
-public class ITDTeleopTWOMOTORS extends LinearOpMode {
+@TeleOp(name = "Teleop ILT Automated Lift")
+public class ITDTeleopAutomatedLift extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor  leftFront   = null;
@@ -24,7 +24,6 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
     public DcMotor liftPivot2;
     public CRServo claw2;
     public Servo wrist;
-    public DcMotor lift2;
 
 
     @Override
@@ -40,7 +39,6 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         lift = hardwareMap.get(DcMotor.class, "lift");
-        lift2 = hardwareMap.get(DcMotor.class, "lift2");
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
         liftPivot2 = hardwareMap.get(DcMotor.class, "liftPivot2");
         claw = hardwareMap.get(CRServo.class, "claw");
@@ -51,7 +49,6 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
         liftPivot2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -65,6 +62,9 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
         telemetry.update();
+
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wrist.setPosition(0.9);
 
         // Wait for the game to start (driver presses START)
         waitForStart();
@@ -89,8 +89,6 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
             rightFront.setPower(0.8*frontRightPower);
             rightBack.setPower(0.8*backRightPower);
 
-            lift.setPower(-gamepad2.left_stick_y);
-            lift2.setPower(-gamepad2.left_stick_y);
             liftPivot.setPower(gamepad2.right_stick_y);
             liftPivot2.setPower(-gamepad2.right_stick_y);
 
@@ -104,61 +102,48 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                 claw.setPower(-1);
                 claw2.setPower(1);
             }
-            // outtake slowly to slowly let out a specimen so the hook is exposed
-            else if (gamepad2.b) {
-                claw.setPower(-0.35);
-                claw2.setPower(0.35);
-            }
             else {
                 claw.setPower(0);
                 claw2.setPower(0);
             }
+
             if (gamepad2.dpad_up) {
                 wrist.setPosition(0.8);
             }
             else if (gamepad2.dpad_left) {
-                wrist.setPosition(0.65);
+                wrist.setPosition(0.75);
             }
             else if (gamepad2.dpad_down) {
                 // UP POSITION (init position)
                 wrist.setPosition(0.9);
             }
 
-            // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all teh way down
-            /*
-            if (gamepad2.right_stick_button) {
-                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
-            // lift up to high basket
             if (gamepad2.dpad_up) {
-                liftPivot.setPower(1);
-                liftPivot.setTargetPosition(1710);
-                liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                setLiftPosition(200);
             }
-            //
             else if (gamepad2.dpad_down) {
+                setLiftPosition(500);
+            }
+            else if (gamepad2.dpad_left) {
+                setLiftPosition(1000);
+            }
+            else if (Math.abs(gamepad2.left_stick_y) > 0.05) {
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                lift.setPower(-gamepad2.left_stick_y);
             }
-
-            // alternative to dpad down: if there is joystick input, override the run to position mode
-            if (gamepad2.left_stick_x > 0 || gamepad2.left_stick_y > 0 || gamepad2.right_stick_x > 0 || gamepad2.right_stick_y > 0) {
-                lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            else if (!lift.isBusy()) {
+                lift.setPower(0);
             }
-            // if the lift and lift pivot are all the way in and we want to go out into the submersible to get a sample, lift the pivot slightly so the intake doesn't get stuck and then extend
-            if (gamepad2.dpad_left && liftPivot.getCurrentPosition() < 50 && lift.getCurrentPosition() < 30) {
-                liftPivot.setDirection(DcMotorSimple.Direction.REVERSE);
-                liftPivot.setPower(-0.9);
-                liftPivot.setTargetPosition(150);
-                liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-
-             */
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
         }
     }
+
+    public void setLiftPosition(int encoderVal) {
+        lift.setTargetPosition(encoderVal);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setPower(1);
+    }
+
 }
