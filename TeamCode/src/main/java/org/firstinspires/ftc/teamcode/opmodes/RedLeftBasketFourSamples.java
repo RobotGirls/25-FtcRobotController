@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 // RR-specific imports
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -13,71 +10,103 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "RedRightTripleSpeciman")
-public class RedRightTripleSpeciman extends LinearOpMode {
+@Autonomous(name = "RedLeftBasketFourSamples")
+public class RedLeftBasketFourSamples extends LinearOpMode {
     private boolean first = true;
-    private static final double FIRST_LIFT_DOWN_POS = 50.0;
-    private static final double LAST_LIFT_DOWN_POS = 100.0;
     private double currLiftPos = 0.0;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(8, -60, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(89));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-     //   Lift lift = new Lift(hardwareMap);
-     //   Claw claw = new Claw(hardwareMap);
+        Lift lift = new Lift(hardwareMap);
+        lift.resetTimer();
+        Claw claw = new Claw(hardwareMap);
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
 
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toChamber = drive.actionBuilder(initialPose)
-                .lineToY(-33.5)
-                .turn(Math.toRadians(-90))
-                .lineToX(34)
-                .splineTo(new Vector2d(34,-4),Math.toRadians(0))
-                .turn(Math.toRadians(-90))
-                //  .strafeTo(new Vector2d(34,-4))
-                .strafeTo(new Vector2d(48,-4))
-                .strafeTo(new Vector2d(48,-58))
-                .strafeTo(new Vector2d(48,-4))
-                .strafeTo(new Vector2d(56,-4))
-                .strafeTo(new Vector2d(56,-58))
-                .strafeTo(new Vector2d(56,-4))
-                .strafeTo(new Vector2d(61,-4))
-                .strafeTo(new Vector2d(61,-58));
+        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(-62,-55), Math.toRadians(-135))
+                .waitSeconds(1.5);
+
+        TrajectoryActionBuilder toSample1 = toBasket.endTrajectory().fresh()
+                // samples (push)
+                .strafeToLinearHeading(new Vector2d(-48,-40), Math.toRadians(90))
+                .waitSeconds(1.5);
+
+        TrajectoryActionBuilder toBasket1 = toSample1.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-62,-55), Math.toRadians(-135))
+                .waitSeconds(1.5);
+
+        TrajectoryActionBuilder toSample2 = toBasket1.endTrajectory().fresh()
+                // samples (push)
+                .strafeToLinearHeading(new Vector2d(-58,-40), Math.toRadians(90))
+                .waitSeconds(1.5);
+
+        TrajectoryActionBuilder toBasket2 = toSample2.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-62,-55), Math.toRadians(-135))
+                .waitSeconds(1.5);
+
+        TrajectoryActionBuilder toSample3 = toBasket2.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-64,-40), Math.toRadians(115))
+                .waitSeconds(1.5);
+
+        TrajectoryActionBuilder toBasket3 = toSample3.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-62,-55), Math.toRadians(-135))
+                .waitSeconds(1.5);
 
         // ON INIT:
   //      Actions.runBlocking(claw.closeClaw());
+        Action firstTraj = toBasket.build();
+        Action toSampleOne = toSample1.build();
+        Action toSampleTwo = toSample2.build();
+        Action toSampleThree = toSample3.build();
+        Action toBasketOne = toBasket1.build();
+        Action toBasketTwo = toBasket2.build();
+        Action toBasketThree = toBasket3.build();
 
-        Action firstTraj = toChamber.build();
-
-        while (!isStopRequested() && !opModeIsActive()) {
-            telemetry.addData("Robot position: ", drive.updatePoseEstimate());
-            telemetry.update();
-        }
-        waitForStart();
-        if (isStopRequested()) return;
-
-        // IN RUNTIME
-        // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),
-                        firstTraj // go to the chamber, push sample, park in observation zone
-                        //lift.liftUp() // to lvl1 ascent
-                      //  claw.openClaw(), // drop the sample
-                      //  lift.liftDown()
+                        firstTraj, // go to the basket
+                        liftPivot.liftPivotUp(),
+                        lift.liftUp(),
+                        claw.openClaw(), // drop the sample
+                        lift.liftDown(),
+                        toSampleOne, // goes to the first neutral field sample
+                        //[grab sample commands here]
+                        toBasketOne, //goes to basket
+                        liftPivot.liftPivotUp(),
+                        lift.liftUp(),
+                        claw.openClaw(), // drop the sample
+                        lift.liftDown(),
+                        toSampleTwo, // goes to the second neutral field sample
+                        //[grab sample commands here]
+                        toBasketTwo, //goes to basket
+                        liftPivot.liftPivotUp(),
+                        lift.liftUp(),
+                        claw.openClaw(), // drop the sample
+                        lift.liftDown(),
+                        toSampleThree, // goes to the third neutral field sample
+                        //[grab sample commands here]
+                        toBasketThree, //goes to basket
+                        liftPivot.liftPivotUp(),
+                        lift.liftUp(),
+                        claw.openClaw(), // drop the sample
+                        lift.liftDown(),
+                        liftPivot.liftPivotDown() //random comment hello
                 )
         );
+
     }
 
 }
