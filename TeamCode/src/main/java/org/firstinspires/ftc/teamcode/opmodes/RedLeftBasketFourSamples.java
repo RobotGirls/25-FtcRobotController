@@ -76,34 +76,39 @@ public class RedLeftBasketFourSamples extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-//                        liftPivot.liftPivotDown(),
                         firstTraj, // go to the basket
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
                         toSampleOne, // goes to the first neutral field sample
-                        //[grab sample commands here]
+                        liftPivot.liftPivotDown(),
+                        lift.liftUpLittle(),
+                        claw.closeClaw(),
                         toBasketOne, //goes to basket
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
                         toSampleTwo, // goes to the second neutral field sample
-                        //[grab sample commands here]
+                        liftPivot.liftPivotDown(),
+                        lift.liftUpLittle(),
+                        claw.closeClaw(),
                         toBasketTwo, //goes to basket
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
                         toSampleThree, // goes to the third neutral field sample
-                        //[grab sample commands here]
+                        liftPivot.liftPivotDown(),
+                        lift.liftUpLittle(),
+                        claw.closeClaw(),
                         toBasketThree, //goes to basket
                         liftPivot.liftPivotUp(),
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
-                        liftPivot.liftPivotDown() //random comment hello
+                        liftPivot.liftPivotDown() //random comment
                 )
         );
 
