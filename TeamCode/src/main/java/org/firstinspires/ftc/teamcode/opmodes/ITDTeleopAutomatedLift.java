@@ -24,6 +24,7 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
     public DcMotor liftPivot2;
     public CRServo claw2;
     public Servo wrist;
+    public DcMotor lift2;
 
 
     @Override
@@ -39,6 +40,7 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         lift = hardwareMap.get(DcMotor.class, "lift");
+        lift2 = hardwareMap.get(DcMotor.class, "lift2");
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
         liftPivot2 = hardwareMap.get(DcMotor.class, "liftPivot2");
         claw = hardwareMap.get(CRServo.class, "claw");
@@ -49,6 +51,7 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
         liftPivot2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -64,7 +67,8 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
         telemetry.update();
 
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        wrist.setPosition(0.9);
+        liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wrist.setPosition(0.99);
 
         // Wait for the game to start (driver presses START)
         waitForStart();
@@ -92,8 +96,6 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
             liftPivot.setPower(gamepad2.right_stick_y);
             liftPivot2.setPower(-gamepad2.right_stick_y);
 
-            telemetry.addData("Lift encoder ticks: ", lift.getCurrentPosition());
-            telemetry.update();
             if (gamepad2.a) {
                 claw.setPower(1);
                 claw2.setPower(-1);
@@ -107,19 +109,21 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
                 claw2.setPower(0);
             }
 
-            if (gamepad2.dpad_up) {
-                wrist.setPosition(0.8);
+            if (gamepad2.y) {
+                wrist.setPosition(0.65);
             }
-            else if (gamepad2.dpad_left) {
-                wrist.setPosition(0.75);
-            }
-            else if (gamepad2.dpad_down) {
+            else if (gamepad2.b) {
                 // UP POSITION (init position)
-                wrist.setPosition(0.9);
+                wrist.setPosition(0.99);
+            }
+            else if (gamepad2.dpad_right) {
+                wrist.setPosition(0.86);
             }
 
             if (gamepad2.dpad_up) {
-                setLiftPosition(200);
+                // up to basket
+                setPivotPosition(500);
+                setLiftPosition(2000);
             }
             else if (gamepad2.dpad_down) {
                 setLiftPosition(500);
@@ -127,13 +131,26 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
             else if (gamepad2.dpad_left) {
                 setLiftPosition(1000);
             }
-            else if (Math.abs(gamepad2.left_stick_y) > 0.05) {
+            else if (Math.abs(gamepad2.left_stick_y) > 0.05 || Math.abs(gamepad2.right_stick_y) > 0.05) {
                 lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 lift.setPower(-gamepad2.left_stick_y);
+                lift2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                lift2.setPower(-gamepad2.left_stick_y);
+                liftPivot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                liftPivot.setPower(-gamepad2.right_stick_y);
+                liftPivot2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                liftPivot2.setPower(gamepad2.right_stick_y);
             }
-            else if (!lift.isBusy()) {
+
+            else if (!lift.isBusy() && !lift2.isBusy()) {
                 lift.setPower(0);
+                lift2.setPower(0);
             }
+            else if (!liftPivot.isBusy() && !liftPivot2.isBusy()) {
+                liftPivot.setPower(0);
+                liftPivot2.setPower(0);
+            }
+
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
@@ -142,8 +159,21 @@ public class ITDTeleopAutomatedLift extends LinearOpMode {
 
     public void setLiftPosition(int encoderVal) {
         lift.setTargetPosition(encoderVal);
+        lift2.setTargetPosition(encoderVal);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(1);
+        lift2.setPower(1);
+    }
+
+    public void setPivotPosition(int encoderVal) {
+        liftPivot.setTargetPosition(encoderVal);
+        liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftPivot.setPower(1);
+
+        liftPivot2.setTargetPosition(encoderVal);
+        liftPivot2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftPivot2.setPower(1);
     }
 
 }

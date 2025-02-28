@@ -113,15 +113,15 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                 claw.setPower(0);
                 claw2.setPower(0);
             }
-            if (gamepad2.dpad_up) {
-                wrist.setPosition(0.8);
-            }
-            else if (gamepad2.dpad_left) {
+            if (gamepad2.y) {
                 wrist.setPosition(0.65);
             }
-            else if (gamepad2.dpad_down) {
+            else if (gamepad2.b) {
                 // UP POSITION (init position)
-                wrist.setPosition(0.9);
+                wrist.setPosition(0.99);
+            }
+            else if (gamepad2.dpad_right) {
+                wrist.setPosition(0.91);
             }
 
             // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all teh way down
