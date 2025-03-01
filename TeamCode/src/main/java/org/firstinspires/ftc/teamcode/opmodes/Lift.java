@@ -20,7 +20,7 @@ public class Lift{
     private final double POS_HIGH_BASKET = 3150.0;
     private final double POS_LIFT_TO_RUNG = 570.0;
     private final double POS_LIFT_DOWN = 100.0;
-    private final double MAX_LIFT_TIMER = 12.0;
+    private final double MAX_LIFT_TIMER = 10.0;
 
     public Lift(HardwareMap hardwareMap) {
         lift = hardwareMap.get(DcMotorEx.class, "lift");

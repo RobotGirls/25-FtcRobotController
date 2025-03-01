@@ -104,24 +104,26 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
                 claw.setPower(-1);
                 claw2.setPower(1);
             }
-            // outtake slowly to slowly let out a specimen so the hook is exposed
-            else if (gamepad2.b) {
-                claw.setPower(-0.35);
-                claw2.setPower(0.35);
-            }
+
             else {
                 claw.setPower(0);
                 claw2.setPower(0);
             }
             if (gamepad2.y) {
-                wrist.setPosition(0.65);
+                // get spec from wall
+                wrist.setPosition(0.86);
             }
             else if (gamepad2.b) {
                 // UP POSITION (init position)
                 wrist.setPosition(0.99);
             }
             else if (gamepad2.dpad_right) {
-                wrist.setPosition(0.91);
+                // release into basket
+                wrist.setPosition(0.70);
+            }
+            else if (gamepad2.dpad_left) {
+                // pick up from sub
+                wrist.setPosition(0.6);
             }
 
             // at the beginning of teleop, reset encoders to 0 (lift and liftpivot have to be all teh way down

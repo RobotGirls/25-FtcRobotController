@@ -56,6 +56,7 @@ public class ITDTeleopStateMachine extends LinearOpMode {
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
         liftPivot2 = hardwareMap.get(DcMotor.class, "liftPivot2");
         claw = hardwareMap.get(CRServo.class, "claw");
+        claw2 = hardwareMap.get(CRServo.class, "claw2");
         wrist = hardwareMap.servo.get("wrist");
 
 
@@ -78,8 +79,6 @@ public class ITDTeleopStateMachine extends LinearOpMode {
         telemetry.addData(">", "Robot Ready.  Press START.");    //
         telemetry.update();
 
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wrist.setPosition(0.99);
 
         // Wait for the game to start (driver presses START)
@@ -124,9 +123,11 @@ public class ITDTeleopStateMachine extends LinearOpMode {
                     break;
 
                 case PIVOT_TO_BASKET:
-                    liftPivot.setPower(1);
-                    liftPivot2.setPower(-1);
-                    if (liftPivot.getCurrentPosition() >= 1000) {
+                    liftPivot.setPower(-1);
+                    liftPivot2.setPower(1);
+                    if (liftPivot.getCurrentPosition() <= -1500) {
+                        liftPivot.setPower(0);
+                        liftPivot2.setPower(0);
                         currentState = State.LIFT_TO_BASKET;
                     }
                     break;
@@ -135,6 +136,8 @@ public class ITDTeleopStateMachine extends LinearOpMode {
                     lift.setPower(1);
                     lift2.setPower(1);
                     if (lift.getCurrentPosition() >= 2500) {
+                        lift.setPower(0);
+                        lift2.setPower(0);
                         currentState = State.OUTTAKE;
                     }
                     break;
@@ -148,8 +151,9 @@ public class ITDTeleopStateMachine extends LinearOpMode {
                     break;
 
                 case OUTTAKE:
-                    wrist.setPosition(0.99);
+                    wrist.setPosition(0.7);
                     claw.setPower(-1);
+                    claw2.setPower(1);
                     if (!gamepad2.a) { // Stop automation when button is released
                         currentState = State.IDLE;
                     }
@@ -181,7 +185,7 @@ public class ITDTeleopStateMachine extends LinearOpMode {
                     }
 
                     // Check if automations should resume
-                    if (gamepad1.a || gamepad1.b) {
+                    if (gamepad2.a || gamepad2.b) {
                         currentState = State.IDLE;
                     }
                     break;

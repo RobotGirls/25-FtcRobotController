@@ -28,15 +28,16 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
         Lift lift = new Lift(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
+        Wrist wrist = new Wrist(hardwareMap);
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(-38, -60))
+                .strafeTo(new Vector2d(-38, -58))
                 .waitSeconds(0.3)
-                .splineTo(new Vector2d(-51.2,-58.4), Math.toRadians(225));
+                .strafeToLinearHeading(new Vector2d(-61,-60), Math.toRadians(225));
 
         TrajectoryActionBuilder toSampleOne = toBasket.endTrajectory().fresh()
-            .strafeToLinearHeading(new Vector2d(-36,-44.5), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-36,-44.5), Math.toRadians(90));
 
         TrajectoryActionBuilder toBasketAgain = toSampleOne.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-38,-57.5), Math.toRadians(225));
@@ -50,7 +51,6 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
         // ON INIT:
   //      Actions.runBlocking(claw.closeClaw())
        // lift.setModeOnInit();
-        Actions.runBlocking(liftPivot.liftPivotUpInit());
 
 
 
@@ -70,10 +70,12 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
                 new SequentialAction(
                         firstTraj,  // get to basket to drop preload
                         liftPivot.liftPivotUp(), // lift the pivot
-                        lift.liftUpNoTimer(), // lift the lift (w/ timer debug)
-                        claw.closeClaw(), // drop the sample
+                        lift.liftUp(), // lift the lift (w/ timer debug)
+                        wrist.wristUp(),
+                        claw.openClaw(), // drop the sample
                         lift.liftDown(), // lift down
-                        liftPivot.liftPivotDown(), // lift pivot down
+                        liftPivot.liftPivotDown() // lift pivot down
+                        /*
                         secondTraj, // get to the first sample to intake
                         lift.liftUpLittle(), // lift the lift slightly to touch the ground to reach sample
                         claw.openClaw(), // intake the sample
@@ -85,7 +87,7 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
                         lift.liftDown(), // lift down
                         // backToSub, // head back to the submersible to park
                         lift.liftUpLittle()
-
+*/
 
                 )
         );
