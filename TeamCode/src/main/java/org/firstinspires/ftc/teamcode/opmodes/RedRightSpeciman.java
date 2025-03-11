@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -38,13 +39,20 @@ public class RedRightSpeciman extends LinearOpMode {
         Lift lift = new Lift(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         LiftPivot liftPivot = new LiftPivot(hardwareMap);
+        Wrist wrist = new Wrist(hardwareMap);
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toChamber = drive.actionBuilder(initialPose)
                 .lineToY(-35);
 
+        TrajectoryActionBuilder forwardLittle = toChamber.endTrajectory().fresh()
+                .lineToY(-27);
 
-        Action toPark = toChamber.endTrajectory().fresh()
+        TrajectoryActionBuilder toWall = forwardLittle.endTrajectory().fresh()
+                .lineToY(-40)
+                .strafeToLinearHeading(new Vector2d(40,-60),Math.toRadians(270));
+
+        Action toPark = forwardLittle.endTrajectory().fresh()
                 .lineToY(-60)
                 .strafeTo(new Vector2d(60,-60))
                 .waitSeconds(1)
@@ -56,6 +64,8 @@ public class RedRightSpeciman extends LinearOpMode {
         liftPivot.liftPivotUpInit();
 
         Action firstTraj = toChamber.build();
+        Action secondTraj = forwardLittle.build();
+        Action thirdTraj = forwardLittle.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -68,13 +78,17 @@ public class RedRightSpeciman extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-//                        liftPivot.liftPivotDown(),
-                        firstTraj, // go to the chamber, push sample, park in observation zone
-                        liftPivot.liftPivotUp(),
-                        lift.liftUp(), // to lvl1 ascent
-                        liftPivot.liftPivotDown(),
-                        lift.liftDown(),
-                        toPark
+                        new ParallelAction(
+                                firstTraj, // go to the chamber, push sample, park in observation zone
+                                liftPivot.liftPivotUp()
+                        ),
+                        lift.liftUpChamber(),
+                        wrist.wristSpecimen(),
+                        secondTraj,
+                        liftPivot.liftPivotDownLittle(),
+                        claw.openClaw(),
+                        wrist.wristSpecimen()
+
                 )
         );
     }

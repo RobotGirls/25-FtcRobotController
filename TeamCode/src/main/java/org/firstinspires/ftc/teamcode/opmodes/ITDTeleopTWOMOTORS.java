@@ -53,6 +53,9 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -96,33 +99,29 @@ public class ITDTeleopTWOMOTORS extends LinearOpMode {
 
             telemetry.addData("Lift encoder ticks: ", lift.getCurrentPosition());
             telemetry.update();
-            if (gamepad2.a) {
+            if (gamepad2.left_bumper) {
                 claw.setPower(1);
                 claw2.setPower(-1);
             }
-            else if (gamepad2.x) {
+            else if (gamepad2.right_bumper) {
                 claw.setPower(-1);
                 claw2.setPower(1);
             }
-
             else {
                 claw.setPower(0);
                 claw2.setPower(0);
             }
-            if (gamepad2.y) {
-                // get spec from wall
+
+            if (gamepad2.dpad_right) {
                 wrist.setPosition(0.86);
             }
-            else if (gamepad2.b) {
-                // UP POSITION (init position)
+            else if (gamepad2.dpad_up) {
                 wrist.setPosition(0.99);
             }
-            else if (gamepad2.dpad_right) {
-                // release into basket
-                wrist.setPosition(0.70);
-            }
             else if (gamepad2.dpad_left) {
-                // pick up from sub
+                wrist.setPosition(0.7);
+            }
+            else if (gamepad2.dpad_down) {
                 wrist.setPosition(0.6);
             }
 

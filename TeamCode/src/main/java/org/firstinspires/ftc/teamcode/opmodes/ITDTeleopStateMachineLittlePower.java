@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name = "Teleop State Machine")
-public class ITDTeleopStateMachine extends LinearOpMode {
+@TeleOp(name = "Teleop State Machine Small Power")
+public class ITDTeleopStateMachineLittlePower extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor  leftFront   = null;
@@ -36,7 +36,8 @@ public class ITDTeleopStateMachine extends LinearOpMode {
         PIVOT_TO_CHAMBER,
         OUTTAKE_SPECIMEN,
         PIVOT_TO_INTAKE,
-        WRIST_TO_INTAKE
+        WRIST_TO_INTAKE,
+        HOLD_POS
     }
 
     private State currentState = State.IDLE;
@@ -119,9 +120,10 @@ public class ITDTeleopStateMachine extends LinearOpMode {
             rightBack.setPower(0.8 * backRightPower);
 
             // Check for joystick input to override automations
-            if (Math.abs(gamepad2.left_stick_y) > 0.1 || Math.abs(gamepad2.right_stick_y) > 0.1 || gamepad2.left_bumper || gamepad2.right_bumper) {
+            if (Math.abs(gamepad2.left_stick_y) > 0.1 || Math.abs(gamepad2.right_stick_y) > 0.1) {
                 currentState = State.MANUAL_CONTROL;
             }
+
 
             // State machine logic
             switch (currentState) {
@@ -134,99 +136,7 @@ public class ITDTeleopStateMachine extends LinearOpMode {
                         // intake from sub
                         currentState = State.PIVOT_TO_CHAMBER;
                     }
-                    else if (gamepad2.x) {
-                        currentState = State.PIVOT_TO_INTAKE;
-                    }
-                    break;
 
-                case PIVOT_TO_BASKET:
-                    liftPivot.setPower(-1);
-                    liftPivot2.setPower(1);
-                    if (liftPivot.getCurrentPosition() <= -2295) {
-                        liftPivot.setPower(0);
-                        liftPivot2.setPower(0);
-                        currentState = State.LIFT_TO_BASKET;
-                    }
-                    break;
-
-                case LIFT_TO_BASKET:
-                    lift.setPower(1);
-                    lift2.setPower(1);
-                    if (lift.getCurrentPosition() >= 3000) {
-                        lift.setPower(0);
-                        lift2.setPower(0);
-                        currentState = State.OUTTAKE;
-                    }
-                    break;
-
-                case INTAKE:
-                    wrist.setPosition(0.5);
-                    claw.setPower(1);
-                    claw2.setPower(-1);
-                    if (!gamepad2.b) { // Stop automation when button is released
-                        currentState = State.IDLE;
-                    }
-                    break;
-
-                case OUTTAKE:
-                    wrist.setPosition(0.86);
-                    sleep(1000);
-
-                    break;
-
-                case PIVOT_TO_CHAMBER:
-                    liftPivot.setPower(-1);
-                    liftPivot2.setPower(1);
-                    if (liftPivot.getCurrentPosition() <= -1500) {
-                        liftPivot.setPower(0);
-                        liftPivot2.setPower(0);
-                        currentState = State.OUTTAKE_SPECIMEN;
-                    }
-                    break;
-
-                case OUTTAKE_SPECIMEN:
-                    wrist.setPosition(0.86);
-
-                    if (!gamepad2.b) { // Stop automation when button is released
-                        currentState = State.IDLE;
-                    }
-                    break;
-
-                case LIFT_TO_INTAKE:
-                    lift.setPower(1);
-                    lift2.setPower(1);
-                    if (lift.getCurrentPosition() >= 1400) {
-
-                        lift.setPower(0);
-                        lift2.setPower(0);
-                        currentState = State.WRIST_TO_INTAKE;
-                    }
-                    break;
-
-                case PIVOT_TO_INTAKE:
-                    liftPivot.setPower(-1);
-                    liftPivot2.setPower(1);
-                    if (liftPivot.getCurrentPosition() <= -500) {
-                        liftPivot.setPower(0);
-                        liftPivot2.setPower(0);
-                        currentState = State.LIFT_TO_INTAKE;
-                    }
-                    break;
-
-                case WRIST_TO_INTAKE:
-                    wrist.setPosition(0.652);
-                    if (!gamepad2.x) { // Stop automation when button is released
-                        currentState = State.IDLE;
-                    }
-                    break;
-
-
-                case MANUAL_CONTROL:
-                    // Manual control with joysticks
-                    liftPivot.setPower(gamepad2.right_stick_y);
-                    liftPivot2.setPower(-gamepad2.right_stick_y);
-                    lift.setPower(-gamepad2.left_stick_y);
-                    lift2.setPower(-gamepad2.left_stick_y);
 
                     if (gamepad2.left_bumper) {
                         claw.setPower(1);
@@ -245,14 +155,162 @@ public class ITDTeleopStateMachine extends LinearOpMode {
                         wrist.setPosition(0.86);
                     }
                     else if (gamepad2.dpad_up) {
-                        wrist.setPosition(0.99);
+                        wrist.setPosition(0.93);
                     }
                     else if (gamepad2.dpad_left) {
                         // new position for lower wheels
-                        wrist.setPosition(0.77);
+                        wrist.setPosition(0.732);
                     }
                     else if (gamepad2.dpad_down) {
                         wrist.setPosition(0.68);
+                    }
+
+                    break;
+                case HOLD_POS:
+                    lift.setPower(0);
+                    lift2.setPower(0);
+                    liftPivot.setTargetPosition(liftPivot.getCurrentPosition());
+                    liftPivot2.setTargetPosition(liftPivot2.getCurrentPosition());
+                    liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot.setPower(0.5);
+                    liftPivot2.setPower(0.5);
+
+                    if (gamepad2.a || gamepad2.b || gamepad2.left_bumper || gamepad2.right_bumper || gamepad2.dpad_left || gamepad2.dpad_right || gamepad2.dpad_down || gamepad2.dpad_up) {
+                        currentState = State.IDLE;
+                    }
+                    break;
+
+
+                case PIVOT_TO_BASKET:
+                    liftPivot.setTargetPosition(-2460);
+                    liftPivot2.setTargetPosition(2460); // Opposite direction for the second motor
+                    liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot.setPower(-1);
+                    liftPivot2.setPower(1);
+
+                    if (!liftPivot.isBusy() && !liftPivot2.isBusy()) {
+                        liftPivot.setPower(0.5);  // Apply small power to hold position
+                        liftPivot2.setPower(0.5);
+                        currentState = State.LIFT_TO_BASKET;
+                    }
+                    break;
+
+                case LIFT_TO_BASKET:
+                    lift.setPower(1);
+                    lift2.setPower(1);
+                    if (lift.getCurrentPosition() >= 3000) {
+                        lift.setPower(0);
+                        lift2.setPower(0);
+                        currentState = State.OUTTAKE;
+                    }
+                    break;
+
+                case OUTTAKE:
+                    wrist.setPosition(0.93);
+
+                    sleep(500);
+                    currentState = State.IDLE;
+
+                    break;
+
+                case PIVOT_TO_CHAMBER:
+                    liftPivot.setPower(-1);
+                    liftPivot2.setPower(1);
+                    if (liftPivot.getCurrentPosition() <= -1500) {
+                        liftPivot.setPower(0);
+                        liftPivot2.setPower(0);
+                        currentState = State.OUTTAKE_SPECIMEN;
+                    }
+                    break;
+
+                case OUTTAKE_SPECIMEN:
+                    wrist.setPosition(0.86);
+
+                    sleep(500);
+                    currentState = State.IDLE;
+                    break;
+
+                case LIFT_TO_INTAKE:
+                    lift.setPower(1);
+                    lift2.setPower(1);
+                    if (lift.getCurrentPosition() >= 1400) {
+                        lift.setPower(0);
+                        lift2.setPower(0);
+                        currentState = State.IDLE;
+                    }
+                    break;
+
+                case PIVOT_TO_INTAKE:
+                    liftPivot.setTargetPosition(-310);
+                    liftPivot2.setTargetPosition(310); // Opposite direction for the second motor
+                    liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    liftPivot.setPower(1);
+                    liftPivot2.setPower(1);
+
+                    if (!liftPivot.isBusy() && !liftPivot2.isBusy()) {
+                        liftPivot.setPower(0.5);  // Apply small power to hold position
+                        liftPivot2.setPower(0.5);
+                        currentState = State.WRIST_TO_INTAKE;
+                    }
+                    break;
+
+                case WRIST_TO_INTAKE:
+                    wrist.setPosition(0.68);
+                    sleep(1000);
+                    currentState = State.LIFT_TO_INTAKE;
+
+                    break;
+
+
+                case MANUAL_CONTROL:
+
+                    liftPivot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    liftPivot2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    // Manual control with joysticks
+
+
+                    if (liftPivot.getCurrentPosition() > -800 && !gamepad1.b) {
+                        if (gamepad2.left_stick_y < 0.1) {
+                            if (lift.getCurrentPosition() < 1400) {
+                                lift.setPower(-gamepad2.left_stick_y);
+                                lift2.setPower(-gamepad2.left_stick_y);
+                            } else {
+                                lift.setPower(0);
+                                lift2.setPower(0);
+                            }
+                        }
+                        else {
+                            lift.setPower(-gamepad2.left_stick_y);
+                            lift2.setPower(-gamepad2.left_stick_y);
+                        }
+                    }
+                    else {
+                        lift.setPower(-gamepad2.left_stick_y);
+                        lift2.setPower(-gamepad2.left_stick_y);
+                    }
+
+                    if (liftPivot.getCurrentPosition() < -3000) {
+                        if (gamepad2.right_stick_y < -0.1) {
+                            // if driver is trying to extend more
+                            liftPivot.setPower(0);
+                            liftPivot2.setPower(0);
+                        }
+                        else {
+                            liftPivot.setPower(gamepad2.right_stick_y);
+                            liftPivot2.setPower(-gamepad2.right_stick_y);
+                        }
+
+                    }
+                    else {
+                        liftPivot.setPower(gamepad2.right_stick_y);
+                        liftPivot2.setPower(-gamepad2.right_stick_y);
+                    }
+
+                    if (Math.abs(gamepad2.left_stick_y) < 0.1 || Math.abs(gamepad2.right_stick_y) < 0.1) {
+                        currentState = State.HOLD_POS;
                     }
 
                     // Check if automations should resume

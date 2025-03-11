@@ -23,7 +23,7 @@ public class Wrist {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            wrist.setPosition(0.6);
+            wrist.setPosition(0.5);
             try {
                 sleep(2000);
             } catch (InterruptedException e) {
@@ -35,5 +35,95 @@ public class Wrist {
 
     public Action wristUp() {
         return new WristUp();
+    }
+
+    public class WristIn implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            wrist.setPosition(0.2);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return false;
+        }
+    }
+
+    public Action wristIn() {
+        return new WristIn();
+    }
+
+    public class WristIntake implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            wrist.setPosition(0.728);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return false;
+        }
+    }
+
+    public Action wristIntake() {
+        return new WristIntake();
+    }
+
+    public class WristScore implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            wrist.setPosition(0.95);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return false;
+        }
+    }
+
+    public Action wristScore() {
+        return new WristScore();
+    }
+
+    public class WristSpecimen implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            wrist.setPosition(0.89);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return false;
+        }
+    }
+
+    public Action wristSpecimen() {
+        return new WristSpecimen();
+    }
+
+    public class WristOutOfTheWay implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            wrist.setPosition(0.68);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return false;
+        }
+    }
+
+    public Action wristOutOfTheWay() {
+        return new WristOutOfTheWay();
     }
 }

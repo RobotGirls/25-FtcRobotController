@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name = "Teleop State Machine")
-public class ITDTeleopStateMachine extends LinearOpMode {
+@TeleOp(name = "Teleop State Machine HOLD POS")
+public class ITDTeleopStateMachineHoldPos extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor  leftFront   = null;
@@ -25,6 +25,8 @@ public class ITDTeleopStateMachine extends LinearOpMode {
     public Servo wrist;
     public DcMotor lift2;
 
+    private final double kG = 0.1;
+
     private enum State {
         IDLE,
         PIVOT_TO_BASKET,
@@ -38,6 +40,8 @@ public class ITDTeleopStateMachine extends LinearOpMode {
         PIVOT_TO_INTAKE,
         WRIST_TO_INTAKE
     }
+
+    public int pivotTargetPosition;
 
     private State currentState = State.IDLE;
 
@@ -204,11 +208,9 @@ public class ITDTeleopStateMachine extends LinearOpMode {
                     break;
 
                 case PIVOT_TO_INTAKE:
-                    liftPivot.setPower(-1);
-                    liftPivot2.setPower(1);
-                    if (liftPivot.getCurrentPosition() <= -500) {
-                        liftPivot.setPower(0);
-                        liftPivot2.setPower(0);
+                    pivotTargetPosition = -440; // Set target encoder position
+                    movePivotToPosition(pivotTargetPosition);
+                    if (liftPivot.getCurrentPosition() <= pivotTargetPosition + 10) { // Small tolerance
                         currentState = State.LIFT_TO_INTAKE;
                     }
                     break;
@@ -222,9 +224,16 @@ public class ITDTeleopStateMachine extends LinearOpMode {
 
 
                 case MANUAL_CONTROL:
-                    // Manual control with joysticks
-                    liftPivot.setPower(gamepad2.right_stick_y);
-                    liftPivot2.setPower(-gamepad2.right_stick_y);
+                    if (Math.abs(gamepad2.right_stick_y) > 0.1) {
+                        // Driver actively moving pivot -> Direct joystick control
+                        liftPivot.setPower(gamepad2.right_stick_y);
+                        liftPivot2.setPower(-gamepad2.right_stick_y);
+                        pivotTargetPosition = liftPivot.getCurrentPosition(); // Update target
+                    } else {
+                        // No joystick input -> Hold position using feedforward
+                        movePivotToPosition(pivotTargetPosition);
+                    }
+
                     lift.setPower(-gamepad2.left_stick_y);
                     lift2.setPower(-gamepad2.left_stick_y);
 
@@ -266,9 +275,22 @@ public class ITDTeleopStateMachine extends LinearOpMode {
             telemetry.addData("State", currentState);
             telemetry.addData("Pivot Position", liftPivot.getCurrentPosition());
             telemetry.addData("Lift Position", lift.getCurrentPosition());
+            telemetry.addData("Holding Pivot At", pivotTargetPosition);
             telemetry.update();
 
 
         }
+    }
+
+    private void movePivotToPosition(int targetPosition) {
+        double error = targetPosition - liftPivot.getCurrentPosition();
+        double power = (error * 0.002) + (kG * Math.cos(getPivotAngle())); // Small P-term + gravity feedforward
+        liftPivot.setPower(power);
+        liftPivot2.setPower(-power);
+    }
+
+    // convert encoder ticks to an estimated pivot angle
+    private double getPivotAngle() {
+        return (liftPivot.getCurrentPosition() / 680.5); // Convert ticks to radians
     }
 }

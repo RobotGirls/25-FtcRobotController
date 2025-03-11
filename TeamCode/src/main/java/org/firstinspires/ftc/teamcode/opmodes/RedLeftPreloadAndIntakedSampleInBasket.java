@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 // RR-specific imports
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -33,14 +34,13 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
                 .strafeTo(new Vector2d(-38, -58))
-                .waitSeconds(0.3)
-                .strafeToLinearHeading(new Vector2d(-61,-60), Math.toRadians(225));
+                .strafeToLinearHeading(new Vector2d(-63,-61), Math.toRadians(225));
 
         TrajectoryActionBuilder toSampleOne = toBasket.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-36,-44.5), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-47,-44.6), Math.toRadians(90));
 
         TrajectoryActionBuilder toBasketAgain = toSampleOne.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-38,-57.5), Math.toRadians(225));
+                .strafeToLinearHeading(new Vector2d(-57,-57.3), Math.toRadians(35));
 
         Action backToSub = toBasketAgain.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-31,-10),Math.toRadians(0))
@@ -53,10 +53,10 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
        // lift.setModeOnInit();
 
 
-
         Action firstTraj = toBasket.build();
         Action secondTraj = toSampleOne.build();
         Action thirdTraj = toBasketAgain.build();
+
 
         while (!isStopRequested() && !opModeIsActive()) {
 
@@ -68,27 +68,36 @@ public class RedLeftPreloadAndIntakedSampleInBasket extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        firstTraj,  // get to basket to drop preload
-                        liftPivot.liftPivotUp(), // lift the pivot
+                        new ParallelAction(
+                                firstTraj,
+                                liftPivot.liftPivotUp()
+                        ),
+                         // lift the pivot
                         lift.liftUp(), // lift the lift (w/ timer debug)
                         wrist.wristUp(),
                         claw.openClaw(), // drop the sample
-                        lift.liftDown(), // lift down
-                        liftPivot.liftPivotDown() // lift pivot down
-                        /*
-                        secondTraj, // get to the first sample to intake
+                        new ParallelAction(
+                                wrist.wristOutOfTheWay(),
+                                lift.liftDown()
+                        ),
+                        new ParallelAction(
+                                liftPivot.liftPivotDown(), // lift pivot down
+                                secondTraj // get to the first sample to intake
+                        ),
+                        liftPivot.liftPivotUpLittle(),
+                        wrist.wristIntake(),
                         lift.liftUpLittle(), // lift the lift slightly to touch the ground to reach sample
-                        claw.openClaw(), // intake the sample
                         liftPivot.liftPivotDown(),
+                        claw.closeClaw(), // intake the sample
+                        liftPivot.liftPivotUpLittle(),
                         thirdTraj, // get back to the basket to drop other sample
-                        liftPivot.liftPivotUp(),
+                        liftPivot.liftPivotUpBackward(),
                         lift.liftUpNoTimer(),
-                        claw.closeClaw(), // drop the sample
+                        wrist.wristScore(),
+                        claw.openClaw(), // drop the sample
+                        wrist.wristUp(),
                         lift.liftDown(), // lift down
-                        // backToSub, // head back to the submersible to park
-                        lift.liftUpLittle()
-*/
-
+                        liftPivot.liftPivotDown()
                 )
         );
     }
