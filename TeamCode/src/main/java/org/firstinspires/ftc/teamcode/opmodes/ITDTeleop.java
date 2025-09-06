@@ -7,21 +7,20 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@Disabled
-@TeleOp(name = "Teleop ILT BUTTONS")
+@TeleOp(name = "Teleop")
 public class ITDTeleop extends LinearOpMode {
 
     /* Declare OpMode members. */
-    public DcMotor  leftFront   = null;
+    public DcMotor  leftFront  = null;
     public DcMotor  rightFront  = null;
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
-
+/*
     public DcMotor lift;
     public CRServo claw;
     public DcMotor liftPivot;
     public CRServo claw2;
-
+ */
 
     @Override
     public void runOpMode() {
@@ -34,7 +33,7 @@ public class ITDTeleop extends LinearOpMode {
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
+/*
         lift = hardwareMap.get(DcMotor.class, "lift");
         liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
         claw = hardwareMap.get(CRServo.class, "claw");
@@ -44,6 +43,7 @@ public class ITDTeleop extends LinearOpMode {
 
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+ */
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -82,7 +82,7 @@ public class ITDTeleop extends LinearOpMode {
             leftBack.setPower(0.8*backLeftPower);
             rightFront.setPower(0.8*frontRightPower);
             rightBack.setPower(0.8*backRightPower);
-
+/*
             lift.setPower(-gamepad2.left_stick_y);
             liftPivot.setPower(gamepad2.right_stick_y);
 
@@ -143,7 +143,7 @@ public class ITDTeleop extends LinearOpMode {
                 liftPivot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
-             */
+ */
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
