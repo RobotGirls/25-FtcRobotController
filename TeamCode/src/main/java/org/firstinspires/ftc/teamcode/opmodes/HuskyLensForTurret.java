@@ -30,15 +30,17 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -59,18 +61,26 @@ import java.util.concurrent.TimeUnit;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
-@TeleOp(name = "Sensor: HuskyLens", group = "Sensor")
+@TeleOp(name = "HuskyLens for turret", group = "Sensor")
 
-public class SensorHuskyLens extends LinearOpMode {
+public class HuskyLensForTurret extends LinearOpMode {
 
     private final int READ_PERIOD = 1;
 
     private HuskyLens huskyLens;
+    private DcMotor turret;
+
+    public static final int CENTER = 160;
+    private static final int ALIGN_THRESHOLD = 17;
+
 
     @Override
     public void runOpMode()
     {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        turret = hardwareMap.get(DcMotor.class, "turret");
+
+        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         /*
          * This sample rate limits the reads solely to allow a user time to observe
@@ -139,22 +149,31 @@ public class SensorHuskyLens extends LinearOpMode {
              *
              * Returns an empty array if no objects are seen.
              */
-            HuskyLens.Block[] blocks = huskyLens.blocks();
-            telemetry.addData("Block count", blocks.length);
-            for (int i = 0; i < blocks.length; i++) {
-                telemetry.addData("Block", blocks[i].toString());
-                /*
-                 * Here inside the FOR loop, you could save or evaluate specific info for the currently recognized Bounding Box:
-                 * - blocks[i].width and blocks[i].height   (size of box, in pixels)
-                 * - blocks[i].left and blocks[i].top       (edges of box)
-                 * - blocks[i].x and blocks[i].y            (center location)
-                 * - blocks[i].id                           (Color ID)
-                 *
-                 * These values have Java type int (integer).
-                 */
-            }
+            List<HuskyLens.Block> blocks = Arrays.asList(huskyLens.blocks(2));
+                if (!blocks.isEmpty()) {
+                    HuskyLens.Block block = blocks.get(0);
 
+                    int x = block.x;
+                    int offset = x - CENTER;
+
+                    if (Math.abs(offset) > ALIGN_THRESHOLD) {
+                        double power = 0.00021 * offset;
+                        power = Math.max(-0.3, Math.min(0.3, power));
+                        turret.setPower(power);
+                    } else {
+                        turret.setPower(0);  // aligned
+                    }
+
+                    telemetry.addData("Tag X", x);
+                    telemetry.addData("Offset", offset);
+                    telemetry.addData("Block", block.toString());
+                } else {
+                    turret.setPower(0);  // no tag seen
+                    telemetry.addLine("No tag detected");
+                }
+                telemetry.update();
+
+            }
             telemetry.update();
         }
     }
-}
