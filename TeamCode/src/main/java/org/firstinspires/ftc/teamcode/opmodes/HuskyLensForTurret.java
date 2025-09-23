@@ -82,6 +82,7 @@ public class HuskyLensForTurret extends LinearOpMode {
 
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        int tagIds[] = {20,21,22,23,224};
         /*
          * This sample rate limits the reads solely to allow a user time to observe
          * what is happening on the Driver Station telemetry.  Typical applications
@@ -149,6 +150,8 @@ public class HuskyLensForTurret extends LinearOpMode {
              *
              * Returns an empty array if no objects are seen.
              */
+
+
             List<HuskyLens.Block> blocks = Arrays.asList(huskyLens.blocks(2));
                 if (!blocks.isEmpty()) {
                     HuskyLens.Block block = blocks.get(0);
