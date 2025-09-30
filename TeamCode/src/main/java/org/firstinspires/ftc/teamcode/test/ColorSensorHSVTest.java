@@ -2,24 +2,22 @@ package org.firstinspires.ftc.teamcode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.teamcode.test.HSVColorSensor;
 
 @TeleOp(name = "Color Sensor HSV Test A")
-public class ColorSensorHSV extends LinearOpMode {
+public class ColorSensorHSVTest extends LinearOpMode {
 
-    HSVColorSensorTest colorSensor;
-    colorSensor = new HSVColorSensor();
+    HSVColorSensor colorSensor = new HSVColorSensor();
     @Override
     public void runOpMode() throws InterruptedException {
-        colorSensor.initColorSensor();
+        colorSensor.initColorSensor(hardwareMap);
         while (!isStarted()) {
-            getDetectedColor();
-            colorTelemetry();
+            colorSensor.getDetectedColor(telemetry);
         }
         // wait for PLAY button to be pushed
         waitForStart();
         while (opModeIsActive()) {
-            getDetectedColor();
-            colorTelemetry();
+            colorSensor.getDetectedColor(telemetry);
         }
     } // end runOpMode
 }

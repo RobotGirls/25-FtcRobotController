@@ -1,14 +1,17 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+@TeleOp(name = "Teleop HsvColorSensor")
 
 // @Disabled
-public class HSVColorSensor {
+public class NormalizedColorSensorTeleop extends LinearOpMode {
     private NormalizedColorSensor colorSensor;
     private float hue;
     private float saturation;
@@ -23,11 +26,30 @@ public class HSVColorSensor {
     private DetectedColor latchedDetectedColor = DetectedColor.UNKNOWN;
 
 
-    public void initColorSensor(HardwareMap hardwareMap) {
+    @Override
+    public void runOpMode() throws InterruptedException {
+        initColorSensor();
+            while (!isStarted()) {
+                getDetectedColor();
+                colorTelemetry();
+
+            }
+
+            // wait for PLAY button to be pushed
+            waitForStart();
+            while (opModeIsActive()) {
+                getDetectedColor();
+                colorTelemetry();
+            }
+
+    } // end runOpMode
+
+
+    public void initColorSensor() {
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensorV3");
     }
 
-    public void colorTelemetry(Telemetry telemetry) {
+    public void colorTelemetry() {
         telemetry.addData("hue", hue);
         telemetry.addData("saturation", saturation);
         telemetry.addData("value", value);
@@ -36,7 +58,7 @@ public class HSVColorSensor {
         telemetry.update();
     }
 
-    public void getDetectedColor(Telemetry telemetry) {
+    public void getDetectedColor() {
         NormalizedRGBA colors = colorSensor.getNormalizedColors(); //return 4 values
         hue = JavaUtil.colorToHue(colors.toColor());
         saturation = JavaUtil.colorToSaturation(colors.toColor());
@@ -50,6 +72,6 @@ public class HSVColorSensor {
         } else {
             currentDetectedColor = DetectedColor.UNKNOWN;
         }
-        colorTelemetry(telemetry);
+
     }
 }

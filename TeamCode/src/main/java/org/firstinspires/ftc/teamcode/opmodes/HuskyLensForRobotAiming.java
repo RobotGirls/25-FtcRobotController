@@ -32,11 +32,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode.opmodes;
 
+
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
@@ -62,8 +65,8 @@ import java.util.concurrent.TimeUnit;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
+@Config
 @TeleOp(name = "HuskyLens for aiming", group = "Sensor")
-
 public class HuskyLensForRobotAiming extends LinearOpMode {
 
     private final int READ_PERIOD = 1;
@@ -76,8 +79,14 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
     public DcMotor  leftBack  = null;
 
     public static final int CENTER = 160;
-    private static final int ALIGN_THRESHOLD = 17;
+    private static final int ALIGN_THRESHOLD = 10;
 
+    double Kp = 0.002;
+    double Ki = 0.0005 ;
+    double Kd = 0;
+    double integralSum;
+    double lastError;
+    ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode()
@@ -167,7 +176,7 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
              */
 
 
-            List<HuskyLens.Block> blocks = Arrays.asList(huskyLens.blocks(2));
+            List<HuskyLens.Block> blocks = Arrays.asList(huskyLens.blocks(1));
                 if (!blocks.isEmpty()) {
                     HuskyLens.Block block = blocks.get(0);
 
@@ -175,21 +184,23 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
                     int offset = x - CENTER;
 
                     if (Math.abs(offset) > ALIGN_THRESHOLD) {
-                        do {
-                            if (x > 160 && Math.abs(offset) > ALIGN_THRESHOLD) {
-                                double power = 0.05 * offset;
-                                power = Math.max(-0.3, Math.min(0.3, power));
-                                leftFront.setPower(-power);
-                            } else if (x < 160 && Math.abs(offset) > ALIGN_THRESHOLD) {
-                                double power = 0.05 * offset;
-                                power = Math.max(-0.3, Math.min(0.3, power));
-                                rightBack.setPower(-power);
-                            }
-                        } while (!(x <= ALIGN_THRESHOLD || x == CENTER));
+                            double derivative = (offset - lastError) / timer.seconds();
+                            integralSum = integralSum + (offset * timer.seconds());
+                            double power = (Kp * offset) + (Ki * integralSum) + (Kd * derivative);
+//                            double power = 0.0009 * offset;
+//                            power = Math.max(-0.3, Math.min(0.3, power));
+                            lastError = offset;
+                            leftFront.setPower(-power);
+                            leftBack.setPower(-power);
+                            rightFront.setPower(power);
+                            rightBack.setPower(power);
+                            timer.reset();
 
-                        } else {
+                    } else {
                         leftFront.setPower(0); // aligned
                         rightBack.setPower(0);
+                        leftBack.setPower(0);
+                        rightFront.setPower(0);
                     }
 
                     telemetry.addData("Tag X", x);
