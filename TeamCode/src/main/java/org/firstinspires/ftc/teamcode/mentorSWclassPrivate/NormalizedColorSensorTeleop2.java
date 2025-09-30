@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "Teleop ColorSensor")
 
 // @Disabled
-public class NormalizedColorSensorTeleop extends LinearOpMode {
+public class NormalizedColorSensorTeleop2 extends LinearOpMode {
     private NormalizedColorSensor colorSensor;
     private float normRed;
     private float normGreen;

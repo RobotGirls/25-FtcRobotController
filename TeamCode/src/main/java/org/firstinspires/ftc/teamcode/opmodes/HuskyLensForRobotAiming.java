@@ -81,9 +81,9 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
     public static final int CENTER = 160;
     private static final int ALIGN_THRESHOLD = 10;
 
-    double Kp = 0.002;
-    double Ki = 0.0005 ;
-    double Kd = 0;
+    public static double Kp = 0.002;
+    public static double Ki = 0.0005;
+    public static double Kd = 0.0;
     double integralSum;
     double lastError;
     ElapsedTime timer = new ElapsedTime();

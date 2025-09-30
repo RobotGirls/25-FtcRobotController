@@ -29,9 +29,15 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import static android.view.Gravity.CENTER;
+
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -65,10 +71,23 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Concept: AprilTag Localization", group = "Concept")
-@Disabled
 public class ConceptAprilTagLocalization extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+
+    public DcMotor  leftFront   = null;
+    public DcMotor  rightFront  = null;
+    public DcMotor  rightBack  = null;
+    public DcMotor  leftBack  = null;
+
+    private static final int ALIGN_THRESHOLD = 10;
+
+    public static double Kp = 0.0002;
+    public static double Ki = 0.0005;
+    public static double Kd = 0.0;
+    double integralSum;
+    double lastError;
+    ElapsedTime timer = new ElapsedTime();
 
     /**
      * Variables to store the position and orientation of the camera on the robot. Setting these
@@ -109,8 +128,22 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
      */
     private VisionPortal visionPortal;
 
+
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
+        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
+        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
+        rightBack = hardwareMap.get(DcMotor.class, "backRight");
+        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         initAprilTag();
 
@@ -136,6 +169,40 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
 
             // Share the CPU.
             sleep(20);
+           List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null) {
+                    double x = detection.ftcPose.x;
+                    double offset = x - CENTER;
+                    if (Math.abs(offset) > ALIGN_THRESHOLD) {
+                        double derivative = (offset - lastError) / timer.seconds();
+                        integralSum = integralSum + (offset * timer.seconds());
+                        double power = (Kp * offset) + (Ki * integralSum) + (Kd * derivative);
+//                            double power = 0.0009 * offset;
+//                            power = Math.max(-0.3, Math.min(0.3, power));
+                        lastError = offset;
+                        leftFront.setPower(-power);
+                        leftBack.setPower(-power);
+                        rightFront.setPower(power);
+                        rightBack.setPower(power);
+                        timer.reset();
+
+                    } else {
+                        leftFront.setPower(0); // aligned
+                        rightBack.setPower(0);
+                        leftBack.setPower(0);
+                        rightFront.setPower(0);
+                        if (detection.metadata != null) {
+                            telemetry.addData("Tag X", detection.center.x);
+                            telemetry.addData("Offset", offset);
+                            telemetry.addData("Block", toString());
+                            telemetry.update();
+                        } else {
+                            telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                            telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+                        }
+                }
+            }
         }
 
         // Save more CPU resources when camera is no longer needed.
@@ -145,7 +212,7 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
 
     /**
      * Initialize the AprilTag processor.
-     */
+     */ }
     private void initAprilTag() {
 
         // Create the AprilTag processor.
@@ -219,26 +286,11 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
-
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                // Only use tags that don't have Obelisk in them
-                if (!detection.metadata.name.contains("Obelisk")) {
-                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
-                            detection.robotPose.getPosition().x,
-                            detection.robotPose.getPosition().y,
-                            detection.robotPose.getPosition().z));
-                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
-                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
-                }
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
+            double offset = detection.ftcPose.x - CENTER;
+
+
         }   // end for() loop
 
         // Add "key" information to telemetry
