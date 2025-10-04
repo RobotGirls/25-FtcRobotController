@@ -18,19 +18,24 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "RedLeftBasketThenParkNEWPATH")
-public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
+@Autonomous(name = "BlueLeftBasketThenPark")
+public class LM0AutoRed extends LinearOpMode {
     private boolean first = true;
+    private static final double FIRST_LIFT_DOWN_POS = 50.0;
+    private static final double LAST_LIFT_DOWN_POS = 100.0;
     private double currLiftPos = 0.0;
+    ElapsedTime liftTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
+        liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-38, -62, Math.toRadians(179));
+        Pose2d initialPose = new Pose2d(38, 62, Math.toRadians(279));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Lift lift = new Lift(hardwareMap);
@@ -39,22 +44,32 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
+                .lineToY(52)
+                .turn(Math.toRadians(90))
+                .lineToX(58)
+                .turn(Math.toRadians(45))
+                .strafeTo(new Vector2d(62,58))
+                .waitSeconds(1.5);
+
+                /*
                 .waitSeconds(1)
-                .lineToX(-60)
+                .lineToX(60)
                 .turn(Math.toRadians(45))
                 .waitSeconds(0.3)
                 .turn(Math.toRadians(45))
-                .lineToY(-15)
+                .lineToY(15)
                 .turn(Math.toRadians(90))
-                .lineToX(-30);
+                .lineToX(30);
+
+                 */
 
         Action toSub = toBasket.endTrajectory().fresh()
                 // samples (push)
                 .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(-45,-55))
-                .strafeTo(new Vector2d(-45,-15))
+                .strafeTo(new Vector2d(45,55))
+                .strafeTo(new Vector2d(45,15))
                 .turn(Math.toRadians(90))
-                .lineToX(-26)
+                .lineToX(26)
                 .build();
 
 
@@ -80,13 +95,10 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                         lift.liftUp(),
                         claw.openClaw(), // drop the sample
                         lift.liftDown(),
-                        toSub, // push samples, go to submersible
-                        liftPivot.liftPivotUp(),
-                        lift.liftUp()
+                        toSub // push samples, go to submersible
                 )
         );
     }
-
     public class Lift {
         private DcMotorEx lift;
 
@@ -94,6 +106,9 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
             lift = hardwareMap.get(DcMotorEx.class, "lift");
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lift.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         public class LiftUp implements Action {
@@ -112,7 +127,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                 double pos = lift.getCurrentPosition();
                 packet.put("liftPivotPos", pos);
                 telemetry.addData("Lift pivot pos: ", pos);
-                if (pos < 3050.0) {
+                if (pos < 3000.0 && liftTimer.seconds()<25) {
                     // true causes the action to rerun
                     return true;
                 } else {
@@ -123,12 +138,47 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                 // overall, the action powers the lift until it surpasses
                 // 3000 encoder ticks, then powers it off
             }
-                // overall, the action powers the lift until it surpasses
-                // 3000 encoder ticks, then powers it off
+            // overall, the action powers the lift until it surpasses
+            // 3000 encoder ticks, then powers it off
 
         }
         public Action liftUp() {
             return new LiftUp();
+        }
+
+        public class LiftUpLittle implements Action {
+            // checks if the lift motor has been powered on
+            private boolean initialized = false;
+
+            // actions are formatted via telemetry packets as below
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                // powers on motor, if it is not on
+                if (!initialized) {
+                    lift.setPower(1);
+                    initialized = true;
+                }
+                // checks lift's current position
+                double pos = lift.getCurrentPosition();
+                packet.put("liftPivotPos", pos);
+                telemetry.addData("Lift pivot pos: ", pos);
+                if (pos < 500.0) {
+                    // true causes the action to rerun
+                    return true;
+                } else {
+                    // false stops action rerun
+                    lift.setPower(0);
+                    return false;
+                }
+                // overall, the action powers the lift until it surpasses
+                // 3000 encoder ticks, then powers it off
+            }
+            // overall, the action powers the lift until it surpasses
+            // 3000 encoder ticks, then powers it off
+
+        }
+        public Action liftUpLittle() {
+            return new LiftUpLittle();
         }
 
         public class LiftDown implements Action {
@@ -229,7 +279,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                 // checks lift's current position
                 double pos = liftPivot.getCurrentPosition();
                 packet.put("liftPivotPos", pos);
-                if (pos < 1730.0) {
+                if (pos < 1700.0) {
                     // true causes the action to rerun
                     return true;
                 } else {
@@ -259,7 +309,7 @@ public class RedLeftBasketThenParkNEWPATH extends LinearOpMode {
                 // checks lift's current position
                 double pos = liftPivot.getCurrentPosition();
                 packet.put("liftPivotPos", pos);
-                if (pos > 1400.0) {
+                if (pos > 1420.0) {
                     // true causes the action to rerun
                     return true;
                 } else {

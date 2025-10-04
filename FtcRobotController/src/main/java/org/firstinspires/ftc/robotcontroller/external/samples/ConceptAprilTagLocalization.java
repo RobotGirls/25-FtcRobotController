@@ -26,7 +26,6 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import static android.view.Gravity.CENTER;
@@ -159,7 +158,7 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
 
             // Push telemetry to the Driver Station.
             telemetry.update();
-
+/*
             // Save CPU resources; can resume streaming when needed.
             if (gamepad1.dpad_down) {
                 visionPortal.stopStreaming();
@@ -167,9 +166,13 @@ public class ConceptAprilTagLocalization extends LinearOpMode {
                 visionPortal.resumeStreaming();
             }
 
-            // Share the CPU.
+ */
+// FIXME to test
             sleep(20);
            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+           telemetry.addData("AprilTags Detected", currentDetections.size());
+
+           // Step through the list of detections and display info for each one.
             for (AprilTagDetection detection : currentDetections) {
                 if (detection.metadata != null) {
                     double x = detection.ftcPose.x;
