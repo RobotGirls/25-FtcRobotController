@@ -33,7 +33,7 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
        // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(56, -53, Math.toRadians(315));
+        Pose2d initialPose = new Pose2d(-47, -50, Math.toRadians(-310));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
@@ -41,11 +41,11 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
                 .lineToX(0)
                 .waitSeconds(.5)
-                .turn(Math.toRadians(-45))
+                .turn(Math.toRadians(-120))
                 .strafeTo(new Vector2d(8, -31))
                 .lineToY(-24)
-                .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(40, -24))
+                .turn(Math.toRadians(-55))
+                .strafeTo(new Vector2d(-40, -42))
                 .waitSeconds(1.5);
 
 
