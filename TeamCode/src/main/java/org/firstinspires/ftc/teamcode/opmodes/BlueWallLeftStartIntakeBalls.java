@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 // RR-specific imports
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -13,18 +10,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "Start at Classifier and Intake",group = "Red Auto")
-public class RedClassifierStartIntakeBalls extends LinearOpMode {
+@Autonomous(name = "Start Wall (left) and Intake",group = "Blue Auto")
+public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
     private boolean first = true;
     // Timer for our old lift mechanism - incorporate if necessary
    // ElapsedTime liftTimer = new ElapsedTime();
@@ -33,18 +24,18 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
        // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-47, 50, Math.toRadians(135));
+        Pose2d initialPose = new Pose2d(70, 0, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .lineToX(0)
-                .waitSeconds(.5)
-                .turn(Math.toRadians(-45))
-                .strafeTo(new Vector2d(13, 30))
                 .strafeTo(new Vector2d(0, 0))
                 .turn(Math.toRadians(45))
+                .waitSeconds(.5)
+                .turn(Math.toRadians(45))
+                .strafeTo(new Vector2d(12, -30))
+                .strafeTo(new Vector2d(0, 0))
                 .waitSeconds(1.5);
 
 
