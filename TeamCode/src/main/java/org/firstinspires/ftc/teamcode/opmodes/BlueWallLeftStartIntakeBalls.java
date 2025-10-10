@@ -24,7 +24,7 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
        // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(70, 0, Math.toRadians(180));
+        Pose2d initialPose = new Pose2d(70, -16, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
