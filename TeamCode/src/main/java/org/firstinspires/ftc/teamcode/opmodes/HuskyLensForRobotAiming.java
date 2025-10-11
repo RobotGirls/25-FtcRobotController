@@ -69,8 +69,6 @@ import java.util.concurrent.TimeUnit;
 @TeleOp(name = "HuskyLens for aiming", group = "Sensor")
 public class HuskyLensForRobotAiming extends LinearOpMode {
 
-    private final int READ_PERIOD = 1;
-
     private HuskyLens huskyLens;
 
     public DcMotor  leftFront   = null;
@@ -87,6 +85,7 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
     double integralSum;
     double lastError;
     ElapsedTime timer = new ElapsedTime();
+    HuskeyLensSensor huskeyLensSensor = new HuskeyLensSensor();
 
     @Override
     public void runOpMode()
@@ -112,7 +111,7 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
          * what is happening on the Driver Station telemetry.  Typical applications
          * would not likely rate limit.
          */
-        Deadline rateLimit = new Deadline(READ_PERIOD, TimeUnit.SECONDS);
+        Deadline rateLimit = new Deadline(huskeyLensSensor.READ_PERIOD, TimeUnit.SECONDS);
 
         /*
          * Immediately expire so that the first time through we'll do the read.
@@ -178,10 +177,7 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
 
             List<HuskyLens.Block> blocks = Arrays.asList(huskyLens.blocks(1));
                 if (!blocks.isEmpty()) {
-                    HuskyLens.Block block = blocks.get(0);
-
-                    int x = block.x;
-                    int offset = x - CENTER;
+                    double offset = huskeyLensSensor.findCurrBlockAndOffset(blocks);
 
                     if (Math.abs(offset) > ALIGN_THRESHOLD) {
                             double derivative = (offset - lastError) / timer.seconds();
@@ -203,9 +199,9 @@ public class HuskyLensForRobotAiming extends LinearOpMode {
                         rightFront.setPower(0);
                     }
 
-                    telemetry.addData("Tag X", x);
+                    telemetry.addData("Tag X", huskeyLensSensor.findXValue(blocks));
                     telemetry.addData("Offset", offset);
-                    telemetry.addData("Block", block.toString());
+                    telemetry.addData("Block", huskeyLensSensor.detectCurrBlock(blocks).toString());
                 } else {
                     // turret.setPower(0);  // no tag seen
                     telemetry.addLine("No tag detected");
