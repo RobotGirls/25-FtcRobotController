@@ -1,29 +1,30 @@
 package org.firstinspires.ftc.teamcode.test;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "JasmineAprilTagEasyTestTeleop3")
+@TeleOp(name = "Anneke's Limelight Test Teleop")
 
-public class AprilTagTestTeleopEasy extends LinearOpMode {
+public class LimelightTestTeleop extends LinearOpMode {
 
-    private JasmineAprilTagEasy jasmineAprilTag = new JasmineAprilTagEasy();
+    private Limelight3ASensor limelightSensor = new Limelight3ASensor();
 
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
         waitForStart();
         while (opModeIsActive()) {
-            jasmineAprilTag.telemetryAprilTag();
-            jasmineAprilTag.cameraStreaming(gamepad1);
+            limelightSensor.limelightProcessing(telemetry);
 
             // Share the CPU.
             sleep(20);
         }
-        jasmineAprilTag.stopAprilTagProcessing();
+        limelightSensor.stopLimelightProcessing();
+
     }
 
     public void initHardware() {
-        jasmineAprilTag.initAprilTag(hardwareMap, telemetry);
+        limelightSensor.initLimelight(hardwareMap, telemetry);
     }
 
 }
