@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "Teleop LM2")
+@TeleOp(name = "Teleop LM0")
 public class ITDTeleopLM2 extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -16,7 +16,7 @@ public class ITDTeleopLM2 extends LinearOpMode {
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
 
-    public DcMotor lift;
+    public DcMotor shooter;
     public CRServo claw;
     public DcMotor liftPivot;
     public CRServo claw2;
@@ -37,10 +37,8 @@ public class ITDTeleopLM2 extends LinearOpMode {
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
 
-        lift = hardwareMap.get(DcMotor.class, "lift");
-        liftPivot = hardwareMap.get(DcMotor.class, "liftPivot");
-        claw = hardwareMap.get(CRServo.class, "claw");
-        claw2 = hardwareMap.get(CRServo.class, "claw2");
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
+
 
         liftPivot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftPivot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -49,7 +47,7 @@ public class ITDTeleopLM2 extends LinearOpMode {
         liftPivot.setPower(0.5);
 
 
-        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -88,29 +86,18 @@ public class ITDTeleopLM2 extends LinearOpMode {
             rightFront.setPower(frontRightPower);
             rightBack.setPower(backRightPower);
 
-            lift.setPower(gamepad2.left_stick_y);
-            liftPivot.setPower(-0.7*gamepad2.right_stick_y);
+
 
             if (gamepad2.a) {
-                claw.setPower(1);
-                claw2.setPower(-1);
-            }
-
-            else if (gamepad2.y) {
-                liftPivot.setTargetPosition(900);
+                shooter.setPower(0.75);
             }
             else if (gamepad2.b) {
-                liftPivot.setTargetPosition(0);
+                shooter.setPower(0.9);
+            }
+            else if (gamepad2.x) {
+                shooter.setPower(1);
             }
 
-            else if (gamepad2.x) {
-                claw.setPower(-1);
-                claw2.setPower(1);
-            }
-            else {
-                claw.setPower(0);
-                claw2.setPower(0);
-            }
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
         }
