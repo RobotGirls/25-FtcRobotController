@@ -24,19 +24,17 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
        // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(70, -16, Math.toRadians(180));
+        Pose2d initialPose = new Pose2d(-47, -50, Math.toRadians(225));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(0, 0))
-                .turn(Math.toRadians(45))
                 .waitSeconds(.5)
-                .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(12, -30))
-                .strafeTo(new Vector2d(0, 0))
-                .waitSeconds(1.5);
+                .strafeToLinearHeading(new Vector2d(-12,-30),Math.toRadians(270))
+                .waitSeconds(.5)
+                .strafeToLinearHeading(new Vector2d(-34,-30),Math.toRadians(225))
+                .waitSeconds(.5);
 
 
         Action toSub = toBasket.endTrajectory().fresh()
@@ -62,8 +60,8 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
 //                        liftPivot.liftPivotDown(),
-                        firstTraj, // go to the basket, push samples, and then submersible
-                        toSub // push samples, go to submersible
+                        firstTraj
+                        // toSub // push samples, go to submersible
                 )
         );
 
