@@ -39,11 +39,11 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .waitSeconds(.5)
-                .strafeToLinearHeading(new Vector2d(-12,30),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(0,30),Math.toRadians(135))
+                .strafeToLinearHeading(new Vector2d(-3.6,59),Math.toRadians(90))
                 .waitSeconds(.5)
                 .strafeToLinearHeading(new Vector2d(-34,30),Math.toRadians(135))
-                .waitSeconds(1.5);
+                .waitSeconds(.5);
 
 
         Action toSub = toBasket.endTrajectory().fresh()
@@ -76,7 +76,10 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
 
         // add mechanism code below
 
+
     }
 
 }
+
+
 
