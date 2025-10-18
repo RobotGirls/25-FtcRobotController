@@ -33,6 +33,8 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        telemetry.setAutoClear(false);
        // liftTimer.reset();
         // instantiating the robot at a specific pose
         Pose2d initialPose = new Pose2d(-47, 50, Math.toRadians(135));
@@ -45,8 +47,6 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(0,30),Math.toRadians(135))
                 .strafeToLinearHeading(new Vector2d(-3.6,59),Math.toRadians(90));
-
-
 
         Action toSub = toBasket.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-34,30),Math.toRadians(135))
@@ -67,13 +67,12 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-//              FIX ME Katelyn; we don't need the intake; it's preloaded...right?
-//              new ParallelAction(
-//                                shooter.shootArtifact(),
-//                                transfer.transferArtifact(),
-//                                intake.intakeArtifact()
-//                        ),
-                        shooter.shootArtifact(),
+                       // shooter.shootArtifact(),
+              new ParallelAction(
+                                shooter.shootArtifact(),
+                                transfer.transferArtifact(),
+                                intake.intakeArtifact()
+                        ),
                         firstTraj,
                         new ParallelAction(
                                 intake.intakeArtifact(),
@@ -98,12 +97,12 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
 
     public class Shooter {
         private DcMotor shooter;
-        private ElapsedTime timer;
+        private ElapsedTime timer2;
 
 
         public Shooter(HardwareMap hardwareMap) {
             shooter = hardwareMap.get(DcMotor.class, "shooter");
-            timer = new ElapsedTime();
+            timer2 = new ElapsedTime();
 
         }
 
@@ -117,12 +116,15 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                     shooter.setPower(-1);
                     initialized = true;
                 }
-
-                if (timer.milliseconds() < 3000) {
+                double timerValue = timer2.milliseconds();
+                telemetry.addData("Shooter Timer",timerValue);
+                telemetry.update();
+                if (timer2.milliseconds() < 5000) {
                     return true;
                 }
                 else {
                     shooter.setPower(0);
+                    timer2.reset();
                     return false;
                 }
             }
@@ -134,12 +136,12 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
 
     public class Intake {
         private DcMotor intake;
-        private ElapsedTime timer;
+        private ElapsedTime timer1;
 
 
         public Intake(HardwareMap hardwareMap) {
             intake = hardwareMap.get(DcMotor.class, "intake");
-            timer = new ElapsedTime();
+            timer1 = new ElapsedTime();
 
         }
 
@@ -147,18 +149,22 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
 
             private boolean initialized = false;
 
+
+
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
                     intake.setPower(-1);
                     initialized = true;
                 }
-
-                if (timer.milliseconds() < 5000) {
+                double timerValue = timer1.milliseconds();
+                telemetry.addData("Intake Timer",timerValue);
+                telemetry.update();
+                if (timerValue < 5000) {
                     return true;
-                }
-                else {
+                } else {
                     intake.setPower(0);
+                    timer1.reset();
                     return false;
                 }
             }
@@ -189,12 +195,15 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                     transfer.setPower(-1);
                     initialized = true;
                 }
-
-                if (timer.milliseconds() < 3000) {
+                double timerValue = timer.milliseconds();
+                telemetry.addData("Transfer Timer",timerValue);
+                telemetry.update();
+                if (timerValue < 3000) {
                     return true;
                 }
                 else {
                     transfer.setPower(0);
+                    timer.reset();
                     return false;
                 }
             }
