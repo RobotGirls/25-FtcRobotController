@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "Teleop LM3 BUTTONS")
+@TeleOp(name = "Teleop LM0 BUTTONS")
 public class DECODETeleopLM0 extends LinearOpMode {
 
     /* Declare OpMode members. */

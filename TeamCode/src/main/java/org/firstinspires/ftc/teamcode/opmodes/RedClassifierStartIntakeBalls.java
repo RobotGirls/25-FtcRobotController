@@ -67,11 +67,13 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        new ParallelAction(
-                                shooter.shootArtifact(),
-                                transfer.transferArtifact(),
-                                intake.intakeArtifact()
-                        ),
+//              FIX ME Katelyn; we don't need the intake; it's preloaded...right?
+//              new ParallelAction(
+//                                shooter.shootArtifact(),
+//                                transfer.transferArtifact(),
+//                                intake.intakeArtifact()
+//                        ),
+                        shooter.shootArtifact(),
                         firstTraj,
                         new ParallelAction(
                                 intake.intakeArtifact(),
