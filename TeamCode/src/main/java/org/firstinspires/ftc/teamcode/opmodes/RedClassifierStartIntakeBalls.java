@@ -115,6 +115,7 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                 if (!initialized) {
                     shooter.setPower(-1);
                     initialized = true;
+                    timer2.reset();
                 }
                 double timerValue = timer2.milliseconds();
                 telemetry.addData("Shooter Timer",timerValue);
@@ -124,7 +125,6 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                 }
                 else {
                     shooter.setPower(0);
-                    timer2.reset();
                     return false;
                 }
             }
@@ -156,6 +156,7 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                 if (!initialized) {
                     intake.setPower(-1);
                     initialized = true;
+                    timer1.reset();
                 }
                 double timerValue = timer1.milliseconds();
                 telemetry.addData("Intake Timer",timerValue);
@@ -164,7 +165,6 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                     return true;
                 } else {
                     intake.setPower(0);
-                    timer1.reset();
                     return false;
                 }
             }
@@ -194,6 +194,7 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                 if (!initialized) {
                     transfer.setPower(-1);
                     initialized = true;
+                    timer.reset();
                 }
                 double timerValue = timer.milliseconds();
                 telemetry.addData("Transfer Timer",timerValue);
@@ -203,7 +204,6 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                 }
                 else {
                     transfer.setPower(0);
-                    timer.reset();
                     return false;
                 }
             }
