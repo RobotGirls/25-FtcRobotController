@@ -21,13 +21,18 @@ public class DECODETeleopLM0 extends LinearOpMode {
     public DcMotor shooter;
     public DcMotor transfer;
     public DcMotor intake;
+    public enum FlywheelState {
+        ON,
+        OFF
+    }
+    FlywheelState flywheelState = FlywheelState.OFF;
 
 
     @Override
     public void runOpMode() {
 
         // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
+        leftFront = hardwareMap.get(DcMotor.class, "frontLeft") ;
         rightFront = hardwareMap.get(DcMotor.class, "frontRight");
         rightBack = hardwareMap.get(DcMotor.class, "backRight");
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
@@ -91,12 +96,17 @@ public class DECODETeleopLM0 extends LinearOpMode {
                 intake.setPower(0);
                 transfer.setPower(0);
             }
+
             if (gamepad2.x) {
                 shooter.setPower(-1);
+                flywheelState = FlywheelState.ON;
             }
-            else {
-                shooter.setPower(0);
+            
+            if (gamepad2.y) {
+                    shooter.setPower(0);
+                    flywheelState = FlywheelState.OFF;
             }
+
            
 
             // Pace this loop so jaw action is reasonable speed.
