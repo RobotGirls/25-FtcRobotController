@@ -34,10 +34,10 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        telemetry.setAutoClear(false);
+       // telemetry.setAutoClear(false);
        // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-47, 50, Math.toRadians(135));
+        Pose2d initialPose = new Pose2d(-55, 58, Math.toRadians(135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Shooter shooter = new Shooter(hardwareMap);
@@ -45,16 +45,17 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(0,30),Math.toRadians(135))
-                .strafeToLinearHeading(new Vector2d(-3.6,59),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-19,30),Math.toRadians(135));
 
-        Action toSub = toBasket.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-34,30),Math.toRadians(135))
-                .waitSeconds(.5)
+        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, 30, Math.toRadians(135)))
+                .strafeToLinearHeading(new Vector2d(-21,72),Math.toRadians(97));
+
+        Action toSub = toIntake.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135))
                 .build();
 
         Action firstTraj = toBasket.build();
-
+        Action secondTraj = toIntake.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -67,7 +68,7 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                       // shooter.shootArtifact(),
+                       shooter.shootArtifact(),
               new ParallelAction(
                                 shooter.shootArtifact(),
                                 transfer.transferArtifact(),
@@ -75,10 +76,13 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                         ),
                         firstTraj,
                         new ParallelAction(
+                                secondTraj,
                                 intake.intakeArtifact(),
                                 transfer.transferArtifact()
                         ),
+                        shooter.artifactOut(),
                         toSub,
+                       shooter.shootArtifact(),
                        new ParallelAction(
                                shooter.shootArtifact(),
                                transfer.transferArtifact(),
@@ -131,6 +135,33 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         }
         public Action shootArtifact() {
             return new ShootArtifact();
+        }
+
+        public class ArtifactOut implements Action {
+
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    shooter.setPower(1);
+                    initialized = true;
+                    timer2.reset();
+                }
+                double timerValue = timer2.milliseconds();
+                telemetry.addData("Shooter Timer",timerValue);
+                telemetry.update();
+                if (timer2.milliseconds() < 500) {
+                    return true;
+                }
+                else {
+                    shooter.setPower(0);
+                    return false;
+                }
+            }
+        }
+        public Action artifactOut() {
+            return new ArtifactOut();
         }
     }
 

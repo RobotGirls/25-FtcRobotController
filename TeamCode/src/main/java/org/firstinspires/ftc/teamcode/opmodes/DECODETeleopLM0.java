@@ -37,8 +37,7 @@ public class DECODETeleopLM0 extends LinearOpMode {
         rightBack = hardwareMap.get(DcMotor.class, "backRight");
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
 
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
