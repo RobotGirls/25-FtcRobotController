@@ -37,25 +37,31 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
        // telemetry.setAutoClear(false);
        // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-55, 58, Math.toRadians(135));
+        Pose2d initialPose = new Pose2d(-63, 66, Math.toRadians(135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-19,30),Math.toRadians(135));
 
+        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135));
+
+
+        TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-55, 58, Math.toRadians(135)))
+                .strafeToLinearHeading(new Vector2d(-19,30),Math.toRadians(135));
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, 30, Math.toRadians(135)))
-                .strafeToLinearHeading(new Vector2d(-21,72),Math.toRadians(97));
+                .strafeToLinearHeading(new Vector2d(-17,69),Math.toRadians(97));
 
         Action toSub = toIntake.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135))
                 .build();
 
         Action firstTraj = toBasket.build();
-        Action secondTraj = toIntake.build();
+        Action secondTraj = toShoot.build();
+        Action thirdTraj = toIntake.build();
+
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -68,30 +74,32 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                       shooter.shootArtifact(),
-              new ParallelAction(
+                        firstTraj,
+                        shooter.shootArtifact(),
+                        new ParallelAction(
                                 shooter.shootArtifact(),
                                 transfer.transferArtifact(),
                                 intake.intakeArtifact()
                         ),
-                        firstTraj,
+                        secondTraj,
                         new ParallelAction(
-                                secondTraj,
+                                thirdTraj,
                                 intake.intakeArtifact(),
                                 transfer.transferArtifact()
                         ),
                         shooter.artifactOut(),
                         toSub,
-                       shooter.shootArtifact(),
-                       new ParallelAction(
-                               shooter.shootArtifact(),
-                               transfer.transferArtifact(),
-                               intake.intakeArtifact()
-                       )
+                        shooter.shootArtifact(),
+                        new ParallelAction(
+                                shooter.shootArtifact(),
+                                transfer.transferArtifact(),
+                                intake.intakeArtifact()
+                        )
 
-                       //  toSub // push samples, go to submersible
+                        //  toSub // push samples, go to submersible
                 )
         );
+
 
         // add mechanism code below
 

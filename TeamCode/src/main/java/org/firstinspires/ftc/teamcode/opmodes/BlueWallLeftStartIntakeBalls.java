@@ -37,7 +37,7 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-55, -58, Math.toRadians(225));
+        Pose2d initialPose = new Pose2d(-63, -66, Math.toRadians(225));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Shooter shooter = new Shooter(hardwareMap);
@@ -45,8 +45,11 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
         Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-19,-30),Math.toRadians(225));
+                .strafeToLinearHeading(new Vector2d(-57,-60),Math.toRadians(225));
 
+
+        TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-55, -58, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(-19,-30),Math.toRadians(225));
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(-17,-69),Math.toRadians(270));
 
@@ -55,7 +58,8 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
                 .build();
 
         Action firstTraj = toBasket.build();
-        Action secondTraj = toIntake.build();
+        Action secondTraj = toShoot.build();
+        Action thirdTraj = toIntake.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -68,15 +72,16 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
+                        firstTraj,
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
                                 transfer.transferArtifact(),
                                 intake.intakeArtifact()
                         ),
-                        firstTraj,
+                        secondTraj,
                         new ParallelAction(
-                                secondTraj,
+                                thirdTraj,
                                 intake.intakeArtifact(),
                                 transfer.transferArtifact()
                         ),
@@ -151,7 +156,7 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
                 double timerValue = timer2.milliseconds();
                 telemetry.addData("Shooter Timer",timerValue);
                 telemetry.update();
-                if (timer2.milliseconds() < 500) {
+                if (timer2.milliseconds() < 900) {
                     return true;
                 }
                 else {
