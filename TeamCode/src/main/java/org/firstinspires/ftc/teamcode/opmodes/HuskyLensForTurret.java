@@ -72,6 +72,10 @@ public class HuskyLensForTurret extends LinearOpMode {
 
     public static final int CENTER = 160;
     private static final int ALIGN_THRESHOLD = 17;
+    public DcMotor  leftFront   = null;
+    public DcMotor  rightFront  = null;
+    public DcMotor  rightBack  = null;
+    public DcMotor  leftBack  = null;
 
 
     @Override
@@ -81,6 +85,19 @@ public class HuskyLensForTurret extends LinearOpMode {
         turret = hardwareMap.get(DcMotor.class, "turret");
 
         turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
+        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
+        rightBack = hardwareMap.get(DcMotor.class, "backRight");
+        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+
+
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         /*
          * This sample rate limits the reads solely to allow a user time to observe
@@ -139,6 +156,8 @@ public class HuskyLensForTurret extends LinearOpMode {
                 continue;
             }
             rateLimit.reset();
+
+
 
             /*
              * All algorithms, except for LINE_TRACKING, return a list of Blocks where a
