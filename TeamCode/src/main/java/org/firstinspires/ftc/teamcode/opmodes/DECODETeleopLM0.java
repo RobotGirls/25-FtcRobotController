@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -9,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "Teleop LM3 BUTTONS")
+@TeleOp(name = "DECODE TELEOP")
 public class DECODETeleopLM0 extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -34,9 +32,6 @@ public class DECODETeleopLM0 extends LinearOpMode {
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        //drive.setPoseEstimate(startPose);
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         transfer = hardwareMap.get(DcMotor.class, "transfer");
@@ -92,13 +87,11 @@ public class DECODETeleopLM0 extends LinearOpMode {
                 transfer.setPower(0);
             }
             if (gamepad2.x) {
-                shooter.setPower(-1);
+                shooter.setPower(-0.75);
             }
             else {
                 shooter.setPower(0);
             }
-           
-
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
         }
