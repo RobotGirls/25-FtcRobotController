@@ -20,7 +20,6 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(new Vector2d(-12,30),Math.toRadians(90))
                 .waitSeconds(.5)
                 .strafeToLinearHeading(new Vector2d(-34,30),Math.toRadians(135))
-                .waitSeconds(.5)
                 .build());
 
 //                .turn(Math.toRadians(90))
