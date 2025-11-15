@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "Teleop LM0 BUTTONS")
+@TeleOp(name = "DECODE TELEOP")
 public class DECODETeleopLM0 extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -38,6 +38,7 @@ public class DECODETeleopLM0 extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
@@ -97,16 +98,19 @@ public class DECODETeleopLM0 extends LinearOpMode {
             }
 
             if (gamepad2.x) {
-                shooter.setPower(-1);
+                shooter.setPower(-0.8);
                 flywheelState = FlywheelState.ON;
             }
-            
-            if (gamepad2.y) {
-                    shooter.setPower(0);
-                    flywheelState = FlywheelState.OFF;
+            if (gamepad2.b) {
+                shooter.setPower(-0.6);
+                flywheelState = FlywheelState.ON;
             }
-
-           
+            else if (gamepad2.a) {
+                shooter.setPower(0.5);
+            }
+            else {
+                shooter.setPower(0);
+            }
 
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);

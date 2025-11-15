@@ -122,7 +122,7 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(-1);
+                    shooter.setPower(-0.6);
                     initialized = true;
                     timer2.reset();
                 }
