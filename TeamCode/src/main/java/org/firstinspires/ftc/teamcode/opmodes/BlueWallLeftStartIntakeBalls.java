@@ -46,11 +46,10 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
-
         TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-57, -60, Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(-22,-30),Math.toRadians(225));
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(-22,-58),Math.toRadians(270));
+                .strafeToLinearHeading(new Vector2d(-22,-62),Math.toRadians(270));
 
         TrajectoryActionBuilder toShootAgain = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
                 .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
@@ -125,7 +124,7 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(-0.44);
+                    shooter.setPower(MecanumDrive.FLYWHEEL_SPEED);
                     initialized = true;
                     timer2.reset();
                 }

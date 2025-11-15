@@ -125,7 +125,7 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(-1);
+                    shooter.setPower(MecanumDrive.FLYWHEEL_SPEED);
                     initialized = true;
                     timer2.reset();
                 }
