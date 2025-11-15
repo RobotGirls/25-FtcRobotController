@@ -53,6 +53,7 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
 
         TrajectoryActionBuilder toShootAgain = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
                 .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
+
         Action toSub = toShootAgain.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-50,-40),Math.toRadians(225))
                 .build();

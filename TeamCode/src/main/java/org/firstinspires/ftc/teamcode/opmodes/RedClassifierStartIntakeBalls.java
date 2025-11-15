@@ -54,13 +54,18 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, 30, Math.toRadians(135)))
                 .strafeToLinearHeading(new Vector2d(-17,69),Math.toRadians(97));
 
-        Action toSub = toIntake.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135))
+        TrajectoryActionBuilder toShootAgain  =drive.actionBuilder(new Pose2d(-17, 69, Math.toRadians(97)))
+                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135));
+
+        Action outsideZone = toIntake.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(50,40),Math.toRadians(223))
                 .build();
+
 
         Action firstTraj = toBasket.build();
         Action secondTraj = toShoot.build();
         Action thirdTraj = toIntake.build();
+        Action fourthTraj = toShootAgain.build();
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -88,13 +93,14 @@ public class RedClassifierStartIntakeBalls extends LinearOpMode {
                                 transfer.transferArtifact()
                         ),
                         shooter.artifactOut(),
-                        toSub,
+                        fourthTraj,
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
                                 transfer.transferArtifact(),
                                 intake.intakeArtifact()
-                        )
+                        ),
+                        outsideZone
 
                         //  toSub // push samples, go to submersible
                 )
