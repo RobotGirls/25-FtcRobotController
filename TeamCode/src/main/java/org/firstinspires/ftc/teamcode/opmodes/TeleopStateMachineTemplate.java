@@ -4,46 +4,33 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 @TeleOp(name = "Teleop State Machine")
-public class TeleopStateMachineTemplateEsther extends LinearOpMode {
+public class TeleopStateMachineTemplate extends LinearOpMode {
 
-    /* Declare OpMode members. */
-    public DcMotor  leftFront   = null;
-    public DcMotor  rightFront  = null;
-    public DcMotor  rightBack  = null;
-    public DcMotor  leftBack  = null;
-
-
-    private enum State {
+    public enum State {
         IDLE,
         MANUAL_CONTROL,
         MOTOR,
-        SERVO,
-
+        SERVO
     }
 
-    private State currentState = State.IDLE;
+    ;
 
+    /* Declare OpMode members. */
+    public DcMotor leftFront = null;
+    public DcMotor rightFront = null;
+    public DcMotor rightBack = null;
+    public DcMotor leftBack = null;
+
+    TeleopStateMachineTemplate.State currentState = State.IDLE;
 
     @Override
     public void runOpMode() {
 
-        // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBack = hardwareMap.get(DcMotor.class, "backRight");
-        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
-
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        initHardware();
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -77,29 +64,47 @@ public class TeleopStateMachineTemplateEsther extends LinearOpMode {
             rightFront.setPower(0.8 * frontRightPower);
             rightBack.setPower(0.8 * backRightPower);
 
+
             // Update MANUAL_CONTROL based off of your own robot
             // Check for joystick input to override automations
             if (Math.abs(gamepad2.left_stick_y) > 0.1 || Math.abs(gamepad2.right_stick_y) > 0.1 || gamepad2.left_bumper || gamepad2.right_bumper) {
                 currentState = State.MANUAL_CONTROL;
+
+                // State machine logic
+                switch (currentState) {
+                    case IDLE:
+                        // Check for button presses to start automations
+                        break;
+
+
+                    case MANUAL_CONTROL:
+                        // Manual control with joysticks
+                        break;
+                }
+
+                // Telemetry for debugging
+                telemetry.addData("State", currentState);
+                telemetry.update();
+
+
             }
-
-            // State machine logic
-            switch (currentState) {
-                case IDLE:
-                    // Check for button presses to start automations
-                    break;
-
-
-                case MANUAL_CONTROL:
-                    // Manual control with joysticks
-                    break;
-            }
-
-            // Telemetry for debugging
-            telemetry.addData("State", currentState);
-            telemetry.update();
-
-
         }
+    }
+    public void initHardware() {
+        // Define and Initialize Motors
+        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
+        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
+        rightBack = hardwareMap.get(DcMotor.class, "backRight");
+        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
     }
 }
