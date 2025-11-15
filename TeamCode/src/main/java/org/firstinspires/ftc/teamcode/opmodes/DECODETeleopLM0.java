@@ -38,6 +38,7 @@ public class DECODETeleopLM0 extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
@@ -78,10 +79,10 @@ public class DECODETeleopLM0 extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            leftFront.setPower(0.8*frontLeftPower);
-            leftBack.setPower(0.8*backLeftPower);
-            rightFront.setPower(0.8*frontRightPower);
-            rightBack.setPower(0.8*backRightPower);
+            leftFront.setPower(frontLeftPower);
+            leftBack.setPower(backLeftPower);
+            rightFront.setPower(frontRightPower);
+            rightBack.setPower(backRightPower);
 
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
