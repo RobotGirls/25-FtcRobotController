@@ -47,6 +47,8 @@ public class DECODETeleopLM0 extends LinearOpMode {
         transfer = hardwareMap.get(DcMotor.class, "transfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -79,10 +81,10 @@ public class DECODETeleopLM0 extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            leftFront.setPower(frontLeftPower);
-            leftBack.setPower(backLeftPower);
-            rightFront.setPower(frontRightPower);
-            rightBack.setPower(backRightPower);
+            leftFront.setPower(0.8*frontLeftPower);
+            leftBack.setPower(0.8*backLeftPower);
+            rightFront.setPower(0.8*frontRightPower);
+            rightBack.setPower(0.8*backRightPower);
 
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
@@ -102,7 +104,7 @@ public class DECODETeleopLM0 extends LinearOpMode {
                 flywheelState = FlywheelState.ON;
             }
             if (gamepad2.b) {
-                shooter.setPower(-0.6);
+                shooter.setPower(-0.44);
                 flywheelState = FlywheelState.ON;
             }
             else if (gamepad2.a) {
