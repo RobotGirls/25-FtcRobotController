@@ -100,10 +100,10 @@ public class DECODETeleopLM0 extends LinearOpMode {
             }
 
             if (gamepad2.x) {
-                shooter.setPower(-0.8);
+                shooter.setPower(-0.72);
                 flywheelState = FlywheelState.ON;
             }
-            if (gamepad2.b) {
+           else if (gamepad2.b) {
                 shooter.setPower(-0.44);
                 flywheelState = FlywheelState.ON;
             }
