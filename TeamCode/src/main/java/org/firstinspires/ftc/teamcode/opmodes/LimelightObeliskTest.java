@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,33 +12,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-import java.util.List;
-
-/*
- * This OpMode illustrates how to use the Limelight3A Vision Sensor.
- *
- * @see <a href="https://limelightvision.io/">Limelight</a>
- *
- * Notes on configuration:
- *
- *   The device presents itself, when plugged into a USB port on a Control Hub as an ethernet
- *   interface.  A DHCP server running on the Limelight automatically assigns the Control Hub an
- *   ip address for the new ethernet interface.
- *
- *   Since the Limelight is plugged into a USB port, it will be listed on the top level configuration
- *   activity along with the Control Hub Portal and other USB devices such as webcams.  Typically
- *   serial numbers are displayed below the device's names.  In the case of the Limelight device, the
- *   Control Hub's assigned ip address for that ethernet interface is used as the "serial number".
- *
- *   Tapping the Limelight's name, transitions to a new screen where the user can rename the Limelight
- *   and specify the Limelight's ip address.  Users should take care not to confuse the ip address of
- *   the Limelight itself, which can be configured through the Limelight settings page via a web browser,
- *   and the ip address the Limelight device assigned the Control Hub and which is displayed in small text
- *   below the name of the Limelight on the top level configuration screen.
- */
 @TeleOp(name = "Sensor: Limelight3A", group = "Sensor")
 
-public class LimelightTurretTest extends LinearOpMode {
+public class LimelightObeliskTest extends LinearOpMode {
 
     private Limelight3A limelight;
     private DcMotor turret;
@@ -57,10 +31,6 @@ public class LimelightTurretTest extends LinearOpMode {
     public DcMotor  rightFront  = null;
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
-
-    public boolean sawId21;
-    public boolean sawId22;
-    public boolean sawId23;
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -124,23 +94,11 @@ public class LimelightTurretTest extends LinearOpMode {
             telemetry.addData("Pipeline", "Index: %d, Type: %s",
                     status.getPipelineIndex(), status.getPipelineType());
 
+
             LLResult result = limelight.getLatestResult();
-            result.getFiducialResults();
-
-            List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
-            if (!sawId21 && !sawId22 && !sawId23) {
-                for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                    sawId21 = fr.getFiducialId() == 21;
-                    sawId22 = fr.getFiducialId() == 22;
-                    sawId23 = fr.getFiducialId() == 23;
-                }
-            }
-
-            telemetry.addData("saw 21",sawId21);
-            telemetry.addData("saw 22",sawId22);
-            telemetry.addData("saw 23",sawId23);
 
             if (result.isValid()) {
+
                 // Access general information
                 Pose3D botpose = result.getBotpose();
                 double captureLatency = result.getCaptureLatency();
