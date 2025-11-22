@@ -46,7 +46,7 @@ public class LM1RedAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(36,20),Math.toRadians(90));
 
         TrajectoryActionBuilder intakeBalls = drive.actionBuilder(initialPose)
-                .lineToY(60);
+                .strafeToLinearHeading(new Vector2d(36,60),Math.toRadians(90));
 
         Action toFinalShoot = intakeBalls.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(60,20),Math.toRadians(170))
@@ -113,7 +113,7 @@ public class LM1RedAuto extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(MecanumDrive.FLYWHEEL_SPEED);
+                    shooter.setPower(MecanumDrive.FLYWHEEL_SPEED_LONG);
                     initialized = true;
                     timer2.reset();
                 }

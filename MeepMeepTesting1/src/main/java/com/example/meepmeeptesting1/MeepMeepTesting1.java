@@ -15,14 +15,19 @@ public class MeepMeepTesting1 {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(62, 20, Math.toRadians(180)))
-                .strafeToLinearHeading(new Vector2d(60,20),Math.toRadians(170))
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(36,20),Math.toRadians(90))
-                .waitSeconds(1)
-                .lineToY(60)
-                .strafeToLinearHeading(new Vector2d(60,20),Math.toRadians(170))
-                .waitSeconds(1)
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-56, 46, Math.toRadians(130)))
+                .strafeToLinearHeading(new Vector2d(-10,24),Math.toRadians(135))
+                .strafeToLinearHeading(new Vector2d(-10,56),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-10,24),Math.toRadians(135))
+//                .lineToY(60)
+//                .strafeToLinearHeading(new Vector2d(60,20),Math.toRadians(170))
+
+//                .waitSeconds(1)
+//                .strafeToLinearHeading(new Vector2d(36,20),Math.toRadians(90))
+//                .waitSeconds(1)
+//                .lineToY(60)
+//                .strafeToLinearHeading(new Vector2d(60,20),Math.toRadians(170))
+//                .waitSeconds(1)
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)

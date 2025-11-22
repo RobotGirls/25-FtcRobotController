@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 // https://www.revrobotics.com/rev-31-1557/
 @TeleOp(name = "Teleop ColorSensor")
 
-// @Disabled
+ @Disabled
 public class ColorSensorTeleop extends LinearOpMode {
     private ColorSensor colorSensor;
     private double redValue;
