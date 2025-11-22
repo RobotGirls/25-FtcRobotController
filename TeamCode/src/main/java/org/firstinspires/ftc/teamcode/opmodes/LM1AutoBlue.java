@@ -43,8 +43,12 @@ public class LM1AutoBlue extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
         TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-57, -60, Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(-22,-30),Math.toRadians(225));
-        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
+        TrajectoryActionBuilder toIntake1 = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(-22,-62),Math.toRadians(270));
+        TrajectoryActionBuilder toIntake2 = drive.actionBuilder(new Pose2d(5, -30, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(5,-62),Math.toRadians(270));
+        TrajectoryActionBuilder toIntake3 = drive.actionBuilder(new Pose2d(30, -30, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(30,-62),Math.toRadians(270));
 
         TrajectoryActionBuilder toShootAgain = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
                 .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
@@ -55,8 +59,9 @@ public class LM1AutoBlue extends LinearOpMode {
 
         Action firstTraj = toBasket.build();
         Action secondTraj = toShoot.build();
-        Action thirdTraj = toIntake.build();
+        Action thirdTraj;
         Action fourthTraj = toShootAgain.build();
+
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -64,6 +69,15 @@ public class LM1AutoBlue extends LinearOpMode {
         }
         waitForStart();
         if (isStopRequested()) return;
+        if (sawId21) {
+            thirdTraj = toIntake1.build();
+        } else if (sawId22) {
+            thirdTraj = toIntake2.build();
+        } else if (sawId23) {
+            thirdTraj = toIntake3.build();
+        } else {
+            thirdTraj = toIntake1.build();
+        }
 
         // IN RUNTIME
         // running the action sequence!
