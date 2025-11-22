@@ -14,20 +14,15 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-import java.util.Timer;
-
 //@Config
-@Autonomous(name = "BLUE DECODE")
-public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
+@Autonomous(name = "BLUE DECODE",group = "Blue Auto")
+public class LM1AutoBlue extends LinearOpMode {
     private boolean first = true;
 
 
@@ -45,21 +40,23 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
         Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-57,-60),Math.toRadians(225));
-
-
-        TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-55, -58, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(-19,-30),Math.toRadians(225));
+                .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
+        TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-57, -60, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(-22,-30),Math.toRadians(225));
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(-17,-69),Math.toRadians(270));
+                .strafeToLinearHeading(new Vector2d(-22,-62),Math.toRadians(270));
 
-        Action toSub = toIntake.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-57,-60),Math.toRadians(225))
+        TrajectoryActionBuilder toShootAgain = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
+                .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
+
+        Action toSub = toShootAgain.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-50,-40),Math.toRadians(225))
                 .build();
 
         Action firstTraj = toBasket.build();
         Action secondTraj = toShoot.build();
         Action thirdTraj = toIntake.build();
+        Action fourthTraj = toShootAgain.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -86,13 +83,14 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
                                 transfer.transferArtifact()
                         ),
                         shooter.artifactOut(),
-                        toSub,
+                        fourthTraj,
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
                                 transfer.transferArtifact(),
                                 intake.intakeArtifact()
-                        )
+                        ),
+                        toSub
 
                         //  toSub // push samples, go to submersible
                 )
@@ -111,8 +109,8 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
 
         public Shooter(HardwareMap hardwareMap) {
             shooter = hardwareMap.get(DcMotor.class, "shooter");
+            shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             timer2 = new ElapsedTime();
-
         }
 
         public class ShootArtifact implements Action {
@@ -122,7 +120,7 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(-1);
+                    shooter.setPower(MecanumDrive.FLYWHEEL_SPEED);
                     initialized = true;
                     timer2.reset();
                 }
@@ -250,6 +248,4 @@ public class BlueWallLeftStartIntakeBalls extends LinearOpMode {
     }
 
 }
-
-
 
