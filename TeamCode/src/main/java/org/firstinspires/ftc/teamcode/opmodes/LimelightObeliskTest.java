@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+import java.util.List;
 @TeleOp(name = "Sensor: Limelight3A", group = "Sensor")
 
 public class LimelightObeliskTest extends LinearOpMode {
@@ -32,10 +34,13 @@ public class LimelightObeliskTest extends LinearOpMode {
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
 
+    public boolean sawId21;
+    public boolean sawId22;
+    public boolean sawId23;
+
     @Override
     public void runOpMode() throws InterruptedException
     {
-
 
         leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
         rightFront = hardwareMap.get(DcMotor.class, "frontRight");
@@ -94,11 +99,10 @@ public class LimelightObeliskTest extends LinearOpMode {
             telemetry.addData("Pipeline", "Index: %d, Type: %s",
                     status.getPipelineIndex(), status.getPipelineType());
 
-
             LLResult result = limelight.getLatestResult();
+            result.getFiducialResults();
 
             if (result.isValid()) {
-
                 // Access general information
                 Pose3D botpose = result.getBotpose();
                 double captureLatency = result.getCaptureLatency();
@@ -127,7 +131,7 @@ public class LimelightObeliskTest extends LinearOpMode {
 
 
             } else {
-                turret.setPower(0);
+                turret.setPower(gamepad2.right_stick_x);
                 telemetry.addData("Limelight", "No data available");
             }
 
