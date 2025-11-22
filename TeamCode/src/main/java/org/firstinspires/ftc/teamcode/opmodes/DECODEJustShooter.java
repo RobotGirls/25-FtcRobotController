@@ -11,16 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name = "DECODE TELEOP motor only",group = "A")
 public class DECODEJustShooter extends LinearOpMode {
 
-    /* Declare OpMode members. */
-    public DcMotor leftFront   = null;
-    public DcMotor  rightFront  = null;
-    public DcMotor  rightBack  = null;
-    public DcMotor  leftBack  = null;
-
     public DcMotor shooter1;
     public DcMotor shooter2;
-    public DcMotor transfer;
-    public DcMotor intake;
+
     public enum FlywheelState {
         ON,
         OFF
@@ -32,13 +25,7 @@ public class DECODEJustShooter extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-
-
-        //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        //drive.setPoseEstimate(startPose);
-
         shooter1 = hardwareMap.get(DcMotor.class, "shooter1");
-
         shooter2 = hardwareMap.get(DcMotor.class,"shooter2");
         shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
