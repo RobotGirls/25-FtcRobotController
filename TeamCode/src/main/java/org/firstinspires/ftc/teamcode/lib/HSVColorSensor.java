@@ -17,6 +17,7 @@ public class HSVColorSensor {
     public enum DetectedColor {
         PURPLE,
         GREEN,
+        PURPLE_OR_GREEN,
         UNKNOWN
     }
     private DetectedColor currentDetectedColor = DetectedColor.UNKNOWN;
