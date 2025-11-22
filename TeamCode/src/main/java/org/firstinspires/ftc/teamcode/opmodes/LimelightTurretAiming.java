@@ -11,11 +11,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.test.HSVColorSensor;
 
 @TeleOp(name = "Sensor: Limelight3A", group = "Sensor")
 
 public class LimelightTurretAiming extends LinearOpMode {
 
+    HSVColorSensor colorSensor1 = new HSVColorSensor();
+    HSVColorSensor colorSensor2 = new HSVColorSensor();
+    HSVColorSensor colorSensor3 = new HSVColorSensor();
+    private HSVColorSensor.DetectedColor artifactColor1 = HSVColorSensor.DetectedColor.UNKNOWN;
+    private HSVColorSensor.DetectedColor artifactColor2 = HSVColorSensor.DetectedColor.UNKNOWN;
+    private HSVColorSensor.DetectedColor artifactColor3 = HSVColorSensor.DetectedColor.UNKNOWN;
     private Limelight3A limelight;
     private DcMotor turret;
     private final int ALIGN_THRESHOLD = 3;
@@ -32,6 +39,14 @@ public class LimelightTurretAiming extends LinearOpMode {
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
 
+    public DcMotor shooter;
+    public DcMotor transfer;
+    public DcMotor intake;
+    public enum FlywheelState {
+        ON,
+        OFF
+    }
+    FlywheelState flywheelState = FlywheelState.OFF;
     @Override
     public void runOpMode() throws InterruptedException
     {
@@ -49,6 +64,12 @@ public class LimelightTurretAiming extends LinearOpMode {
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         turret = hardwareMap.get(DcMotor.class, "turret");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -85,6 +106,37 @@ public class LimelightTurretAiming extends LinearOpMode {
             leftBack.setPower(backLeftPower);
             rightFront.setPower(frontRightPower);
             rightBack.setPower(backRightPower);
+
+            if (gamepad2.left_bumper) {
+                intake.setPower(1);
+                transfer.setPower(1);
+            }
+            else if (gamepad2.right_bumper) {
+                intake.setPower(-1);
+                transfer.setPower(-1);
+            }
+            else {
+                intake.setPower(0);
+                transfer.setPower(0);
+            }
+
+            if (gamepad2.x) {
+                shooter.setPower(-0.72);
+                flywheelState = FlywheelState.ON;
+            }
+            else if (gamepad2.b) {
+                shooter.setPower(-0.44);
+                flywheelState = FlywheelState.ON;
+            }
+            else if (gamepad2.a) {
+                shooter.setPower(0.5);
+            }
+            else {
+                shooter.setPower(0);
+            }
+
+            // Pace this loop so jaw action is reasonable speed.
+            sleep(50);
 
             LLStatus status = limelight.getStatus();
             telemetry.addData("Name", "%s",
@@ -134,5 +186,9 @@ public class LimelightTurretAiming extends LinearOpMode {
             telemetry.update();
         }
         limelight.stop();
+    }
+
+    public void init() {
+        
     }
 }
