@@ -39,24 +39,23 @@ public class LM1AutoBlue extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
-        TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-57, -60, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(-22,-30),Math.toRadians(225));
-        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(-22,-62),Math.toRadians(270));
+        TrajectoryActionBuilder lineUp = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(-12,20),Math.toRadians(225));
 
-        TrajectoryActionBuilder toShootAgain = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
-                .strafeToLinearHeading(new Vector2d(-53,-56),Math.toRadians(225));
+        TrajectoryActionBuilder lineUpIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(-12,-28),Math.toRadians(-90));
 
-        Action toSub = toShootAgain.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-50,-40),Math.toRadians(225))
+        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
+                .strafeToLinearHeading(new Vector2d(-12,-56),Math.toRadians(-90));
+
+        Action toSub = toIntake.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-12,-28),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-22,-25),Math.toRadians(225))
                 .build();
 
-        Action firstTraj = toBasket.build();
-        Action secondTraj = toShoot.build();
+        Action firstTraj = lineUp.build();
+        Action secondTraj = lineUpIntake.build();
         Action thirdTraj = toIntake.build();
-        Action fourthTraj = toShootAgain.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -83,14 +82,13 @@ public class LM1AutoBlue extends LinearOpMode {
                                 transfer.transferArtifact()
                         ),
                         shooter.artifactOut(),
-                        fourthTraj,
+                        toSub,
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
                                 transfer.transferArtifact(),
                                 intake.intakeArtifact()
-                        ),
-                        toSub
+                        )
 
                         //  toSub // push samples, go to submersible
                 )

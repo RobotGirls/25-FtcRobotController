@@ -7,8 +7,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@TeleOp(name = "DECODE TELEOP",group = "A")
+
+@TeleOp(name = "DECODE TELEOP")
 public class DECODETeleopLM1 extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -108,6 +110,9 @@ public class DECODETeleopLM1 extends LinearOpMode {
             }
             else if (gamepad2.a) {
                 shooter.setPower(0.5);
+            }
+            else if (gamepad2.y) {
+                shooter.setPower(MecanumDrive.FLYWHEEL_SPEED_LONG);
             }
             else {
                 shooter.setPower(0);

@@ -32,7 +32,7 @@ public class LM0RedAuto extends LinearOpMode {
        // telemetry.setAutoClear(false);
        // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-63, 66, Math.toRadians(135));
+        Pose2d initialPose = new Pose2d(-56, 46, Math.toRadians(130));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Shooter shooter = new Shooter(hardwareMap);
@@ -45,7 +45,7 @@ public class LM0RedAuto extends LinearOpMode {
 
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-55, 58, Math.toRadians(135)))
-                .strafeToLinearHeading(new Vector2d(-19,30),Math.toRadians(135));
+                .strafeToLinearHeading(new Vector2d(-10,24),Math.toRadians(135));
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, 30, Math.toRadians(135)))
                 .strafeToLinearHeading(new Vector2d(-17,69),Math.toRadians(97));
 
