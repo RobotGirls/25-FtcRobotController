@@ -21,8 +21,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "BLUE DECODE")
-public class LM0AutoBlue extends LinearOpMode {
+@Autonomous(name = "BLUE DECODE",group = "Blue Auto")
+public class LM1AutoBlue extends LinearOpMode {
     private boolean first = true;
 
 

@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "Start at Classifier and Intake",group = "Red Auto")
+@Autonomous(name = "RED DECODE LM1",group = "Red Auto")
 public class LM1RedAuto extends LinearOpMode {
 
 
@@ -31,7 +31,7 @@ public class LM1RedAuto extends LinearOpMode {
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(60, 20, Math.toRadians(170));
+        Pose2d initialPose = new Pose2d(62, 20, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Shooter shooter = new Shooter(hardwareMap);
@@ -39,19 +39,23 @@ public class LM1RedAuto extends LinearOpMode {
         Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
 
+        TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(60,20),Math.toRadians(170));
+
         TrajectoryActionBuilder toIntakeBalls = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135));
+                .strafeToLinearHeading(new Vector2d(36,20),Math.toRadians(90));
 
         TrajectoryActionBuilder intakeBalls = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135));
+                .lineToY(60);
 
         Action toFinalShoot = intakeBalls.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(50,40),Math.toRadians(223))
+                .strafeToLinearHeading(new Vector2d(60,20),Math.toRadians(170))
                 .build();
 
 
-        Action firstTraj = toIntakeBalls.build();
-        Action secondTraj = intakeBalls.build();
+        Action firstTraj = toShoot.build();
+        Action secondTraj = toIntakeBalls.build();
+        Action thirdTraj = intakeBalls.build();
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -65,15 +69,16 @@ public class LM1RedAuto extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
+                        firstTraj,
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
                                 transfer.transferArtifact(),
                                 intake.intakeArtifact()
                         ),
-                        firstTraj,
+                        secondTraj,
                         new ParallelAction(
-                                secondTraj,
+                                thirdTraj,
                                 intake.intakeArtifact(),
                                 transfer.transferArtifact()
                         ),
@@ -87,11 +92,6 @@ public class LM1RedAuto extends LinearOpMode {
                         )
                 )
         );
-
-
-        // add mechanism code below
-
-
 
     }
 

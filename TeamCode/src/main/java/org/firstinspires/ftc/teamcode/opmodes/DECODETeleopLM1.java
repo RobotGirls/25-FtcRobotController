@@ -4,13 +4,12 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp(name = "DECODE TELEOP")
-public class DECODETeleopLM0 extends LinearOpMode {
+@TeleOp(name = "DECODE TELEOP",group = "A")
+public class DECODETeleopLM1 extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor leftFront   = null;
