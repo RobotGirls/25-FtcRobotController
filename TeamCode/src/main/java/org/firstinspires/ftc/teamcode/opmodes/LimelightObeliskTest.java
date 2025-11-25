@@ -11,14 +11,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.test.Limelight3ASensor;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.List;
-@TeleOp(name = "Sensor: Limelight3A", group = "Sensor")
+@TeleOp(name = "Sensor: Limelight3A Obselisk Tag ID :D", group = "Sensor")
 
 public class LimelightObeliskTest extends LinearOpMode {
 
     private Limelight3A limelight;
+    private Limelight3ASensor limelightClass = new Limelight3ASensor();
     private DcMotor turret;
     private final int ALIGN_THRESHOLD = 3;
     private double lastError = 0;
@@ -100,7 +104,7 @@ public class LimelightObeliskTest extends LinearOpMode {
                     status.getPipelineIndex(), status.getPipelineType());
 
             LLResult result = limelight.getLatestResult();
-            result.getFiducialResults();
+
 
             if (result.isValid()) {
                 // Access general information
@@ -109,6 +113,9 @@ public class LimelightObeliskTest extends LinearOpMode {
                 double targetingLatency = result.getTargetingLatency();
                 double parseLatency = result.getParseLatency();
 
+                double tagID = limelightClass.getFuducials(telemetry,result);
+
+                telemetry.addData("April Tag ID",tagID);
                 telemetry.addData("tx", result.getTx());
                 telemetry.addData("txnc", result.getTxNC());
                 telemetry.addData("ty", result.getTy());

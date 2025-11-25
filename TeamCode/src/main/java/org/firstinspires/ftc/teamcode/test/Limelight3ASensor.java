@@ -64,11 +64,17 @@ public class Limelight3ASensor {
             telemetry.addData("Detector", "Class: %s, Area: %.2f", dr.getClassName(), dr.getTargetArea());
         }
 
+    }
+
+    public double getFuducials(Telemetry telemetry, LLResult result) {
         // Access fiducial results
         List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
         for (LLResultTypes.FiducialResult fr : fiducialResults) {
-            telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+            double tagId = fr.getFiducialId();
+//          telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+            return tagId;
         }
+        return 0;
     }
 
     public void getColor(Telemetry telemetry, LLResult result) {
