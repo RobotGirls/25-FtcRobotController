@@ -40,26 +40,25 @@ public class LM0RedAuto extends LinearOpMode {
         Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
 
-        TrajectoryActionBuilder toBasket = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135));
-
-
         TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-55, 58, Math.toRadians(135)))
-                .strafeToLinearHeading(new Vector2d(-10,24),Math.toRadians(135));
-        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-19, 30, Math.toRadians(135)))
-                .strafeToLinearHeading(new Vector2d(-17,69),Math.toRadians(97));
+                .strafeToLinearHeading(new Vector2d(-32,26),Math.toRadians(135));
+
+        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-32, 26, Math.toRadians(135)))
+                .strafeToLinearHeading(new Vector2d(-10,26),Math.toRadians(90));
+        TrajectoryActionBuilder intakeBalls = drive.actionBuilder(new Pose2d(-32, 26, Math.toRadians(135)))
+                .strafeToLinearHeading(new Vector2d(-10,56),Math.toRadians(90));
 
         TrajectoryActionBuilder toShootAgain  =drive.actionBuilder(new Pose2d(-17, 69, Math.toRadians(97)))
-                .strafeToLinearHeading(new Vector2d(-57,60),Math.toRadians(135));
+                .strafeToLinearHeading(new Vector2d(-32,26),Math.toRadians(135));
 
         Action outsideZone = toIntake.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(50,40),Math.toRadians(223))
                 .build();
 
 
-        Action firstTraj = toBasket.build();
-        Action secondTraj = toShoot.build();
-        Action thirdTraj = toIntake.build();
+        Action firstTraj = toShoot.build();
+        Action secondTraj = toIntake.build();
+        Action thirdTraj = intakeBalls.build();
         Action fourthTraj = toShootAgain.build();
 
 
@@ -83,7 +82,7 @@ public class LM0RedAuto extends LinearOpMode {
                         ),
                         secondTraj,
                         new ParallelAction(
-                                thirdTraj,
+                                secondTraj,
                                 intake.intakeArtifact(),
                                 transfer.transferArtifact()
                         ),
