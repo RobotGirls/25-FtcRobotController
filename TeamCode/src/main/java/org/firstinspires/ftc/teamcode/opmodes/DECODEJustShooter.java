@@ -20,14 +20,14 @@ public class DECODEJustShooter extends LinearOpMode {
     }
     FlywheelState flywheelState = FlywheelState.OFF;
 
-    public double shooterSpeed = 0.75;
+    public double shooterSpeed = 0.80;
 
     @Override
     public void runOpMode() {
 
         shooter1 = hardwareMap.get(DcMotor.class, "shooter1");
         shooter2 = hardwareMap.get(DcMotor.class,"shooter2");
-        shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //shooter1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
