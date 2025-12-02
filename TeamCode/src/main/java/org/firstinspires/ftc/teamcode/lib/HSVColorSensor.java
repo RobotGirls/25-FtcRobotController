@@ -25,7 +25,11 @@ public class HSVColorSensor {
 
 
     public void initColorSensor(HardwareMap hardwareMap) {
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensorV3");
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor1");
+    }
+
+    public void initColorSensorName(HardwareMap hardwareMap,String deviceName) {
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, deviceName);
     }
 
     public void colorTelemetry(Telemetry telemetry) {
