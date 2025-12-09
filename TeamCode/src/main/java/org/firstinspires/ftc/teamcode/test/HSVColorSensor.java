@@ -42,7 +42,7 @@ public class HSVColorSensor {
         hue = JavaUtil.colorToHue(colors.toColor());
         saturation = JavaUtil.colorToSaturation(colors.toColor());
         value = JavaUtil.colorToValue(colors.toColor());
-        if (hue >=220 && hue <=240) {
+        if (hue >= 220 && hue <= 240) {
             currentDetectedColor = DetectedColor.PURPLE;
             latchedDetectedColor = DetectedColor.PURPLE;
         } else if (hue >= 150 && hue <=160) {
