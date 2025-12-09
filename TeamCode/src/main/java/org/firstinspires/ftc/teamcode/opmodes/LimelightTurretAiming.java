@@ -127,6 +127,7 @@ public class LimelightTurretAiming extends LinearOpMode {
 
 
             } else {
+                // if we don't see an apriltag
                 turret.setPower(0);
                 telemetry.addData("Limelight", "No data available");
             }
