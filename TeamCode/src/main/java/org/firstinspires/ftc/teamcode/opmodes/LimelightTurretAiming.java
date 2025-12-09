@@ -32,6 +32,8 @@ public class LimelightTurretAiming extends LinearOpMode {
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
 
+    public final double TURRET_OFFSET = 90; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
+
     @Override
     public void runOpMode() throws InterruptedException
     {
@@ -130,6 +132,8 @@ public class LimelightTurretAiming extends LinearOpMode {
                 // if we don't see an apriltag
                 turret.setPower(0);
                 telemetry.addData("Limelight", "No data available");
+
+                turret.setTargetPosition(robot.getHeading() - TURRET_OFFSET);
             }
 
             telemetry.update();
