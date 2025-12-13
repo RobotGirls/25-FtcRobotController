@@ -133,7 +133,7 @@ public class LimelightTurretAiming extends LinearOpMode {
                 turret.setPower(0);
                 telemetry.addData("Limelight", "No data available");
 
-                turret.setTargetPosition(robot.getHeading() - TURRET_OFFSET);
+                //turret.setTargetPosition(robot.getHeading() - TURRET_OFFSET);
             }
 
             telemetry.update();
