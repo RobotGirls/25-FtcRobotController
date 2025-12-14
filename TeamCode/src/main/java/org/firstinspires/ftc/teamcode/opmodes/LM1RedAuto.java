@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Autonomous(name = "RED DECODE LM1",group = "Red Auto")
 public class LM1RedAuto extends LinearOpMode {
 
+    public final double FLYWHEEL_SPEED_LONG = -0.8;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -36,7 +37,6 @@ public class LM1RedAuto extends LinearOpMode {
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
@@ -73,21 +73,18 @@ public class LM1RedAuto extends LinearOpMode {
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
-                                transfer.transferArtifact(),
                                 intake.intakeArtifact()
                         ),
                         secondTraj,
                         new ParallelAction(
                                 thirdTraj,
-                                intake.intakeArtifact(),
-                                transfer.transferArtifact()
+                                intake.intakeArtifact()
                         ),
                         toFinalShoot,
                         shooter.artifactOut(),
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
-                                transfer.transferArtifact(),
                                 intake.intakeArtifact()
                         )
                 )
@@ -113,7 +110,7 @@ public class LM1RedAuto extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(MecanumDrive.FLYWHEEL_SPEED_LONG);
+                    shooter.setPower(FLYWHEEL_SPEED_LONG);
                     initialized = true;
                     timer2.reset();
                 }
@@ -176,8 +173,6 @@ public class LM1RedAuto extends LinearOpMode {
 
             private boolean initialized = false;
 
-
-
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
@@ -198,45 +193,6 @@ public class LM1RedAuto extends LinearOpMode {
         }
         public Action intakeArtifact() {
             return new IntakeArtifact();
-        }
-    }
-
-    public class Transfer {
-        private DcMotor transfer;
-        private ElapsedTime timer;
-
-
-        public Transfer(HardwareMap hardwareMap) {
-            transfer = hardwareMap.get(DcMotor.class, "transfer");
-            timer = new ElapsedTime();
-
-        }
-
-        public class TransferArtifact implements Action {
-
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    transfer.setPower(-1);
-                    initialized = true;
-                    timer.reset();
-                }
-                double timerValue = timer.milliseconds();
-                telemetry.addData("Transfer Timer",timerValue);
-                telemetry.update();
-                if (timerValue < 3000) {
-                    return true;
-                }
-                else {
-                    transfer.setPower(0);
-                    return false;
-                }
-            }
-        }
-        public Action transferArtifact() {
-            return new TransferArtifact();
         }
     }
 

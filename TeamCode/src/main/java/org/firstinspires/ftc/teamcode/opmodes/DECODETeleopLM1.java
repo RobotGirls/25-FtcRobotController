@@ -58,14 +58,14 @@ public class DECODETeleopLM1 extends LinearOpMode {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        turret = hardwareMap.get(DcMotor.class, "turret");
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        //turret = hardwareMap.get(DcMotor.class, "turret");
+        //limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        telemetry.setMsTransmissionInterval(11);
+        //telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(0);
+       // limelight.pipelineSwitch(0);
 
-        limelight.start();
+      //  limelight.start();
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -76,7 +76,7 @@ public class DECODETeleopLM1 extends LinearOpMode {
         //drive.setPoseEstimate(startPose);
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
-        transfer = hardwareMap.get(DcMotor.class, "transfer");
+        //transfer = hardwareMap.get(DcMotor.class, "transfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -115,44 +115,38 @@ public class DECODETeleopLM1 extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            leftFront.setPower(0.8*frontLeftPower);
-            leftBack.setPower(0.8*backLeftPower);
-            rightFront.setPower(0.8*frontRightPower);
-            rightBack.setPower(0.8*backRightPower);
+            leftFront.setPower(0.8 * frontLeftPower);
+            leftBack.setPower(0.8 * backLeftPower);
+            rightFront.setPower(0.8 * frontRightPower);
+            rightBack.setPower(0.8 * backRightPower);
 
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
-                transfer.setPower(1);
-            }
-            else if (gamepad2.right_bumper) {
+
+            } else if (gamepad2.right_bumper) {
                 intake.setPower(-1);
-                transfer.setPower(-1);
-            }
-            else {
+
+            } else {
                 intake.setPower(0);
-                transfer.setPower(0);
+
             }
 
             if (gamepad2.x) {
-                shooter.setPower(-0.72);
+                shooter.setPower(-0.8);
                 flywheelState = FlywheelState.ON;
-            }
-           else if (gamepad2.b) {
-                shooter.setPower(-0.44);
+            } else if (gamepad2.b) {
+                shooter.setPower(-0.4);
                 flywheelState = FlywheelState.ON;
-            }
-            else if (gamepad2.a) {
-                shooter.setPower(0.5);
-            }
-            else if (gamepad2.y) {
+            } else if (gamepad2.a) {
+                shooter.setPower(0.8);
+            } else if (gamepad2.y) {
                 shooter.setPower(MecanumDrive.FLYWHEEL_SPEED_LONG);
-            }
-            else {
+            } else {
                 shooter.setPower(0);
             }
 
-            LLResult result = limelight.getLatestResult();
-
+            //LLResult result = limelight.getLatestResult();
+/*
             if (result.isValid()) {
 
                 // Access general information
@@ -192,8 +186,10 @@ public class DECODETeleopLM1 extends LinearOpMode {
         }
         limelight.stop();
 
+ */
+
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
-
+        }
     }
 }
