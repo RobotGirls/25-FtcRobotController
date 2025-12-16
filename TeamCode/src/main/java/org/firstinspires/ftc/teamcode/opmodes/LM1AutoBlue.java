@@ -37,13 +37,12 @@ public class LM1AutoBlue extends LinearOpMode {
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        Transfer transfer = new Transfer(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder lineUp = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-12,20),Math.toRadians(225));
+                .strafeToLinearHeading(new Vector2d(-34,-34),Math.toRadians(225));
 
         TrajectoryActionBuilder lineUpIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(-12,-28),Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-12,-34),Math.toRadians(-90));
 
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
                 .strafeToLinearHeading(new Vector2d(-12,-56),Math.toRadians(-90));
@@ -72,21 +71,22 @@ public class LM1AutoBlue extends LinearOpMode {
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
-                                transfer.transferArtifact(),
                                 intake.intakeArtifact()
                         ),
-                        secondTraj,
+                        new ParallelAction(
+                                secondTraj,
+                                shooter.artifactOut()
+                        ),
+
                         new ParallelAction(
                                 thirdTraj,
-                                intake.intakeArtifact(),
-                                transfer.transferArtifact()
+                                intake.intakeArtifact()
                         ),
                         shooter.artifactOut(),
                         toSub,
                         shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
-                                transfer.transferArtifact(),
                                 intake.intakeArtifact()
                         )
 
@@ -152,7 +152,7 @@ public class LM1AutoBlue extends LinearOpMode {
                 double timerValue = timer2.milliseconds();
                 telemetry.addData("Shooter Timer",timerValue);
                 telemetry.update();
-                if (timer2.milliseconds() < 900) {
+                if (timer2.milliseconds() < 1800) {
                     return true;
                 }
                 else {
@@ -181,8 +181,6 @@ public class LM1AutoBlue extends LinearOpMode {
 
             private boolean initialized = false;
 
-
-
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
@@ -193,7 +191,7 @@ public class LM1AutoBlue extends LinearOpMode {
                 double timerValue = timer1.milliseconds();
                 telemetry.addData("Intake Timer",timerValue);
                 telemetry.update();
-                if (timerValue < 5000) {
+                if (timerValue < 7000) {
                     return true;
                 } else {
                     intake.setPower(0);
@@ -204,46 +202,34 @@ public class LM1AutoBlue extends LinearOpMode {
         public Action intakeArtifact() {
             return new IntakeArtifact();
         }
-    }
 
-    public class Transfer {
-        private DcMotor transfer;
-        private ElapsedTime timer;
-
-
-        public Transfer(HardwareMap hardwareMap) {
-            transfer = hardwareMap.get(DcMotor.class, "transfer");
-            timer = new ElapsedTime();
-
-        }
-
-        public class TransferArtifact implements Action {
+        public class OuttakeArtifact implements Action {
 
             private boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    transfer.setPower(-1);
+                    intake.setPower(1);
                     initialized = true;
-                    timer.reset();
+                    timer1.reset();
                 }
-                double timerValue = timer.milliseconds();
-                telemetry.addData("Transfer Timer",timerValue);
+                double timerValue = timer1.milliseconds();
+                telemetry.addData("Intake Timer",timerValue);
                 telemetry.update();
-                if (timerValue < 3000) {
+                if (timerValue < 1500) {
                     return true;
-                }
-                else {
-                    transfer.setPower(0);
+                } else {
+                    intake.setPower(0);
                     return false;
                 }
             }
         }
-        public Action transferArtifact() {
-            return new TransferArtifact();
+        public Action outtakeArtifact() {
+            return new OuttakeArtifact();
         }
     }
+
 
 }
 
