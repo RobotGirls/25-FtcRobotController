@@ -187,7 +187,6 @@ public class DECODETeleopLM1 extends LinearOpMode {
         limelight.stop();
 
  */
-
             // Pace this loop so jaw action is reasonable speed.
             sleep(50);
         }

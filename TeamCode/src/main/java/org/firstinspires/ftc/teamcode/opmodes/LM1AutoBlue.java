@@ -41,15 +41,15 @@ public class LM1AutoBlue extends LinearOpMode {
         TrajectoryActionBuilder lineUp = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(-34,-34),Math.toRadians(225));
 
-        TrajectoryActionBuilder lineUpIntake = drive.actionBuilder(new Pose2d(-19, -30, Math.toRadians(225)))
-                .strafeToLinearHeading(new Vector2d(-12,-34),Math.toRadians(-90));
+        TrajectoryActionBuilder lineUpIntake = drive.actionBuilder(new Pose2d(-34, -34, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(-16,-34),Math.toRadians(-90));
 
-        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-22, -58, Math.toRadians(270)))
-                .strafeToLinearHeading(new Vector2d(-12,-56),Math.toRadians(-90));
+        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-12, -34, Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(-16,-56),Math.toRadians(-90));
 
         Action toSub = toIntake.endTrajectory().fresh()
                 .strafeToLinearHeading(new Vector2d(-12,-28),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-22,-25),Math.toRadians(225))
+                .strafeToLinearHeading(new Vector2d(-25,-28),Math.toRadians(225))
                 .build();
 
         Action firstTraj = lineUp.build();
@@ -69,10 +69,9 @@ public class LM1AutoBlue extends LinearOpMode {
                 new SequentialAction(
                         firstTraj,
                         shooter.shootArtifact(),
-                        new ParallelAction(
-                                shooter.shootArtifact(),
-                                intake.intakeArtifact()
-                        ),
+                        intake.intakeArtifact(),
+                        shooter.stopShooting(),
+
                         new ParallelAction(
                                 secondTraj,
                                 shooter.artifactOut()
@@ -82,20 +81,19 @@ public class LM1AutoBlue extends LinearOpMode {
                                 thirdTraj,
                                 intake.intakeArtifact()
                         ),
-                        shooter.artifactOut(),
-                        toSub,
-                        shooter.shootArtifact(),
                         new ParallelAction(
-                                shooter.shootArtifact(),
-                                intake.intakeArtifact()
-                        )
+                        shooter.artifactOut(),
+                                intake.outtakeArtifact()
+                        ),
+                        toSub,
+
+                        shooter.shootArtifact(),
+                        intake.intakeArtifact(),
+                        shooter.stopShooting()
 
                         //  toSub // push samples, go to submersible
                 )
         );
-
-        // add mechanism code below
-
 
 
     }
@@ -125,17 +123,33 @@ public class LM1AutoBlue extends LinearOpMode {
                 double timerValue = timer2.milliseconds();
                 telemetry.addData("Shooter Timer",timerValue);
                 telemetry.update();
-                if (timer2.milliseconds() < 5000) {
+                if (timer2.milliseconds() < 4500) {
                     return true;
                 }
                 else {
-                    shooter.setPower(0);
+                    //shooter.setPower(0);
                     return false;
                 }
             }
         }
         public Action shootArtifact() {
             return new ShootArtifact();
+        }
+
+        public class StopShooting implements Action {
+
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                shooter.setPower(0);
+                return false;
+
+
+            }
+        }
+        public Action stopShooting() {
+            return new StopShooting();
         }
 
         public class ArtifactOut implements Action {
@@ -191,7 +205,7 @@ public class LM1AutoBlue extends LinearOpMode {
                 double timerValue = timer1.milliseconds();
                 telemetry.addData("Intake Timer",timerValue);
                 telemetry.update();
-                if (timerValue < 7000) {
+                if (timerValue < 4500) {
                     return true;
                 } else {
                     intake.setPower(0);
@@ -217,7 +231,7 @@ public class LM1AutoBlue extends LinearOpMode {
                 double timerValue = timer1.milliseconds();
                 telemetry.addData("Intake Timer",timerValue);
                 telemetry.update();
-                if (timerValue < 1500) {
+                if (timerValue < 500) {
                     return true;
                 } else {
                     intake.setPower(0);

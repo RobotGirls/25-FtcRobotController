@@ -20,7 +20,7 @@ public class DECODEJustShooter extends LinearOpMode {
     }
     FlywheelState flywheelState = FlywheelState.OFF;
 
-    public double shooterSpeed = 0.80;
+    public double shooterSpeed = 0.70;
 
     @Override
     public void runOpMode() {
@@ -32,7 +32,6 @@ public class DECODEJustShooter extends LinearOpMode {
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "Robot Ready.  Press START.");    //
