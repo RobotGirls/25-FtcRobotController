@@ -21,44 +21,29 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "BLUE DECODE",group = "Blue Auto")
-public class LM1AutoBlue extends LinearOpMode {
+@Autonomous(name = "RED FAR",group = "Red Auto")
+public class RedAutoFAR extends LinearOpMode {
     private boolean first = true;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // telemetry.setAutoClear(false);
-        // liftTimer.reset();
+       // telemetry.setAutoClear(false);
+       // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-63, -66, Math.toRadians(225));
+        Pose2d initialPose = new Pose2d(60, 15, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder lineUp = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-38,-38),Math.toRadians(229));
+        TrajectoryActionBuilder park = drive.actionBuilder(initialPose)
+                .waitSeconds(27)
+                .strafeToLinearHeading(new Vector2d(36,15),Math.toRadians(180));
 
-        TrajectoryActionBuilder lineUpIntake = drive.actionBuilder(new Pose2d(-34, -34, Math.toRadians(229)))
-                .strafeToLinearHeading(new Vector2d(-16,-34),Math.toRadians(-90));
+        Action firstTraj = park.build();
 
-        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-16, -34, Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(-16,-56),Math.toRadians(-90));
-
-        TrajectoryActionBuilder toSub = drive.actionBuilder(new Pose2d(-16,-56,Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(-12,-28),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-25,-32),Math.toRadians(225));
-
-        Action park = toSub.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-8,-28),Math.toRadians(225))
-                .build();
-
-        Action firstTraj = lineUp.build();
-        Action secondTraj = lineUpIntake.build();
-        Action thirdTraj = toIntake.build();
-        Action fourthTraj = toSub.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -71,35 +56,11 @@ public class LM1AutoBlue extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        firstTraj,
-                        shooter.shootArtifact(),
-                        intake.intakeArtifact(),
-                        shooter.stopShooting(),
 
-                        new ParallelAction(
-                                secondTraj,
-                                shooter.artifactOut()
-                        ),
-
-                        new ParallelAction(
-                                thirdTraj,
-                                intake.intakeArtifact()
-                        ),
-                        new ParallelAction(
-                        shooter.artifactOut(),
-                                intake.outtakeArtifact()
-                        ),
-                        fourthTraj,
-
-                        shooter.shootArtifact(),
-                        intake.intakeArtifact(),
-                        shooter.stopShooting(),
-                        park
-
-                        //  toSub // push samples, go to submersible
+                        firstTraj
                 )
+
         );
-//hello how are you I am not messing up your code. how has your day been? -Holland
     }
 
     public class Shooter {
@@ -120,14 +81,14 @@ public class LM1AutoBlue extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(-0.52);
+                    shooter.setPower(MecanumDrive.FLYWHEEL_SPEED);
                     initialized = true;
                     timer2.reset();
                 }
                 double timerValue = timer2.milliseconds();
                 telemetry.addData("Shooter Timer",timerValue);
                 telemetry.update();
-                if (timer2.milliseconds() < 4500) {
+                if (timer2.milliseconds() < 1900) {
                     return true;
                 }
                 else {
@@ -137,7 +98,7 @@ public class LM1AutoBlue extends LinearOpMode {
             }
         }
         public Action shootArtifact() {
-            return new ShootArtifact();
+            return new RedAutoFAR.Shooter.ShootArtifact();
         }
 
         public class StopShooting implements Action {
@@ -146,7 +107,6 @@ public class LM1AutoBlue extends LinearOpMode {
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-
                 shooter.setPower(0);
                 return false;
 
@@ -154,7 +114,7 @@ public class LM1AutoBlue extends LinearOpMode {
             }
         }
         public Action stopShooting() {
-            return new StopShooting();
+            return new RedAutoFAR.Shooter.StopShooting();
         }
 
         public class ArtifactOut implements Action {
@@ -164,7 +124,7 @@ public class LM1AutoBlue extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(1);
+                    shooter.setPower(0.7);
                     initialized = true;
                     timer2.reset();
                 }
@@ -181,7 +141,7 @@ public class LM1AutoBlue extends LinearOpMode {
             }
         }
         public Action artifactOut() {
-            return new ArtifactOut();
+            return new RedAutoFAR.Shooter.ArtifactOut();
         }
 
         public class StopAtEndOfAuto implements Action {
@@ -211,7 +171,6 @@ public class LM1AutoBlue extends LinearOpMode {
         public Action stopAtEndOfAuto() {
             return new StopAtEndOfAuto();
         }
-
     }
 
     public class Intake {
@@ -248,7 +207,7 @@ public class LM1AutoBlue extends LinearOpMode {
             }
         }
         public Action intakeArtifact() {
-            return new IntakeArtifact();
+            return new RedAutoFAR.Intake.IntakeArtifact();
         }
 
         public class OuttakeArtifact implements Action {
@@ -265,7 +224,7 @@ public class LM1AutoBlue extends LinearOpMode {
                 double timerValue = timer1.milliseconds();
                 telemetry.addData("Intake Timer",timerValue);
                 telemetry.update();
-                if (timerValue < 500) {
+                if (timerValue < 700) {
                     return true;
                 } else {
                     intake.setPower(0);
@@ -274,11 +233,9 @@ public class LM1AutoBlue extends LinearOpMode {
             }
         }
         public Action outtakeArtifact() {
-            return new OuttakeArtifact();
+            return new RedAutoFAR.Intake.OuttakeArtifact();
         }
     }
-
-
 }
 
 

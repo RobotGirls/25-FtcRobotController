@@ -7,7 +7,9 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -23,7 +25,7 @@ public class DECODETeleopLM1 extends LinearOpMode {
     public DcMotor  rightBack  = null;
     public DcMotor  leftBack  = null;
 
-    public DcMotor shooter;
+    public DcMotorEx shooter;
     public DcMotor transfer;
     public DcMotor intake;
 
@@ -75,18 +77,20 @@ public class DECODETeleopLM1 extends LinearOpMode {
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
 
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
-        //transfer = hardwareMap.get(DcMotor.class, "transfer");
+        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setDirection(DcMotorEx.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        // increased d and f from default to reduce oscillations and make it reach target faster
+        shooter.setVelocityPIDFCoefficients(10,3,3,2);
+        // defaults: p 10, i 3, d 0, f 0
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -120,6 +124,7 @@ public class DECODETeleopLM1 extends LinearOpMode {
             rightFront.setPower(0.8 * frontRightPower);
             rightBack.setPower(0.8 * backRightPower);
 
+
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
 
@@ -128,14 +133,13 @@ public class DECODETeleopLM1 extends LinearOpMode {
 
             } else {
                 intake.setPower(0);
-
             }
 
             if (gamepad2.x) {
-                shooter.setPower(-0.8);
+                shooter.setVelocity(1300);
                 flywheelState = FlywheelState.ON;
             } else if (gamepad2.b) {
-                shooter.setPower(-0.4);
+                shooter.setVelocity(-1000);
                 flywheelState = FlywheelState.ON;
             } else if (gamepad2.a) {
                 shooter.setPower(0.8);
@@ -144,6 +148,11 @@ public class DECODETeleopLM1 extends LinearOpMode {
             } else {
                 shooter.setPower(0);
             }
+
+            telemetry.addData("flywheel speed: ", shooter.getVelocity());
+
+            telemetry.update();
+
 
             //LLResult result = limelight.getLatestResult();
 /*

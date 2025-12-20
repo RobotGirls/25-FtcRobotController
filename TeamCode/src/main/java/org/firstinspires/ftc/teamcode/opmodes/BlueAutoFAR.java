@@ -21,8 +21,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "BLUE DECODE",group = "Blue Auto")
-public class LM1AutoBlue extends LinearOpMode {
+@Autonomous(name = "BLUE FAR",group = "Blue Auto")
+public class BlueAutoFAR extends LinearOpMode {
     private boolean first = true;
 
 
@@ -32,33 +32,18 @@ public class LM1AutoBlue extends LinearOpMode {
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-63, -66, Math.toRadians(225));
+        Pose2d initialPose = new Pose2d(60, -15, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Shooter shooter = new Shooter(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder lineUp = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-38,-38),Math.toRadians(229));
 
-        TrajectoryActionBuilder lineUpIntake = drive.actionBuilder(new Pose2d(-34, -34, Math.toRadians(229)))
-                .strafeToLinearHeading(new Vector2d(-16,-34),Math.toRadians(-90));
+        TrajectoryActionBuilder park = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(36,-15),Math.toRadians(180));
 
-        TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-16, -34, Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(-16,-56),Math.toRadians(-90));
+        Action firstTraj = park.build();
 
-        TrajectoryActionBuilder toSub = drive.actionBuilder(new Pose2d(-16,-56,Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(-12,-28),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-25,-32),Math.toRadians(225));
-
-        Action park = toSub.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-8,-28),Math.toRadians(225))
-                .build();
-
-        Action firstTraj = lineUp.build();
-        Action secondTraj = lineUpIntake.build();
-        Action thirdTraj = toIntake.build();
-        Action fourthTraj = toSub.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -71,30 +56,7 @@ public class LM1AutoBlue extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        firstTraj,
-                        shooter.shootArtifact(),
-                        intake.intakeArtifact(),
-                        shooter.stopShooting(),
-
-                        new ParallelAction(
-                                secondTraj,
-                                shooter.artifactOut()
-                        ),
-
-                        new ParallelAction(
-                                thirdTraj,
-                                intake.intakeArtifact()
-                        ),
-                        new ParallelAction(
-                        shooter.artifactOut(),
-                                intake.outtakeArtifact()
-                        ),
-                        fourthTraj,
-
-                        shooter.shootArtifact(),
-                        intake.intakeArtifact(),
-                        shooter.stopShooting(),
-                        park
+                        firstTraj
 
                         //  toSub // push samples, go to submersible
                 )

@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "RED DECODE LM0",group = "Red Auto")
+@Autonomous(name = "RED DECODE",group = "Red Auto")
 public class LM0RedAuto extends LinearOpMode {
     private boolean first = true;
 
@@ -45,15 +45,18 @@ public class LM0RedAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-12,24),Math.toRadians(90));
 
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-12, 24, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(-12,54),Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-12,50),Math.toRadians(90));
 
-        Action toSub = toIntake.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(-34,28),Math.toRadians(130))
+        TrajectoryActionBuilder toSub = drive.actionBuilder(new Pose2d(-12,54,90))
+                .strafeToLinearHeading(new Vector2d(-30,24),Math.toRadians(130));
+        Action park = toSub.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-8,28),Math.toRadians(130))
                 .build();
 
         Action firstTraj = lineUp.build();
         Action secondTraj = lineUpIntake.build();
         Action thirdTraj = toIntake.build();
+        Action fourthTraj = toSub.build();
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -86,11 +89,12 @@ public class LM0RedAuto extends LinearOpMode {
                                 shooter.artifactOut(),
                                 intake.outtakeArtifact()
                         ),
-                        toSub,
-
+                        fourthTraj,
                         shooter.shootArtifact(),
                         intake.intakeArtifact(),
-                        shooter.stopShooting()
+                        shooter.stopShooting(),
+                        park
+
                 )
         );
     }
@@ -120,7 +124,7 @@ public class LM0RedAuto extends LinearOpMode {
                 double timerValue = timer2.milliseconds();
                 telemetry.addData("Shooter Timer",timerValue);
                 telemetry.update();
-                if (timer2.milliseconds() < 4500) {
+                if (timer2.milliseconds() < 1900) {
                     return true;
                 }
                 else {
@@ -156,7 +160,7 @@ public class LM0RedAuto extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shooter.setPower(1);
+                    shooter.setPower(0.7);
                     initialized = true;
                     timer2.reset();
                 }
@@ -174,6 +178,34 @@ public class LM0RedAuto extends LinearOpMode {
         }
         public Action artifactOut() {
             return new LM0RedAuto.Shooter.ArtifactOut();
+        }
+
+        public class StopAtEndOfAuto implements Action {
+
+            private boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    shooter.setPower(0.5);
+                    initialized = true;
+                    timer2.reset();
+                }
+                double timerValue = timer2.milliseconds();
+                telemetry.addData("Shooter Timer",timerValue);
+                telemetry.update();
+                if (timer2.milliseconds() < 500) {
+                    return true;
+                }
+                else {
+                    shooter.setPower(0);
+                    return false;
+                }
+            }
+
+        }
+        public Action stopAtEndOfAuto() {
+            return new StopAtEndOfAuto();
         }
     }
 
@@ -228,7 +260,7 @@ public class LM0RedAuto extends LinearOpMode {
                 double timerValue = timer1.milliseconds();
                 telemetry.addData("Intake Timer",timerValue);
                 telemetry.update();
-                if (timerValue < 500) {
+                if (timerValue < 700) {
                     return true;
                 } else {
                     intake.setPower(0);
