@@ -45,7 +45,7 @@ public class LM0RedAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-12,24),Math.toRadians(90));
 
         TrajectoryActionBuilder toIntake = drive.actionBuilder(new Pose2d(-12, 24, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(-12,50),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(-12,54),Math.toRadians(90));
 
         TrajectoryActionBuilder toSub = drive.actionBuilder(new Pose2d(-12,54,90))
                 .strafeToLinearHeading(new Vector2d(-30,24),Math.toRadians(130));
