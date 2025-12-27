@@ -66,9 +66,9 @@ public class DECODETeleopTankDrive extends LinearOpMode {
 
       //  limelight.start();
 
-        telemetry.addData(">", "Robot Ready.  Press Play.");
-        telemetry.update();
-        waitForStart();
+        //telemetry.addData(">", "Robot Ready.  Press Play.");
+        //telemetry.update();
+        //waitForStart();
 
 
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
@@ -88,7 +88,7 @@ public class DECODETeleopTankDrive extends LinearOpMode {
 
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData(">", "Robot Ready.  Press START.");    //
+        telemetry.addData(">", "Robot Ready.  Press START.");
         telemetry.update();
 
         // Wait for the game to start (driver presses START)
