@@ -33,20 +33,15 @@ public class TankDriveAuto extends LinearOpMode {
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(60, 0, Math.toRadians(180));
+        Pose2d initialPose = new Pose2d( -44, -52, Math.toRadians(55));
         TankDrive drive = new TankDrive(hardwareMap, initialPose);
 
 
         // actionBuilder builds from the drive steps passed to it
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
-                .lineToX(0)
-                .turn(Math.toRadians(90))
-                .lineToY(-25)
-                .setReversed(true)
-                .lineToY(0)
-                .turn(-90)
-                .lineToX(60);
+                .splineTo(new Vector2d(-48,-20),Math.toRadians(40))
+                ;
 
 
         Action firstTraj = toShoot.build();
