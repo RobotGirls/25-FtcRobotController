@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-
+@Config
 @TeleOp(name = "DECODE TELEOP motor only",group = "A")
 public class DECODEJustShooter extends LinearOpMode {
 
@@ -20,7 +21,7 @@ public class DECODEJustShooter extends LinearOpMode {
     }
     FlywheelState flywheelState = FlywheelState.OFF;
 
-    public double shooterSpeed = 0.70;
+    public static double shooterSpeed = 0.70;
 
     @Override
     public void runOpMode() {

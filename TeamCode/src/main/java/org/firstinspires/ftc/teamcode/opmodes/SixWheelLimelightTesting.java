@@ -7,6 +7,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,6 +19,7 @@ public class SixWheelLimelightTesting extends LinearOpMode {
 
     private Limelight3A limelight;
     private DcMotor turret;
+    private DcMotorEx shooter;
     private final int ALIGN_THRESHOLD = 3;
     private double lastError = 0;
     private double derivative;
@@ -37,6 +39,7 @@ public class SixWheelLimelightTesting extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        /*
         leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
         rightFront = hardwareMap.get(DcMotor.class, "frontRight");
         rightBack = hardwareMap.get(DcMotor.class, "backRight");
@@ -50,12 +53,17 @@ public class SixWheelLimelightTesting extends LinearOpMode {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
+         */
+
         turret = hardwareMap.get(DcMotor.class, "turret");
+        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        shooter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(2);
+        limelight.pipelineSwitch(0);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -81,10 +89,14 @@ public class SixWheelLimelightTesting extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
+            double power = 0; // initial turret power
+/*
             leftFront.setPower(frontLeftPower);
             leftBack.setPower(backLeftPower);
             rightFront.setPower(frontRightPower);
             rightBack.setPower(backRightPower);
+
+ */
 
             LLStatus status = limelight.getStatus();
 
@@ -106,14 +118,16 @@ public class SixWheelLimelightTesting extends LinearOpMode {
                 double roboty = botpose.getPosition().y;
                 telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
                 if (robotx < -0.5) {
+                    // if robot is very close to the goal
                     shooterSpeed = 0.5;
                 } else if (robotx >=-0.5 && robotx <0.5) {
+                    // if robot is around the tip (farthest end) of the close launch zone
                     shooterSpeed = 0.6;
                 } else {
+                    // if robot is in the far launch zone
                     shooterSpeed = 0.75;
                 }
-                telemetry.addData("shooterSpeed", shooterSpeed);
-                telemetry.update();
+
 
 
                 double error = result.getTx();
@@ -122,7 +136,7 @@ public class SixWheelLimelightTesting extends LinearOpMode {
                     error = -1 * result.getTx();
                     derivative = (error - lastError) / timer.seconds();
                     integralSum = integralSum + (error * timer.seconds());
-                    double power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+                    power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
                     turret.setPower(power);
                     lastError = error;
                 } else {
@@ -137,8 +151,17 @@ public class SixWheelLimelightTesting extends LinearOpMode {
 
                 //turret.setTargetPosition(robot.getHeading() - TURRET_OFFSET);
             }
+            if (gamepad2.x) {
+                shooter.setPower(shooterSpeed);
+            }
+            else {
+                shooter.setPower(0);
+            }
 
+            telemetry.addData("shooterSpeed: ", shooterSpeed);
+            telemetry.addData("turret speed: ", power);
             telemetry.update();
+
         }
         limelight.stop();
     }
