@@ -37,7 +37,9 @@ public class LM3AutoBlue extends LinearOpMode {
                 .waitSeconds(0.1)
                 .splineToSplineHeading(new Pose2d(-10,-50, Math.toRadians(-90)),-55)
                 .waitSeconds(0.1)
-                .splineToSplineHeading(new Pose2d(-16,-2, Math.toRadians(-130)),-55);
+                .splineToSplineHeading(new Pose2d(-16,-2, Math.toRadians(-130)),-55)
+                .waitSeconds(0.1)
+                .splineToSplineHeading(new Pose2d(20,-20,Math.toRadians(0)),-55);
 
 
         Action firstTraj = toShoot.build();

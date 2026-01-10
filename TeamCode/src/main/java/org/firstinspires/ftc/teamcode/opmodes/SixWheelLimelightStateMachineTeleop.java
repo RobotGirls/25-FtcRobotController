@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -18,10 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
 
     public enum TankDriveStates {
-        DRIVE,
-        LIMELIGHT,
-        COLOR_SENSOR,
-        FLYWHEEL
+        DRIVE
     }
 
     TankDriveStates teleopState = TankDriveStates.DRIVE;
@@ -29,6 +27,7 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
     private Limelight3A limelight;
     private DcMotor turret;
     private DcMotorEx shooter;
+    private Servo hoodServo;
     private final int ALIGN_THRESHOLD = 3;
     private double lastError = 0;
     private double derivative;
@@ -61,6 +60,8 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
+        hoodServo = hardwareMap.get(Servo.class,"hoodServo");
+
         shooter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         telemetry.setMsTransmissionInterval(11);
@@ -90,10 +91,6 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
                     leftMotor.setPower(leftPower);
                     rightMotor.setPower(rightPower);
 
-                    if (gamepad2.x || gamepad2.y || gamepad2.a) {
-                        teleopState = TankDriveStates.COLOR_SENSOR;
-                    }
-
                     LLStatus status = limelight.getStatus();
 
                     LLResult result = limelight.getLatestResult();
@@ -117,12 +114,16 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
                         if (robotx < -0.5) {
                             // if robot is very close to the goal
                             shooterSpeed = 0.5;
+                            hoodServo.setPosition(0.5);
                         } else if (robotx >= -0.5 && robotx < 0.5) {
                             // if robot is around the tip (farthest end) of the close launch zone
                             shooterSpeed = 0.6;
+                            hoodServo.setPosition(0.6);
+
                         } else {
                             // if robot is in the far launch zone
                             shooterSpeed = 0.75;
+                            hoodServo.setPosition(0.75);
                         }
 
                         double error = result.getTx();
