@@ -18,25 +18,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
 
-    public enum TankDriveStates {
-        DRIVE
+    public enum LimelightStates {
+        IDLE,
+        VALID_RESULTS,
+        INVALID_RESULTS
     }
 
-    TankDriveStates teleopState = TankDriveStates.DRIVE;
+    LimelightStates limelightState = LimelightStates.IDLE;
 
-    private Limelight3A limelight;
-    private DcMotor turret;
-    private DcMotorEx shooter;
-    private Servo hoodServo;
     private final int ALIGN_THRESHOLD = 3;
+    Servo hoodServo;
     private double lastError = 0;
-    private double derivative;
+    private double derivative = 0;
     private double integralSum = 0;
 
     private double Kp = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
     private double Ki = 0;
     private double Kd = 0;
-    private double shooterSpeed = 0.75;
+    private double shooterSpeed = -1500;
+
+    Limelight3A limelight;
+    DcMotorEx shooter;
+    DcMotor turret;
 
     public DcMotor  leftMotor   = null;
     public DcMotor  rightMotor  = null;
@@ -60,9 +63,10 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        hoodServo = hardwareMap.get(Servo.class,"hoodServo");
+        hoodServo = hardwareMap.get(Servo.class, "hoodServo");
 
-        shooter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooter.setVelocityPIDFCoefficients(10,3,3,2);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.setMsTransmissionInterval(11);
 
@@ -79,23 +83,26 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            if (teleopState == TankDriveStates.DRIVE) {
-                    double drive = -gamepad1.left_stick_y; // Remember, Y stick value is reversed; Forward/Backward
-                    double turn = gamepad1.right_stick_x; //Left/Right turn
+            double drive = -gamepad1.left_stick_y; // Remember, Y stick value is reversed; Forward/Backward
+            double turn = gamepad1.right_stick_x; //Left/Right turn
 
-                    double leftPower = drive + turn;
-                    double rightPower = drive - turn;
+            double leftPower = drive + turn;
+            double rightPower = drive - turn;
 
-                    double power = 0; // initial turret power
+            double power = 0; // initial turret power
 
-                    leftMotor.setPower(leftPower);
-                    rightMotor.setPower(rightPower);
+            leftMotor.setPower(leftPower);
+            rightMotor.setPower(rightPower);
 
-                    LLStatus status = limelight.getStatus();
-
+            switch(limelightState) {
+                case IDLE:
                     LLResult result = limelight.getLatestResult();
 
                     if (result.isValid()) {
+                        limelightState = LimelightStates.VALID_RESULTS;
+                    }
+                case VALID_RESULTS:
+                    LLResult result1 = limelight.getLatestResult();
                         /*
                         Access general information
                         double captureLatency = result.getCaptureLatency();
@@ -103,33 +110,33 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
                         double parseLatency = result.getParseLatency();
                  */
 
-                        telemetry.addData("tx", result.getTx());
-                        telemetry.addData("txnc", result.getTxNC());
-                        telemetry.addData("ty", result.getTy());
-                        telemetry.addData("tync", result.getTyNC());
-                        Pose3D botpose = result.getBotpose();
+                        telemetry.addData("tx", result1.getTx());
+                        telemetry.addData("txnc", result1.getTxNC());
+                        telemetry.addData("ty", result1.getTy());
+                        telemetry.addData("tync", result1.getTyNC());
+                        Pose3D botpose = result1.getBotpose();
                         double robotx = botpose.getPosition().x;
                         double roboty = botpose.getPosition().y;
                         telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
                         if (robotx < -0.5) {
                             // if robot is very close to the goal
-                            shooterSpeed = 0.5;
-                            hoodServo.setPosition(0.5);
+                            shooterSpeed = 1250;
+                            hoodServo.setPosition(0.6); // FIXME change servo values to those found in testing
                         } else if (robotx >= -0.5 && robotx < 0.5) {
                             // if robot is around the tip (farthest end) of the close launch zone
-                            shooterSpeed = 0.6;
-                            hoodServo.setPosition(0.6);
+                            shooterSpeed = -1340;
+                            hoodServo.setPosition(0.4); // FIXME change servo values to those found in testing
 
                         } else {
                             // if robot is in the far launch zone
-                            shooterSpeed = 0.75;
-                            hoodServo.setPosition(0.75);
+                            shooterSpeed = -1620;
+                            hoodServo.setPosition(0.2); // FIXME change servo values to those found in testing
                         }
 
-                        double error = result.getTx();
+                        double error = result1.getTx();
                         ElapsedTime timer = new ElapsedTime();
                         if (Math.abs(error) > ALIGN_THRESHOLD) {
-                            error = -1 * result.getTx();
+                            error = -1 * result1.getTx();
                             derivative = (error - lastError) / timer.seconds();
                             integralSum = integralSum + (error * timer.seconds());
                             power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
@@ -138,16 +145,22 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
                         } else {
                             turret.setPower(0);  // aligned
                         }
+                        telemetry.update();
 
-
-                    } else {
+                case INVALID_RESULTS:
                         // if we don't see an apriltag
-                        turret.setPower(0);
                         telemetry.addData("Limelight", "No data available");
+                        double turretPower = gamepad2.left_stick_x;
 
-                        // turret.setTargetPosition(robot.getHeading() - TURRET_OFFSET);
-                    }
-
+                        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                        if (turret.getCurrentPosition() >= -2000 && turret.getCurrentPosition() <= 2000) { // FIXME change encoder value after testing
+                            turret.setPower(turretPower);
+                            telemetry.addData("Current Motor Position", turret.getCurrentPosition());
+                        } else {
+                            turret.setPower(0);
+                            telemetry.addData("Current Motor Position", "Too Far!");
+                        }
+                        telemetry.update();
             }
 
         }
