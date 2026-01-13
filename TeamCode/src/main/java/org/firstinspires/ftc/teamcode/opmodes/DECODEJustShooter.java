@@ -21,7 +21,7 @@ public class DECODEJustShooter extends LinearOpMode {
     }
     FlywheelState flywheelState = FlywheelState.OFF;
 
-    public static double shooterSpeed = 0.70;
+    public static double shooterSpeed = 0.40;
 
     @Override
     public void runOpMode() {
