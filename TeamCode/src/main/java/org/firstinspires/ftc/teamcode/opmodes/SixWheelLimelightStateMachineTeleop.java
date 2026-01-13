@@ -14,17 +14,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@TeleOp(name = "SIX WHEEL TELEOP")
+@TeleOp(name = "SIX WHEEL STATE MACHINE TELEOP")
 
 public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
-
-    public enum LimelightStates {
-        IDLE,
-        VALID_RESULTS,
-        INVALID_RESULTS
-    }
-
-    LimelightStates limelightState = LimelightStates.IDLE;
 
     private final int ALIGN_THRESHOLD = 3;
     Servo hoodServo;
@@ -40,28 +32,40 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
     Limelight3A limelight;
     DcMotorEx shooter;
     DcMotor turret;
+    DcMotor intake;
+    DcMotor transfer;
 
-    public DcMotor  leftMotor   = null;
-    public DcMotor  rightMotor  = null;
+    public DcMotor  leftFront  = null;
+    public DcMotor leftBack = null;
+    public DcMotor rightFront = null;
+    public DcMotor  rightBack  = null;
+
+
     public final double TURRET_OFFSET = 90; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        leftMotor = hardwareMap.get(DcMotor.class, "frontLeft");
-        rightMotor = hardwareMap.get(DcMotor.class, "frontRight");
+        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
+        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
+        rightBack = hardwareMap.get(DcMotor.class, "backRight");
 
-        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        /*
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-         */
+
+//        leftFront.setDirection(DcMotorSimple.Direction.REVERSE); // FIXME reverse the correct left motor
+//        rightFront.setDirection(DcMotorSimple.Direction.REVERSE); // FIXME reverse the correct right motor
+
 
         turret = hardwareMap.get(DcMotor.class, "turret");
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        intake = hardwareMap.get(DcMotor.class,"intake");
+        transfer = hardwareMap.get(DcMotor.class,"transfer");
 
         hoodServo = hardwareMap.get(Servo.class, "hoodServo");
 
@@ -77,6 +81,8 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
          */
         limelight.start();
 
+        double power = 0; // initial turret power
+
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
         waitForStart();
@@ -89,65 +95,75 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
             double leftPower = drive + turn;
             double rightPower = drive - turn;
 
-            double power = 0; // initial turret power
 
-            leftMotor.setPower(leftPower);
-            rightMotor.setPower(rightPower);
+            leftFront.setPower(leftPower);
+            leftBack.setPower(leftPower);
+            rightFront.setPower(rightPower);
+            rightBack.setPower(rightPower);
 
-            switch(limelightState) {
-                case IDLE:
-                    LLResult result = limelight.getLatestResult();
+            if (gamepad2.x) {
+                shooter.setVelocity(shooterSpeed);
+            } else {
+                shooter.setVelocity(0);
 
-                    if (result.isValid()) {
-                        limelightState = LimelightStates.VALID_RESULTS;
-                    }
-                case VALID_RESULTS:
-                    LLResult result1 = limelight.getLatestResult();
-                        /*
-                        Access general information
-                        double captureLatency = result.getCaptureLatency();
-                        double targetingLatency = result.getTargetingLatency();
-                        double parseLatency = result.getParseLatency();
-                 */
+            }
+            if (gamepad2.left_bumper) {
+                transfer.setPower(0.7); // FIXME change values accordingly
+                intake.setPower(0.7); // FIXME change values accordingly
+            } else {
+                transfer.setPower(0);
+                intake.setPower(0);
+            }
+            if (gamepad2.right_bumper) {
+                transfer.setPower(-0.7); // FIXME change values accordingly
+                intake.setPower(-0.7); // FIXME change values accordingly
+            } else {
+                transfer.setPower(0);
+                intake.setPower(0);
+            }
 
-                        telemetry.addData("tx", result1.getTx());
-                        telemetry.addData("txnc", result1.getTxNC());
-                        telemetry.addData("ty", result1.getTy());
-                        telemetry.addData("tync", result1.getTyNC());
-                        Pose3D botpose = result1.getBotpose();
-                        double robotx = botpose.getPosition().x;
-                        double roboty = botpose.getPosition().y;
-                        telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
-                        if (robotx < -0.5) {
-                            // if robot is very close to the goal
-                            shooterSpeed = 1250;
-                            hoodServo.setPosition(0.6); // FIXME change servo values to those found in testing
-                        } else if (robotx >= -0.5 && robotx < 0.5) {
-                            // if robot is around the tip (farthest end) of the close launch zone
-                            shooterSpeed = -1340;
-                            hoodServo.setPosition(0.4); // FIXME change servo values to those found in testing
+            LLResult result = limelight.getLatestResult();
 
-                        } else {
-                            // if robot is in the far launch zone
-                            shooterSpeed = -1620;
-                            hoodServo.setPosition(0.2); // FIXME change servo values to those found in testing
-                        }
+            if (result.isValid()) {
+                LLResult result1 = limelight.getLatestResult();
 
-                        double error = result1.getTx();
-                        ElapsedTime timer = new ElapsedTime();
-                        if (Math.abs(error) > ALIGN_THRESHOLD) {
-                            error = -1 * result1.getTx();
-                            derivative = (error - lastError) / timer.seconds();
-                            integralSum = integralSum + (error * timer.seconds());
-                            power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
-                            turret.setPower(power);
-                            lastError = error;
-                        } else {
-                            turret.setPower(0);  // aligned
-                        }
-                        telemetry.update();
+                telemetry.addData("tx", result1.getTx());
+                telemetry.addData("txnc", result1.getTxNC());
+                telemetry.addData("ty", result1.getTy());
+                telemetry.addData("tync", result1.getTyNC());
+                Pose3D botpose = result1.getBotpose();
+                double robotx = botpose.getPosition().x;
+                double roboty = botpose.getPosition().y;
+                telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
+                if (robotx < -0.5) {
+                    // if robot is very close to the goal
+                    shooterSpeed = 1250;
+                    hoodServo.setPosition(0.6); // FIXME change servo values to those found in testing
+                } else if (robotx >= -0.5 && robotx < 0.5) {
+                    // if robot is around the tip (farthest end) of the close launch zone
+                    shooterSpeed = -1340;
+                    hoodServo.setPosition(0.4); // FIXME change servo values to those found in testing
 
-                case INVALID_RESULTS:
+                } else {
+                    // if robot is in the far launch zone
+                    shooterSpeed = -1620;
+                    hoodServo.setPosition(0.2); // FIXME change servo values to those found in testing
+                }
+
+                double error = result1.getTx();
+                ElapsedTime timer = new ElapsedTime();
+                if (Math.abs(error) > ALIGN_THRESHOLD) {
+                    error = -1 * result1.getTx();
+                    derivative = (error - lastError) / timer.seconds();
+                    integralSum = integralSum + (error * timer.seconds());
+                    power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+                    turret.setPower(power);
+                    lastError = error;
+                } else {
+                    turret.setPower(0);  // aligned
+                }
+                telemetry.update();
+            } else {
                         // if we don't see an apriltag
                         telemetry.addData("Limelight", "No data available");
                         double turretPower = gamepad2.left_stick_x;
@@ -162,6 +178,12 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
                         }
                         telemetry.update();
             }
+
+            telemetry.addData("Flywheel Velocity", shooter.getVelocity());
+            telemetry.addData("Turret Error",lastError);
+            telemetry.addData("Flywheel Speed",shooterSpeed);
+            telemetry.addData("Hood Height",hoodServo.getPosition());
+            telemetry.update();
 
         }
         limelight.stop();
