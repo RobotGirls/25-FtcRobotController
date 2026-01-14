@@ -41,16 +41,16 @@ public class LM3AutoRed extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-52, -46, Math.toRadians(-130)))
                 .setReversed(false)
-                .lineToY(-8);
+                .lineToY(8);
         TrajectoryActionBuilder intakeBalls = drive.actionBuilder(new Pose2d(-52, -2, Math.toRadians(-130)))
-                .turn(Math.toRadians(30))
-                .splineTo(new Vector2d(-10,-50), Math.toRadians(-90))
+                .turn(Math.toRadians(-30))
+                .splineTo(new Vector2d(-10,50), Math.toRadians(90))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder backToShoot = drive.actionBuilder(new Pose2d(10, 50, Math.toRadians(-90)))
                 .setReversed(true)
-                .splineTo(new Vector2d(-12,-8), Math.toRadians(45));
+                .splineTo(new Vector2d(-12,8), Math.toRadians(-45));
         Action outOfZone = backToShoot.endTrajectory().fresh()
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .lineToX(0)
                 .build();
 
