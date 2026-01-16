@@ -89,8 +89,8 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double drive = -gamepad1.left_stick_y; // Remember, Y stick value is reversed; Forward/Backward
-            double turn = gamepad1.right_stick_x; //Left/Right turn
+            double drive = -gamepad1.left_stick_x; // Remember, Y stick value is reversed; Forward/Backward
+            double turn = gamepad1.right_stick_y; //Left/Right turn
 
             double leftPower = drive + turn;
             double rightPower = drive - turn;
