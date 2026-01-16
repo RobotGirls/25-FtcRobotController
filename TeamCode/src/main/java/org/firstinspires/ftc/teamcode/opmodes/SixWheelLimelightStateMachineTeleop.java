@@ -41,7 +41,7 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
     public DcMotor  rightBack  = null;
 
 
-    public final double TURRET_OFFSET = 90; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
+    public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -164,19 +164,19 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
                 }
                 telemetry.update();
             } else {
-                        // if we don't see an apriltag
-                        telemetry.addData("Limelight", "No data available");
-                        double turretPower = gamepad2.left_stick_x;
+                // if we don't see an apriltag
+                telemetry.addData("Limelight", "No data available");
+                double turretPower = gamepad2.left_stick_x;
 
-                        turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                        if (turret.getCurrentPosition() >= -2000 && turret.getCurrentPosition() <= 2000) { // FIXME change encoder value after testing
-                            turret.setPower(turretPower);
-                            telemetry.addData("Current Motor Position", turret.getCurrentPosition());
-                        } else {
-                            turret.setPower(0);
-                            telemetry.addData("Current Motor Position", "Too Far!");
-                        }
-                        telemetry.update();
+                turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                if (turret.getCurrentPosition() >= -2000 && turret.getCurrentPosition() <= 2000) { // FIXME change encoder value after testing
+                    turret.setPower(turretPower);
+                    telemetry.addData("Current Motor Position", turret.getCurrentPosition());
+                } else {
+                    turret.setPower(0);
+                    telemetry.addData("Current Motor Position", "Too Far!");
+                }
+                telemetry.update();
             }
 
             telemetry.addData("Flywheel Velocity", shooter.getVelocity());
