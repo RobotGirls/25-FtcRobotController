@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 // RR-specific imports
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -14,12 +11,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.TankDrive;
+
+import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
 
 //@Config
 @Autonomous(name = "LM3 Blue")
@@ -35,8 +32,9 @@ public class LM3AutoBlue extends LinearOpMode {
         // instantiating the robot at a specific pose
         Pose2d initialPose = new Pose2d(60, 0, Math.toRadians(180));
         TankDrive drive = new TankDrive(hardwareMap, initialPose);
-        LM3AutoBlue.Intake intake = new LM3AutoBlue.Intake(hardwareMap);
-        LM3AutoBlue.Shooter shooter = new LM3AutoBlue.Shooter(hardwareMap);
+        ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
+        IntakeRoadRunner intake = new IntakeRoadRunner(hardwareMap,telemetry);
+        TransferRoadRunner transfer = new TransferRoadRunner(hardwareMap, telemetry);
 
         // actionBuilder builds from the drive steps passed to it
 
@@ -45,11 +43,11 @@ public class LM3AutoBlue extends LinearOpMode {
                 .lineToY(-8);
         TrajectoryActionBuilder intakeBalls = drive.actionBuilder(new Pose2d(-52, -2, Math.toRadians(-130)))
                 .turn(Math.toRadians(30))
-                .splineTo(new Vector2d(-10,-50), Math.toRadians(-90))
+                .splineTo(new Vector2d(-10, -50), Math.toRadians(-90))
                 .waitSeconds(0.1);
         TrajectoryActionBuilder backToShoot = drive.actionBuilder(new Pose2d(10, 50, Math.toRadians(-90)))
                 .setReversed(true)
-                .splineTo(new Vector2d(-12,-8), Math.toRadians(45));
+                .splineTo(new Vector2d(-12, -8), Math.toRadians(45));
         Action outOfZone = backToShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
                 .lineToX(0)
@@ -73,120 +71,21 @@ public class LM3AutoBlue extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj,
+                        shooter.shootArtifact(),
                         new ParallelAction(
-                         secondTraj,
-                         intake.intakeArtifact()
+                                secondTraj,
+                                intake.intakeArtifact(),
+                                transfer.intakeArtifact()
                         ),
                         thirdTraj,
+                        shooter.shootArtifact(),
                         outOfZone
 
                 )
         );
     }
 
-    public class Shooter {
-        private DcMotor shooter;
-        private ElapsedTime timer2;
 
-
-        public Shooter(HardwareMap hardwareMap) {
-            shooter = hardwareMap.get(DcMotor.class, "shooter");
-            timer2 = new ElapsedTime();
-
-        }
-
-        public class ShootArtifact implements Action {
-
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    shooter.setPower(FLYWHEEL_SPEED_LONG);
-                    initialized = true;
-                    timer2.reset();
-                }
-                double timerValue = timer2.milliseconds();
-                telemetry.addData("Shooter Timer",timerValue);
-                telemetry.update();
-                if (timer2.milliseconds() < 5000) {
-                    return true;
-                }
-                else {
-                    shooter.setPower(0);
-                    return false;
-                }
-            }
-        }
-        public Action shootArtifact() {
-            return new LM3AutoBlue.Shooter.ShootArtifact();
-        }
-
-        public class ArtifactOut implements Action {
-
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    shooter.setPower(1);
-                    initialized = true;
-                    timer2.reset();
-                }
-                double timerValue = timer2.milliseconds();
-                telemetry.addData("Shooter Timer",timerValue);
-                telemetry.update();
-                if (timer2.milliseconds() < 500) {
-                    return true;
-                }
-                else {
-                    shooter.setPower(0);
-                    return false;
-                }
-            }
-        }
-        public Action artifactOut() {
-            return new LM3AutoBlue.Shooter.ArtifactOut();
-        }
-    }
-
-    public class Intake {
-        private DcMotor intake;
-        private ElapsedTime timer1;
-
-
-        public Intake(HardwareMap hardwareMap) {
-            intake = hardwareMap.get(DcMotor.class, "intake");
-            timer1 = new ElapsedTime();
-
-        }
-
-        public class IntakeArtifact implements Action {
-
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    intake.setPower(-1);
-                    initialized = true;
-                    timer1.reset();
-                }
-                double timerValue = timer1.milliseconds();
-                telemetry.addData("Intake Timer",timerValue);
-                telemetry.update();
-                if (timerValue < 5000) {
-                    return true;
-                } else {
-                    intake.setPower(0);
-                    return false;
-                }
-            }
-        }
-        public Action intakeArtifact() {
-            return new LM3AutoBlue.Intake.IntakeArtifact();
-        }
-    }
 
 }
 
