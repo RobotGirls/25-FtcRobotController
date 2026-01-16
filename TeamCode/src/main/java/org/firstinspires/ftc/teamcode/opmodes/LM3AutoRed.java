@@ -6,9 +6,11 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -32,23 +34,30 @@ public class LM3AutoRed extends LinearOpMode {
         // instantiating the robot at a specific pose
         Pose2d initialPose = new Pose2d(60, 0, Math.toRadians(180));
         TankDrive drive = new TankDrive(hardwareMap, initialPose);
-
+        Intake intake= new Intake(hardwareMap);
+        Shooter shooter = new Shooter(hardwareMap);
 
         // actionBuilder builds from the drive steps passed to it
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-52, -46, Math.toRadians(-130)))
-                .lineToY(-2)
-                .turn(Math.toRadians(30))
-                .splineToSplineHeading(new Pose2d(10,28, Math.toRadians(90)),-50)
-                .waitSeconds(0.1)
-                .splineToSplineHeading(new Pose2d(10,50, Math.toRadians(90)),-55)
-                .waitSeconds(0.1)
-                .splineToSplineHeading(new Pose2d(-16,2, Math.toRadians(130)),-55)
-                .waitSeconds(0.1)
-                .splineToSplineHeading(new Pose2d(20,20,Math.toRadians(0)),-55);
+                .setReversed(false)
+                .lineToY(8);
+        TrajectoryActionBuilder intakeBalls = drive.actionBuilder(new Pose2d(-52, -2, Math.toRadians(-130)))
+                .turn(Math.toRadians(-30))
+                .splineTo(new Vector2d(-10,50), Math.toRadians(90))
+                .waitSeconds(0.1);
+        TrajectoryActionBuilder backToShoot = drive.actionBuilder(new Pose2d(10, 50, Math.toRadians(-90)))
+                .setReversed(true)
+                .splineTo(new Vector2d(-12,8), Math.toRadians(-45));
+        Action outOfZone = backToShoot.endTrajectory().fresh()
+                .turn(Math.toRadians(-90))
+                .lineToX(0)
+                .build();
 
 
         Action firstTraj = toShoot.build();
+        Action secondTraj = intakeBalls.build();
+        Action fourthTraj = backToShoot.build();
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -62,7 +71,11 @@ public class LM3AutoRed extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        firstTraj
+                        firstTraj,
+                        secondTraj,
+                        new ParallelAction(
+                                thirdTraj
+                        )
 
                 )
         );
@@ -142,7 +155,6 @@ public class LM3AutoRed extends LinearOpMode {
         public Intake(HardwareMap hardwareMap) {
             intake = hardwareMap.get(DcMotor.class, "intake");
             timer1 = new ElapsedTime();
-
         }
 
         public class IntakeArtifact implements Action {
