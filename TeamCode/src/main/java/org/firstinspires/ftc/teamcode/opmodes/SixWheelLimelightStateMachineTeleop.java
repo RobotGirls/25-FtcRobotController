@@ -108,15 +108,15 @@ public class SixWheelLimelightStateMachineTeleop extends LinearOpMode {
 
             }
             if (gamepad2.left_bumper) {
-                transfer.setPower(0.7); // FIXME change values accordingly
-                intake.setPower(0.7); // FIXME change values accordingly
+                transfer.setPower(-1); // FIXME change values accordingly
+                intake.setPower(-1); // FIXME change values accordingly
             } else {
                 transfer.setPower(0);
                 intake.setPower(0);
             }
             if (gamepad2.right_bumper) {
-                transfer.setPower(-0.7); // FIXME change values accordingly
-                intake.setPower(-0.7); // FIXME change values accordingly
+                transfer.setPower(1); // FIXME change values accordingly
+                intake.setPower(1); // FIXME change values accordingly
             } else {
                 transfer.setPower(0);
                 intake.setPower(0);
