@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,12 +17,17 @@ import com.acmerobotics.roadrunner.Action;
 public class ShooterRoadRunner {
 
     private DcMotorEx shooter;
+
+    private Servo shooterHood;
     private ElapsedTime timer1;
     private Telemetry telemetry1;
     public double shooterSpeed;
 
+
+
     public ShooterRoadRunner(HardwareMap hardwareMap, Telemetry telemetry) {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+        shooterHood = hardwareMap.get(Servo.class, "shooterHood");
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         timer1 = new ElapsedTime();
@@ -36,17 +42,19 @@ public class ShooterRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                shooterSpeed = -1340;
+                shooter.setVelocity(-1500);
+                shooterHood.setPosition(-5);
                 initialized = true;
                 timer1.reset();
             }
             double timerValue = timer1.milliseconds();
-            telemetry1.addData("Intake Timer",timerValue);
+            telemetry1.addData("timer",timerValue);
             telemetry1.update();
             if (timerValue < 5000) {
                 return true;
             } else {
-                shooter.setPower(0);
+                shooter.setVelocity(0);
+                shooterHood.setPosition(0);
                 return false;
             }
         }
@@ -61,7 +69,7 @@ public class ShooterRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                shooterSpeed = 1340;
+                shooter.setVelocity(1340);
                 initialized = true;
                 timer1.reset();
             }
