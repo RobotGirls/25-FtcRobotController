@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
 
 //@Config
-@Autonomous(name = "LM3 Blue NO INTAKE")
-public class LM3AutoBlueNOINTAKE extends LinearOpMode {
+@Autonomous(name = "LM3 Red NO INTAKE")
+public class LM3AutoRedNOINTAKE extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -26,7 +26,7 @@ public class LM3AutoBlueNOINTAKE extends LinearOpMode {
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-52, -46, Math.toRadians(-130));
+        Pose2d initialPose = new Pose2d(-52, 46, Math.toRadians(130));
         TankDrive drive = new TankDrive(hardwareMap, initialPose);
         IntakeRoadRunner intake= new IntakeRoadRunner(hardwareMap,telemetry);
         ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
@@ -35,11 +35,11 @@ public class LM3AutoBlueNOINTAKE extends LinearOpMode {
         // actionBuilder builds from the drive steps passed to it
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
-                .lineToY(-8);
+                .lineToY(8);
 
         Action outOfZone = toShoot.endTrajectory().fresh()
-                .lineToY(-30)
-                .turn(Math.toRadians(130))
+                .lineToY(30)
+                .turn(Math.toRadians(-130))
                 .lineToX(0)
                 .build();
 
