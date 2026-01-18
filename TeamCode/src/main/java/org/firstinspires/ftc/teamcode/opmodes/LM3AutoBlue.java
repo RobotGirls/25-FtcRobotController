@@ -30,7 +30,7 @@ public class LM3AutoBlue extends LinearOpMode {
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(60, 0, Math.toRadians(180));
+        Pose2d initialPose = new Pose2d(-52, -46, Math.toRadians(-130));
         TankDrive drive = new TankDrive(hardwareMap, initialPose);
         ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
         IntakeRoadRunner intake = new IntakeRoadRunner(hardwareMap,telemetry);
@@ -38,14 +38,15 @@ public class LM3AutoBlue extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
 
-        TrajectoryActionBuilder toShoot = drive.actionBuilder(new Pose2d(-52, -46, Math.toRadians(-130)))
+        TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .lineToY(-8);
-        TrajectoryActionBuilder intakeBalls = drive.actionBuilder(new Pose2d(-52, -2, Math.toRadians(-130)))
+        TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(130))
                 .lineToX(-12)
+                .waitSeconds(0.1)
                 .turn(Math.toRadians(-90))
                 .lineToY(-54);
-        TrajectoryActionBuilder backToShoot = drive.actionBuilder(new Pose2d(10, 50, Math.toRadians(-90)))
+        TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .lineToY(-8)
                 .turnTo(Math.toRadians(-130));
         Action outOfZone = backToShoot.endTrajectory().fresh()
@@ -71,6 +72,7 @@ public class LM3AutoBlue extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj,
+                        shooter.shootArtifact(),
                         new ParallelAction(
                                 shooter.shootArtifact(),
                                 intake.intakeArtifact(),

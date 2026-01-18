@@ -32,7 +32,7 @@ public class TransferRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                transfer.setPower(-0.7);
+                transfer.setPower(1);
                 initialized = true;
                 timer1.reset();
             }
@@ -57,7 +57,7 @@ public class TransferRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                transfer.setPower(0.7);
+                transfer.setPower(-0.7);
                 initialized = true;
                 timer1.reset();
             }

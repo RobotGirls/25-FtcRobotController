@@ -7,20 +7,18 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TankDrive;
-
 import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
 
 //@Config
-@Autonomous(name = "LM3 Red")
-public class LM3AutoRed extends LinearOpMode {
+@Autonomous(name = "LM3 Red NO INTAKE")
+public class LM3AutoRedNOINTAKE extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -39,23 +37,15 @@ public class LM3AutoRed extends LinearOpMode {
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .lineToY(8);
 
-        TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
+        Action outOfZone = toShoot.endTrajectory().fresh()
+                .lineToY(30)
                 .turn(Math.toRadians(-130))
-                .lineToX(-12)
-                .waitSeconds(0.1)
-                .turn(Math.toRadians(90))
-                .lineToY(48);
-        TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
-                .lineToY(8);
-        Action outOfZone = backToShoot.endTrajectory().fresh()
-                .turn(Math.toRadians(90))
-                .lineToX(16)
+                .lineToX(0)
                 .build();
 
 
         Action firstTraj = toShoot.build();
-        Action secondTraj = intakeBalls.build();
-        Action thirdTraj = backToShoot.build();
+
 
 
         while (!isStopRequested() && !opModeIsActive()) {
@@ -76,22 +66,6 @@ public class LM3AutoRed extends LinearOpMode {
                                 intake.intakeArtifact(),
                                 transfer.intakeArtifact()
                         ),
-
-                        new ParallelAction(
-                              secondTraj,
-                                intake.intakeArtifact(),
-                                transfer.intakeArtifact()
-                        ),
-
-                        new ParallelAction(
-                        thirdTraj,
-                        shooter.shootArtifact()
-                                ),
-                        new ParallelAction(
-                                shooter.shootArtifact(),
-                                transfer.intakeArtifact(),
-                                intake.intakeArtifact()
-                        ),
                         outOfZone
 
                 )
@@ -100,6 +74,3 @@ public class LM3AutoRed extends LinearOpMode {
     }
 
 }
-
-
-
