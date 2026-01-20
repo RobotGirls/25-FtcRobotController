@@ -27,7 +27,7 @@ public class ShooterRoadRunner {
 
     public ShooterRoadRunner(HardwareMap hardwareMap, Telemetry telemetry) {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        shooterHood = hardwareMap.get(Servo.class, "shooterHood");
+
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         timer1 = new ElapsedTime();
@@ -42,19 +42,19 @@ public class ShooterRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                shooter.setVelocity(-1500);
-                shooterHood.setPosition(-5);
+                shooter.setVelocity(-1340);
+
                 initialized = true;
                 timer1.reset();
             }
             double timerValue = timer1.milliseconds();
             telemetry1.addData("timer",timerValue);
             telemetry1.update();
-            if (timerValue < 5000) {
+            if (timerValue < 6500) {
                 return true;
             } else {
                 shooter.setVelocity(0);
-                shooterHood.setPosition(0);
+
                 return false;
             }
         }

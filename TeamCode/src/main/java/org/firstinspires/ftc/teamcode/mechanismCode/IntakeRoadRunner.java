@@ -32,7 +32,7 @@ public class IntakeRoadRunner {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    intake.setPower(-0.7);
+                    intake.setPower(1);
                     initialized = true;
                     timer1.reset();
                 }
@@ -57,7 +57,7 @@ public class IntakeRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                intake.setPower(0.7);
+                intake.setPower(-0.7);
                 initialized = true;
                 timer1.reset();
             }
