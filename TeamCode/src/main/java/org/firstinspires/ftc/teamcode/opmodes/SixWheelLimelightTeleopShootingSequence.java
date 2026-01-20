@@ -18,6 +18,8 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
 
     private final int ALIGN_THRESHOLD = 3;
     Servo hoodServo;
+
+    public ElapsedTime sequenceTimer;
     private double lastError = 0;
     private double derivative = 0;
     private double integralSum = 0;
@@ -39,10 +41,18 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
     public DcMotor  rightBack  = null;
 
 
-   // public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
+    public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        sequenceTimer = new ElapsedTime();
+
+        telemetry.setMsTransmissionInterval(11);
+
+        telemetry.addData(">", "Robot Ready.  Press Play.");
+        telemetry.update();
+        waitForStart();
 
         leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
@@ -79,7 +89,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
          */
         limelight.start();
 
-        double power; // initial turret power
+        double power = 0; // initial turret power
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -100,17 +110,33 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
             rightBack.setPower(rightPower);
 
             if (gamepad2.x) {
-                shooter.setVelocity(shooterSpeed);
+                sequenceTimer.reset();
+                sequenceTimer.startTime();
+            }
+
+            if (sequenceTimer.milliseconds() < 5000) {
+                telemetry.addData("Sequence Status:", "Shooter speeds up");
+                telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
+
+            } else if (sequenceTimer.milliseconds() < 8000) {
+                telemetry.addData("Sequence Status:", "transfer outtakes :D");
+                telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
+
+            } else if (sequenceTimer.milliseconds() < 10000) {
+                telemetry.addData("Sequence Status:","Run intake + transfer, shoot ball") ;
+                telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
+
+            }
+
+            telemetry.update();
+
+            if (gamepad2.left_bumper) {
                 transfer.setPower(-1); // FIXME change values accordingly
                 intake.setPower(-1); // FIXME change values accordingly
-                wait(1000);
-                shooter.setVelocity(shooterSpeed);
             } else {
-                shooter.setVelocity(0);
                 transfer.setPower(0);
                 intake.setPower(0);
             }
-
             if (gamepad2.right_bumper) {
                 transfer.setPower(1); // FIXME change values accordingly
                 intake.setPower(1); // FIXME change values accordingly
@@ -185,4 +211,5 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
         }
         limelight.stop();
     }
-}
+
+    }
