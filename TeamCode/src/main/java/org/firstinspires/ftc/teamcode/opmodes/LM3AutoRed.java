@@ -36,6 +36,8 @@ public class LM3AutoRed extends LinearOpMode {
 
         // actionBuilder builds from the drive steps passed to it
 
+
+
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .lineToY(8);
         TrajectoryActionBuilder intakeBalls = drive.actionBuilder(new Pose2d(-52, 8, Math.toRadians(130)))
@@ -46,8 +48,8 @@ public class LM3AutoRed extends LinearOpMode {
         TrajectoryActionBuilder backToShoot = drive.actionBuilder(new Pose2d(-10, 50, Math.toRadians(90)))
                 .lineToY(8);
         Action outOfZone = backToShoot.endTrajectory().fresh()
-                .turn(Math.toRadians(190))
-                .lineToX(16)
+                .turn(Math.toRadians(-90))
+                .lineToX(8)
                 .build();
 
 

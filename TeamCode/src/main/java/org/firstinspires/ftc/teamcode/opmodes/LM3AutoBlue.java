@@ -47,7 +47,7 @@ public class LM3AutoBlue extends LinearOpMode {
                 .lineToY(-54);
         TrajectoryActionBuilder backToShoot = drive.actionBuilder(new Pose2d(10, 50, Math.toRadians(-90)))
                 .lineToY(-8)
-                .turnTo(Math.toRadians(-130));
+                .turnTo(Math.toRadians(-90));
         Action outOfZone = backToShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
                 .lineToX(8)
