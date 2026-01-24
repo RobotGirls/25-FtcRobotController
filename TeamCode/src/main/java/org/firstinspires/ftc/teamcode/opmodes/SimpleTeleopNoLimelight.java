@@ -39,7 +39,7 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
     public DcMotor  rightBack  = null;
     public Servo hood = null;
 
-    public static double hoodHeight = 0;
+    public static double hoodHeight = 0.1;
 
     public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
 
@@ -67,6 +67,7 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
         transfer = hardwareMap.get(DcMotor.class,"transfer");
         hood = hardwareMap.get(Servo.class, "shooterHood");
 
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -103,11 +104,10 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
                 shooter.setVelocity(0);
             }
             if (gamepad2.a) {
-                hood.setPosition(0);
+                hood.setPosition(hoodHeight);
             }
             else if (gamepad2.b) {
-                hood.setPosition(0.8);
-
+                hood.setPosition(0.45); // DOWN
             }
             if (gamepad2.left_bumper) {
                 transfer.setPower(-1); // FIXME change values accordingly
@@ -120,7 +120,7 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
                 transfer.setPower(0);
                 intake.setPower(0);
             }
-
+            turret.setPower(gamepad2.left_stick_x);
 
 
             telemetry.addData("Flywheel Velocity", shooter.getVelocity());

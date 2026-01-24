@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -24,10 +25,10 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
     private double derivative = 0;
     private double integralSum = 0;
 
-    private double Kp = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
+    private double Kp = 0.0165; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
     private double Ki = 0;
     private double Kd = 0;
-    private double shooterSpeed = -1500;
+    private double shooterSpeed = -1600; // default speed: far LZ
 
     Limelight3A limelight;
     DcMotorEx shooter;
@@ -39,6 +40,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
     public DcMotor leftBack = null;
     public DcMotor rightFront = null;
     public DcMotor  rightBack  = null;
+    public boolean shootingOn = false;
 
 
     public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
@@ -74,8 +76,9 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         intake = hardwareMap.get(DcMotor.class,"intake");
         transfer = hardwareMap.get(DcMotor.class,"transfer");
+        hoodServo = hardwareMap.get(Servo.class, "shooterHood");
 
-        hoodServo = hardwareMap.get(Servo.class, "hoodServo");
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
 
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -112,65 +115,76 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
             if (gamepad2.x) {
                 sequenceTimer.reset();
                 sequenceTimer.startTime();
+
+                shootingOn = true;
             }
 
-            if (sequenceTimer.milliseconds() < 5000) {
-                telemetry.addData("Sequence Status:", "Shooter speeds up");
-                telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
+            if (shootingOn) {
+                if (sequenceTimer.milliseconds() < 5000) {
 
-            } else if (sequenceTimer.milliseconds() < 8000) {
-                telemetry.addData("Sequence Status:", "transfer outtakes :D");
-                telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
+                    telemetry.addData("Sequence Status:", "Shooter speeds up and transfer outtakes");
+                    telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
+                    shooter.setVelocity(shooterSpeed);
+                    transfer.setPower(1); // transfer out
+                } else if (sequenceTimer.milliseconds() < 10000) {
 
-            } else if (sequenceTimer.milliseconds() < 10000) {
-                telemetry.addData("Sequence Status:","Run intake + transfer, shoot ball") ;
-                telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
-
+                    telemetry.addData("Sequence Status:","Run intake + transfer, shoot ball") ;
+                    telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
+                    shooter.setVelocity(shooterSpeed);
+                    transfer.setPower(-1);
+                    intake.setPower(-1);
+                }
+                else if (sequenceTimer.milliseconds() > 10000 && sequenceTimer.milliseconds() < 11000){
+                    shooter.setVelocity(0);
+                    transfer.setPower(0);
+                    intake.setPower(0);
+                    shootingOn = false;
+                }
+            }
+            else {
+                if (gamepad2.left_bumper) {
+                    // INTAKE
+                    transfer.setPower(1);
+                    intake.setPower(-1);
+                }
+                else if (gamepad2.right_bumper) {
+                    transfer.setPower(1);
+                    intake.setPower(1);
+                } else {
+                    transfer.setPower(0);
+                    intake.setPower(0);
+                }
             }
 
-            telemetry.update();
-
-            if (gamepad2.left_bumper) {
-                transfer.setPower(-1); // FIXME change values accordingly
-                intake.setPower(-1); // FIXME change values accordingly
-            } else {
-                transfer.setPower(0);
-                intake.setPower(0);
-            }
-            if (gamepad2.right_bumper) {
-                transfer.setPower(1); // FIXME change values accordingly
-                intake.setPower(1); // FIXME change values accordingly
-            } else {
-                transfer.setPower(0);
-                intake.setPower(0);
-            }
 
             LLResult result = limelight.getLatestResult();
 
             if (result.isValid()) {
                 LLResult result1 = limelight.getLatestResult();
-
+/*
                 telemetry.addData("tx", result1.getTx());
                 telemetry.addData("txnc", result1.getTxNC());
                 telemetry.addData("ty", result1.getTy());
                 telemetry.addData("tync", result1.getTyNC());
+
+ */
                 Pose3D botpose = result1.getBotpose();
                 double robotx = botpose.getPosition().x;
-                double roboty = botpose.getPosition().y;
-                telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
+               // double roboty = botpose.getPosition().y;
+                //telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
                 if (robotx < -0.5) {
                     // if robot is very close to the goal
-                    shooterSpeed = 1250;
-                    hoodServo.setPosition(0.6); // FIXME change servo values to those found in testing
+                    shooterSpeed = -1250;
+                    hoodServo.setPosition(0.45);
                 } else if (robotx >= -0.5 && robotx < 0.5) {
                     // if robot is around the tip (farthest end) of the close launch zone
                     shooterSpeed = -1340;
-                    hoodServo.setPosition(0.4); // FIXME change servo values to those found in testing
+                    hoodServo.setPosition(0.25); // FIXME change servo values to those found in testing
 
                 } else {
                     // if robot is in the far launch zone
-                    shooterSpeed = -1620;
-                    hoodServo.setPosition(0.2); // FIXME change servo values to those found in testing
+                    shooterSpeed = -1600;
+                    hoodServo.setPosition(0.1);
                 }
 
                 double error = result1.getTx();
@@ -185,21 +199,23 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
                 } else {
                     turret.setPower(0);  // aligned
                 }
-                telemetry.update();
+
             } else {
-                // if we don't see an apriltag
+                // if we don't see an apriltag (likely because too close to goal)
                 telemetry.addData("Limelight", "No data available");
+
+                shooterSpeed = -1250;
                 double turretPower = gamepad2.left_stick_x;
 
                 turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 if (turret.getCurrentPosition() >= -2000 && turret.getCurrentPosition() <= 2000) { // FIXME change encoder value after testing
                     turret.setPower(turretPower);
-                    telemetry.addData("Current Motor Position", turret.getCurrentPosition());
+                    //telemetry.addData("Current Motor Position", turret.getCurrentPosition());
                 } else {
                     turret.setPower(0);
-                    telemetry.addData("Current Motor Position", "Too Far!");
+                    //telemetry.addData("Current Motor Position", "Too Far!");
                 }
-                telemetry.update();
+
             }
 
             telemetry.addData("Flywheel Velocity", shooter.getVelocity());

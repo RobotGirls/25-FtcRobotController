@@ -23,14 +23,16 @@ public class MeepMeepTesting1 {
                 .setColorScheme(new ColorSchemeBlueDark())
                 .build();
 
-        myBot.runAction(myBot1.getDrive().actionBuilder(new Pose2d(-52, 46, Math.toRadians(130)))
-                .lineToY(8)
-                .turn(Math.toRadians(-130))
+        myBot.runAction(myBot1.getDrive().actionBuilder(new Pose2d(-52, -46, Math.toRadians(-130)))
+                .lineToY(-8)
+                .turn(Math.toRadians(130))
                 .lineToX(-12)
-                .turn(Math.toRadians(90))
-                .lineToY(54)
-                .lineToY(8)
+                .waitSeconds(0.1)
                 .turn(Math.toRadians(-90))
+                .lineToY(-54)
+                .lineToY(-8)
+                .turnTo(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .lineToX(8)
                 .build());
 
