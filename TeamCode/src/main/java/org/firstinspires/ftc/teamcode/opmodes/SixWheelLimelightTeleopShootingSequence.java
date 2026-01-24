@@ -85,7 +85,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(1);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -144,7 +144,6 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
             else {
                 if (gamepad2.left_bumper) {
                     // INTAKE
-                    transfer.setPower(1);
                     intake.setPower(-1);
                 }
                 else if (gamepad2.right_bumper) {
@@ -170,20 +169,20 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
  */
                 Pose3D botpose = result1.getBotpose();
                 double robotx = botpose.getPosition().x;
-               // double roboty = botpose.getPosition().y;
-                //telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
+                double roboty = botpose.getPosition().y;
+                telemetry.addData("MT1 Location", "(" + robotx + ", " + roboty + ")");
                 if (robotx < -0.5) {
                     // if robot is very close to the goal
                     shooterSpeed = -1250;
                     hoodServo.setPosition(0.45);
-                } else if (robotx >= -0.5 && robotx < 0.5) {
+                } else if (robotx >= -0.5 && robotx < 0.2) {
                     // if robot is around the tip (farthest end) of the close launch zone
                     shooterSpeed = -1340;
                     hoodServo.setPosition(0.25); // FIXME change servo values to those found in testing
 
                 } else {
                     // if robot is in the far launch zone
-                    shooterSpeed = -1600;
+                    shooterSpeed = -1620;
                     hoodServo.setPosition(0.1);
                 }
 
@@ -228,4 +227,4 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
         limelight.stop();
     }
 
-    }
+}
