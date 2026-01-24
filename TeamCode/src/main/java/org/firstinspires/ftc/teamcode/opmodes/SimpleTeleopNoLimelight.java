@@ -19,13 +19,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 public class SimpleTeleopNoLimelight extends LinearOpMode {
 
-    private final int ALIGN_THRESHOLD = 3;
-
-    private double lastError = 0;
-
-    private double Kp = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
-    private double Ki = 0;
-    private double Kd = 0;
     private double shooterSpeed = -1500;
 
     DcMotorEx shooter;
@@ -40,8 +33,6 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
     public Servo hood = null;
 
     public static double hoodHeight = 0.1;
-
-    public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -95,7 +86,6 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
 
             if (gamepad2.x) {
                 shooter.setVelocity(-1340); // end of close launch zone
-
             }
             else if (gamepad2.y) {
                 shooter.setVelocity(-1600); // far launch zone
@@ -103,6 +93,8 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
             else {
                 shooter.setVelocity(0);
             }
+
+
             if (gamepad2.a) {
                 hood.setPosition(hoodHeight);
             }
@@ -112,8 +104,12 @@ public class SimpleTeleopNoLimelight extends LinearOpMode {
             if (gamepad2.left_bumper) {
                 transfer.setPower(-1); // FIXME change values accordingly
                 intake.setPower(-1); // FIXME change values accordingly
+            } else {
+                transfer.setPower(0);
+                intake.setPower(0);
             }
-            else if (gamepad2.right_bumper) {
+
+            if (gamepad2.right_bumper) {
                 transfer.setPower(1); // FIXME change values accordingly
                 intake.setPower(1); // FIXME change values accordingly
             } else {

@@ -66,21 +66,31 @@ public final class TankDrive {
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
-        public double inPerTick = 0.00202266887;
-        public double trackWidthTicks = 3970.0129598335896;
+        public double inPerTick = 0.00200848162;
+
+        // 0.00202266887
+        public double trackWidthTicks = 3772.2452942464697;
+
+        //3970.0129598335896
 
         // feedforward parameters (in tick units)
-        public double kS = 1.1699996413529772;
-        public double kV = 0.0003844711405279519;
-        public double kA = 0.00001;
+        public double kS = 1.258226577288331;
+
+        //1.1699996413529772
+        public double kV = 0.0003844599490865924;
+
+        //0.0003844711405279519
+        public double kA = 0.0001;
+
+        //0.00001
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
+        public double maxWheelVel = 40;
         public double minProfileAccel = -30;
         public double maxProfileAccel = 50;
 
@@ -90,7 +100,7 @@ public final class TankDrive {
 
         // path controller gains
         public double ramseteZeta = 0.7; // in the range (0, 1)
-        public double ramseteBBar = 2.0; // positive
+        public double ramseteBBar = 1.8; // positive
 
         // turn controller gains
         public double turnGain = 0.0;
