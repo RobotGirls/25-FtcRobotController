@@ -13,9 +13,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@TeleOp(name = "ILT TELEOP SEQUENCE")
+@TeleOp(name = "ILT TELEOP SEQUENCE BLUE")
 
-public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
+public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
 
     private final int ALIGN_THRESHOLD = 3;
     Servo hoodServo;
@@ -85,7 +85,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(1);
+        limelight.pipelineSwitch(0);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.

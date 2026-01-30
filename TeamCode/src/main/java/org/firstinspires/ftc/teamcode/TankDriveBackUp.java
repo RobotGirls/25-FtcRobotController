@@ -43,14 +43,16 @@ import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.PoseMessage;
 import org.firstinspires.ftc.teamcode.messages.TankCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.TankLocalizerInputsMessage;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,7 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Config
-public final class TankDrive {
+public final class TankDriveBackUp {
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -70,20 +72,15 @@ public final class TankDrive {
 
         // drive model parameters
         public double inPerTick = 0.00200848162;
-        //0.00200848162
 
-        // 0.00202266887
-        public double trackWidthTicks = 3762.043316658141;
-        //3772.2452942464697
+        public double trackWidthTicks = 3772.2452942464697;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.1482982829813286;
-        //1.258226577288331
-        public double kV = 0.00038460666804176113;
-        //0.0003844599490865924
-        public double kA = 0.0000001;
-        //0.00001
+        public double kS = 1.258226577288331;
 
+        public double kV = 0.0003844599490865924;
+
+        public double kA = 0.0001;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 40;
@@ -130,18 +127,14 @@ public final class TankDrive {
     private final DownsampledWriter targetPoseWriter = new DownsampledWriter("TARGET_POSE", 50_000_000);
     private final DownsampledWriter driveCommandWriter = new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
 
-
     private final DownsampledWriter tankCommandWriter = new DownsampledWriter("TANK_COMMAND", 50_000_000);
-
 
     public class DriveLocalizer implements Localizer {
         public final List<Encoder> leftEncs, rightEncs;
         private Pose2d pose;
 
-
         private double lastLeftPos, lastRightPos;
         private boolean initialized;
-
 
         public DriveLocalizer(Pose2d pose) {
             {
@@ -153,7 +146,6 @@ public final class TankDrive {
                 this.leftEncs = Collections.unmodifiableList(leftEncs);
             }
 
-
             {
                 List<Encoder> rightEncs = new ArrayList<>();
                 for (DcMotorEx m : rightMotors) {
@@ -163,31 +155,25 @@ public final class TankDrive {
                 this.rightEncs = Collections.unmodifiableList(rightEncs);
             }
 
-
             // TODO: reverse encoder directions if needed
             //   leftEncs.get(0).setDirection(DcMotorSimple.Direction.REVERSE);
 
-
             this.pose = pose;
         }
-
 
         @Override
         public void setPose(Pose2d pose) {
             this.pose = pose;
         }
 
-
         @Override
         public Pose2d getPose() {
             return pose;
         }
 
-
         @Override
         public PoseVelocity2d update() {
             Twist2dDual<Time> delta;
-
 
             List<PositionVelocityPair> leftReadings = new ArrayList<>(), rightReadings = new ArrayList<>();
             double meanLeftPos = 0.0, meanLeftVel = 0.0;
@@ -200,7 +186,6 @@ public final class TankDrive {
             meanLeftPos /= leftEncs.size();
             meanLeftVel /= leftEncs.size();
 
-
             double meanRightPos = 0.0, meanRightVel = 0.0;
             for (Encoder e : rightEncs) {
                 PositionVelocityPair p = e.getPositionAndVelocity();
@@ -211,24 +196,18 @@ public final class TankDrive {
             meanRightPos /= rightEncs.size();
             meanRightVel /= rightEncs.size();
 
-
             FlightRecorder.write("TANK_LOCALIZER_INPUTS",
                     new TankLocalizerInputsMessage(leftReadings, rightReadings));
-
 
             if (!initialized) {
                 initialized = true;
 
-
                 lastLeftPos = meanLeftPos;
                 lastRightPos = meanRightPos;
 
-
                 return new PoseVelocity2d(new Vector2d(0.0, 0.0), 0.0);
 
-
             }
-
 
             Twist2dDual<Time> twist = kinematics.forward(new TankKinematics.WheelIncrements<>(
                     new DualNum<Time>(new double[]{
@@ -241,34 +220,27 @@ public final class TankDrive {
                     }).times(PARAMS.inPerTick)
             ));
 
-
             lastLeftPos = meanLeftPos;
             lastRightPos = meanRightPos;
 
-
             pose = pose.plus(twist.value());
-
 
             return twist.velocity().value();
         }
     }
 
-
-    public TankDrive(HardwareMap hardwareMap, Pose2d pose) {
+    public TankDriveBackUp(HardwareMap hardwareMap, Pose2d pose) {
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
-
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-
 
         // TODO: make sure your config has motors with these names (or change them)
         //   add additional motors on each side if you have them
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         leftMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "frontLeft"),hardwareMap.get(DcMotorEx.class, "backLeft"));
         rightMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "frontRight"),hardwareMap.get(DcMotorEx.class, "backRight"));
-
 
         for (DcMotorEx m : leftMotors) {
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -277,38 +249,30 @@ public final class TankDrive {
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-
         // TODO: reverse motor directions if needed
         rightMotors.get(0).setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotors.get(1).setDirection(DcMotorSimple.Direction.REVERSE);
-
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         lazyImu = new LazyHardwareMapImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
-
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-
 
         localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);
 
-
         FlightRecorder.write("TANK_PARAMS", PARAMS);
     }
-
 
     public void setDrivePowers(PoseVelocity2d powers) {
         TankKinematics.WheelVelocities<Time> wheelVels = new TankKinematics(2).inverse(
                 PoseVelocity2dDual.constant(powers, 1));
 
-
         double maxPowerMag = 1;
         for (DualNum<Time> power : wheelVels.all()) {
             maxPowerMag = Math.max(maxPowerMag, power.value());
         }
-
 
         for (DcMotorEx m : leftMotors) {
             m.setPower(wheelVels.left.get(0) / maxPowerMag);
@@ -318,18 +282,14 @@ public final class TankDrive {
         }
     }
 
-
     public final class FollowTrajectoryAction implements Action {
         public final TimeTrajectory timeTrajectory;
         private double beginTs = -1;
 
-
         private final double[] xPoints, yPoints;
-
 
         public FollowTrajectoryAction(TimeTrajectory t) {
             timeTrajectory = t;
-
 
             List<Double> disps = com.acmerobotics.roadrunner.Math.range(
                     0, t.path.length(),
@@ -343,7 +303,6 @@ public final class TankDrive {
             }
         }
 
-
         @Override
         public boolean run(@NonNull TelemetryPacket p) {
             double t;
@@ -353,7 +312,6 @@ public final class TankDrive {
             } else {
                 t = Actions.now() - beginTs;
             }
-
 
             if (t >= timeTrajectory.duration) {
                 for (DcMotorEx m : leftMotors) {
@@ -363,25 +321,19 @@ public final class TankDrive {
                     m.setPower(0);
                 }
 
-
                 return false;
             }
 
-
             DualNum<Time> x = timeTrajectory.profile.get(t);
-
 
             Pose2dDual<Arclength> txWorldTarget = timeTrajectory.path.get(x.value(), 3);
             targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
 
-
             updatePoseEstimate();
-
 
             PoseVelocity2dDual<Time> command = new RamseteController(kinematics.trackWidth, PARAMS.ramseteZeta, PARAMS.ramseteBBar)
                     .compute(x, txWorldTarget, localizer.getPose());
             driveCommandWriter.write(new DriveCommandMessage(command));
-
 
             TankKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
             double voltage = voltageSensor.getVoltage();
@@ -391,7 +343,6 @@ public final class TankDrive {
             double rightPower = feedforward.compute(wheelVels.right) / voltage;
             tankCommandWriter.write(new TankCommandMessage(voltage, leftPower, rightPower));
 
-
             for (DcMotorEx m : leftMotors) {
                 m.setPower(leftPower);
             }
@@ -399,39 +350,31 @@ public final class TankDrive {
                 m.setPower(rightPower);
             }
 
-
             p.put("x", localizer.getPose().position.x);
             p.put("y", localizer.getPose().position.y);
             p.put("heading (deg)", Math.toDegrees(localizer.getPose().heading.toDouble()));
-
 
             Pose2d error = txWorldTarget.value().minusExp(localizer.getPose());
             p.put("xError", error.position.x);
             p.put("yError", error.position.y);
             p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));
 
-
             // only draw when active; only one drive action should be active at a time
             Canvas c = p.fieldOverlay();
             drawPoseHistory(c);
 
-
             c.setStroke("#4CAF50");
             Drawing.drawRobot(c, txWorldTarget.value());
 
-
             c.setStroke("#3F51B5");
             Drawing.drawRobot(c, localizer.getPose());
-
 
             c.setStroke("#4CAF50FF");
             c.setStrokeWidth(1);
             c.strokePolyline(xPoints, yPoints);
 
-
             return true;
         }
-
 
         @Override
         public void preview(Canvas c) {
@@ -441,18 +384,14 @@ public final class TankDrive {
         }
     }
 
-
     public final class TurnAction implements Action {
         private final TimeTurn turn;
 
-
         private double beginTs = -1;
-
 
         public TurnAction(TimeTurn turn) {
             this.turn = turn;
         }
-
 
         @Override
         public boolean run(@NonNull TelemetryPacket p) {
@@ -464,7 +403,6 @@ public final class TankDrive {
                 t = Actions.now() - beginTs;
             }
 
-
             if (t >= turn.duration) {
                 for (DcMotorEx m : leftMotors) {
                     m.setPower(0);
@@ -473,17 +411,13 @@ public final class TankDrive {
                     m.setPower(0);
                 }
 
-
                 return false;
             }
-
 
             Pose2dDual<Time> txWorldTarget = turn.get(t);
             targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
 
-
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
-
 
             PoseVelocity2dDual<Time> command = new PoseVelocity2dDual<>(
                     Vector2dDual.constant(new Vector2d(0, 0), 3),
@@ -494,7 +428,6 @@ public final class TankDrive {
             );
             driveCommandWriter.write(new DriveCommandMessage(command));
 
-
             TankKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
             double voltage = voltageSensor.getVoltage();
             final MotorFeedforward feedforward = new MotorFeedforward(PARAMS.kS,
@@ -503,7 +436,6 @@ public final class TankDrive {
             double rightPower = feedforward.compute(wheelVels.right) / voltage;
             tankCommandWriter.write(new TankCommandMessage(voltage, leftPower, rightPower));
 
-
             for (DcMotorEx m : leftMotors) {
                 m.setPower(leftPower);
             }
@@ -511,26 +443,20 @@ public final class TankDrive {
                 m.setPower(rightPower);
             }
 
-
             Canvas c = p.fieldOverlay();
             drawPoseHistory(c);
-
 
             c.setStroke("#4CAF50");
             Drawing.drawRobot(c, txWorldTarget.value());
 
-
             c.setStroke("#3F51B5");
             Drawing.drawRobot(c, localizer.getPose());
-
 
             c.setStroke("#7C4DFFFF");
             c.fillCircle(turn.beginPose.position.x, turn.beginPose.position.y, 2);
 
-
             return true;
         }
-
 
         @Override
         public void preview(Canvas c) {
@@ -539,46 +465,36 @@ public final class TankDrive {
         }
     }
 
-
     public PoseVelocity2d updatePoseEstimate() {
         PoseVelocity2d vel = localizer.update();
         poseHistory.add(localizer.getPose());
-
 
         while (poseHistory.size() > 100) {
             poseHistory.removeFirst();
         }
 
-
         estimatedPoseWriter.write(new PoseMessage(localizer.getPose()));
-
-
 
 
         return vel;
     }
 
-
     private void drawPoseHistory(Canvas c) {
         double[] xPoints = new double[poseHistory.size()];
         double[] yPoints = new double[poseHistory.size()];
-
 
         int i = 0;
         for (Pose2d t : poseHistory) {
             xPoints[i] = t.position.x;
             yPoints[i] = t.position.y;
 
-
             i++;
         }
-
 
         c.setStrokeWidth(1);
         c.setStroke("#3F51B5");
         c.strokePolyline(xPoints, yPoints);
     }
-
 
     public TrajectoryActionBuilder actionBuilder(Pose2d beginPose) {
         return new TrajectoryActionBuilder(
@@ -596,4 +512,3 @@ public final class TankDrive {
         );
     }
 }
-

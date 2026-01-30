@@ -37,13 +37,13 @@ public class ILTBlueAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-45));
+                .splineTo(new Vector2d(-8,-8),Math.toRadians(45));
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(25))
-                .splineTo(new Vector2d(-12,52),Math.toRadians(90));
+                .splineTo(new Vector2d(-12,-52),Math.toRadians(-90));
         TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-45));
+                .splineTo(new Vector2d(-8,-8),Math.toRadians(45));
         Action outOfZone = backToShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
                 .lineToX(2)
