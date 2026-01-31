@@ -85,7 +85,7 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(1);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -100,8 +100,8 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double drive = -gamepad1.left_stick_x; // Remember, Y stick value is reversed; Forward/Backward
-            double turn = gamepad1.right_stick_y; //Left/Right turn
+            double drive = gamepad1.left_stick_x; // Remember, Y stick value is reversed; Forward/Backward
+            double turn = -gamepad1.right_stick_y; //Left/Right turn
 
             double leftPower = drive + turn;
             double rightPower = drive - turn;
@@ -132,7 +132,7 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
                     telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
                     shooter.setVelocity(shooterSpeed);
                     transfer.setPower(-1);
-                    intake.setPower(-1);
+                    intake.setPower(1);
                 }
                 else if (sequenceTimer.milliseconds() > 10000 && sequenceTimer.milliseconds() < 11000){
                     shooter.setVelocity(0);

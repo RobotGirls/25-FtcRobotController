@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -40,13 +41,14 @@ public class ILTRedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-45));
+                .splineTo(new Vector2d(-8,8),Math.toRadians(-42.5));
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
-                .turn(Math.toRadians(25))
-                .splineTo(new Vector2d(-12,52),Math.toRadians(90));
+                .lineToX(-4)
+                .turn(Math.toRadians(-28))
+                .splineTo(new Vector2d(-4,50),Math.toRadians(90));
         TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-45));
+                .splineTo(new Vector2d(-8,8),Math.toRadians(-34));
         Action outOfZone = backToShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
                 .lineToX(2)
@@ -69,36 +71,37 @@ public class ILTRedAuto extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
+                        shooter.shooterOn(),
                         firstTraj,
+                        new SleepAction(1.4),
                         new ParallelAction(
-                                shooter.shootArtifact(),
-                                intake.intakeArtifact(),
-                                transfer.intakeArtifact()
-                        ),
+                                transfer.intakeArtifact(),
+                                intake.intakeArtifact()
 
+                        ),
+                        intake.intakeArtifact(),
                         new ParallelAction(
                                 secondTraj,
                                 intake.intakeArtifact(),
-                                transfer.intakeArtifact()
+                                transfer.outtakeArtifact()
                         ),
-
+                        thirdTraj,
                         new ParallelAction(
-                                thirdTraj,
-                                shooter.shootArtifact()
-                        ),
-                        new ParallelAction(
-                                shooter.shootArtifact(),
                                 transfer.intakeArtifact(),
                                 intake.intakeArtifact()
                         ),
+                        shooter.shooterOff(),
                         outOfZone
 
                 )
         );
 
+
     }
 
 }
+
+
 
 
 

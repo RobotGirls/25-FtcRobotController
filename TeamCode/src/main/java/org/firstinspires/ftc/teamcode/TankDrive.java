@@ -96,7 +96,7 @@ public final class TankDrive {
 
         // path controller gains
         public double ramseteZeta = 0.7; // in the range (0, 1)
-        public double ramseteBBar = 1.8; // positive
+        public double ramseteBBar = 1.83; // positive
 
         // turn controller gains
         public double turnGain = 0.0;

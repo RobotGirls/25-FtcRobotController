@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@TeleOp(name = "ILT TELEOP SEQUENCE")
+@TeleOp(name = "ILT TELEOP SEQUENCE RED")
 
 public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
 
@@ -41,6 +41,9 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
     public DcMotor rightFront = null;
     public DcMotor  rightBack  = null;
     public boolean shootingOn = false;
+
+
+    public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -82,7 +85,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(1);
+        limelight.pipelineSwitch(0);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -97,8 +100,8 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double drive = -gamepad1.left_stick_x; // Remember, Y stick value is reversed; Forward/Backward
-            double turn = gamepad1.right_stick_y; //Left/Right turn
+            double drive = gamepad1.left_stick_x; // Remember, Y stick value is reversed; Forward/Backward
+            double turn = -gamepad1.right_stick_y; //Left/Right turn
 
             double leftPower = drive + turn;
             double rightPower = drive - turn;
@@ -116,6 +119,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                 shootingOn = true;
             }
 
+
             if (shootingOn) {
                 if (sequenceTimer.milliseconds() < 5000) {
 
@@ -129,7 +133,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
                     shooter.setVelocity(shooterSpeed);
                     transfer.setPower(-1);
-                    intake.setPower(-1);
+                    intake.setPower(1);
                 }
                 else if (sequenceTimer.milliseconds() > 10000 && sequenceTimer.milliseconds() < 11000){
                     shooter.setVelocity(0);
@@ -144,9 +148,12 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     intake.setPower(-1);
                 }
                 else if (gamepad2.right_bumper) {
-                    transfer.setPower(1);
+                   // transfer.setPower(1);
                     intake.setPower(1);
-                } else {
+                }
+                else if (gamepad2.dpad_right) {
+                    transfer.setPower(-1);
+                }else {
                     transfer.setPower(0);
                     intake.setPower(0);
                 }
