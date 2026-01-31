@@ -41,8 +41,9 @@ public class ILTRedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-42.5));
+                .splineTo(new Vector2d(-8,8),Math.toRadians(-41.5));
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
+
                 .lineToX(-4)
                 .turn(Math.toRadians(-28))
                 .splineTo(new Vector2d(-4,50),Math.toRadians(90));

@@ -57,7 +57,7 @@ public class LM3AutoFAR extends LinearOpMode {
                 new SequentialAction(
 
                         shooter.shooterOnFar(),
-                        new SleepAction(2.7),
+                        new SleepAction(5),
                         new ParallelAction(
 
                                 intake.intakeArtifact(),

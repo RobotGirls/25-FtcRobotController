@@ -144,6 +144,6 @@ public class ShooterRoadRunner {
     }
 
     public Action shooterOnFar() {
-        return new ShooterRoadRunner.ShooterOn();
+        return new ShooterRoadRunner.ShooterOnFar();
     }
 }

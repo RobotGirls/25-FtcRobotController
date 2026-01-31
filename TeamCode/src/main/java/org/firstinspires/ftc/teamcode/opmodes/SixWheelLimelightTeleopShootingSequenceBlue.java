@@ -125,7 +125,7 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
                     telemetry.addData("Sequence Status:", "Shooter speeds up and transfer outtakes");
                     telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
                     shooter.setVelocity(shooterSpeed);
-                    transfer.setPower(1); // transfer out
+                    //transfer.setPower(1); // transfer out
                 } else if (sequenceTimer.milliseconds() < 10000) {
 
                     telemetry.addData("Sequence Status:","Run intake + transfer, shoot ball") ;
