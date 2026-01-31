@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -37,13 +38,16 @@ public class ILTBlueAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-45));
+                .splineTo(new Vector2d(-8,-8),Math.toRadians(45));
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(25))
-                .splineTo(new Vector2d(-12,52),Math.toRadians(90));
+                .splineTo(new Vector2d(-16,-55),Math.toRadians(-90));
+
         TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-45));
+                .splineTo(new Vector2d(-8,-8),Math.toRadians(45))
+                .turnTo(Math.toRadians(-130))
+                .turn(Math.toRadians(46));
         Action outOfZone = backToShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
                 .lineToX(2)
@@ -57,6 +61,7 @@ public class ILTBlueAuto extends LinearOpMode {
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
+
             telemetry.update();
         }
         waitForStart();
@@ -67,27 +72,30 @@ public class ILTBlueAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj,
+                      shooter.shooterOn(),
+                        new SleepAction(0.5),
                         new ParallelAction(
-                                shooter.shootArtifact(),
+
                                 intake.intakeArtifact(),
                                 transfer.intakeArtifact()
                         ),
-
+                        intake.intakeArtifact(),
                         new ParallelAction(
                                 secondTraj,
-                                intake.intakeArtifact(),
-                                transfer.intakeArtifact()
+                                intake.intakeArtifact()
+
                         ),
 
                         new ParallelAction(
-                                thirdTraj,
-                                shooter.shootArtifact()
+                                thirdTraj
+
                         ),
                         new ParallelAction(
-                                shooter.shootArtifact(),
+
                                 transfer.intakeArtifact(),
                                 intake.intakeArtifact()
                         ),
+                        shooter.shooterOff(),
                         outOfZone
 
                 )

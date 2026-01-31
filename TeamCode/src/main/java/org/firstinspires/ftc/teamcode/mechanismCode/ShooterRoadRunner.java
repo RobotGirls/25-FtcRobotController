@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanismCode;
 
+import static kotlinx.coroutines.DelayKt.delay;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -27,6 +29,7 @@ public class ShooterRoadRunner {
 
     public ShooterRoadRunner(HardwareMap hardwareMap, Telemetry telemetry) {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+        shooterHood = hardwareMap.get(Servo.class, "shooterHood");
 
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -43,6 +46,7 @@ public class ShooterRoadRunner {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 shooter.setVelocity(-1340);
+                shooterHood.setPosition(0.25);
 
                 initialized = true;
                 timer1.reset();
@@ -70,6 +74,7 @@ public class ShooterRoadRunner {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 shooter.setVelocity(1340);
+                shooterHood.setPosition(0.25);
                 initialized = true;
                 timer1.reset();
             }
@@ -88,4 +93,40 @@ public class ShooterRoadRunner {
     public Action artifactOut() {
         return new ShooterRoadRunner.ArtifactOut();
     }
+
+    public class ShooterOn implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+                shooter.setVelocity(-1340);
+                shooterHood.setPosition(0.25);
+                telemetry1.addData("velo ", shooter.getVelocity());
+                telemetry1.update();
+
+                return false;
+            }
+        }
+
+    public Action shooterOn() {
+        return new ShooterRoadRunner.ShooterOn();
+    }
+
+    public class ShooterOff implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+            shooter.setVelocity(0);
+            shooterHood.setPosition(0.25);
+
+
+            return false;
+        }
+    }
+
+    public Action shooterOff() {
+        return new ShooterRoadRunner.ShooterOff();
+    }
 }
+

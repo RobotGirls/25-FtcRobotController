@@ -13,9 +13,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@TeleOp(name = "ILT TELEOP SEQUENCE")
+@TeleOp(name = "ILT TELEOP TWO STICK RED")
 
-public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
+public class SixWheelLimelightTeleopSequenceKayleeRED extends LinearOpMode {
 
     private final int ALIGN_THRESHOLD = 3;
     Servo hoodServo;
@@ -85,7 +85,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(1);
+        limelight.pipelineSwitch(0);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -100,17 +100,14 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double drive = gamepad1.left_stick_x; // Remember, Y stick value is reversed; Forward/Backward
-            double turn = -gamepad1.right_stick_y; //Left/Right turn
-
-            double leftPower = drive + turn;
-            double rightPower = drive - turn;
+            double left = -gamepad1.left_stick_y;
+            double right = gamepad1.right_stick_y;
 
 
-            leftFront.setPower(leftPower);
-            leftBack.setPower(leftPower);
-            rightFront.setPower(rightPower);
-            rightBack.setPower(rightPower);
+            leftFront.setPower(left);
+            leftBack.setPower(left);
+            rightFront.setPower(right);
+            rightBack.setPower(right);
 
             if (gamepad2.x) {
                 sequenceTimer.reset();
