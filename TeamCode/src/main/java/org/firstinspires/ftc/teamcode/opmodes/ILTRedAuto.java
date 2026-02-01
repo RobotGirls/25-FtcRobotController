@@ -41,15 +41,16 @@ public class ILTRedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-41.5));
+                .splineTo(new Vector2d(-8,8),Math.toRadians(-42.2));
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
-
                 .lineToX(-4)
                 .turn(Math.toRadians(-28))
                 .splineTo(new Vector2d(-4,50),Math.toRadians(90));
+
         TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-34));
+                .splineTo(new Vector2d(-8,8),Math.toRadians(-40));
+
         Action outOfZone = backToShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
                 .lineToX(2)

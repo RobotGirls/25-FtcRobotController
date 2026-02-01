@@ -182,7 +182,7 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
 
                 } else {
                     // if robot is in the far launch zone
-                    shooterSpeed = -1620;
+                    shooterSpeed = -1640;
                     hoodServo.setPosition(0.1);
                 }
 

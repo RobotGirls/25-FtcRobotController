@@ -148,11 +148,8 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     intake.setPower(-1);
                 }
                 else if (gamepad2.right_bumper) {
-                   // transfer.setPower(1);
+                    transfer.setPower(1);
                     intake.setPower(1);
-                }
-                else if (gamepad2.dpad_right) {
-                    transfer.setPower(-1);
                 }else {
                     transfer.setPower(0);
                     intake.setPower(0);
@@ -186,7 +183,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
 
                 } else {
                     // if robot is in the far launch zone
-                    shooterSpeed = -1620;
+                    shooterSpeed = -1640;
                     hoodServo.setPosition(0.1);
                 }
 
