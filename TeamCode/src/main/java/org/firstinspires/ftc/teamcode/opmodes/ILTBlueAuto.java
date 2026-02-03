@@ -54,7 +54,7 @@ public class ILTBlueAuto extends LinearOpMode {
                 //.turn(Math.toRadians(90));
 
         Action outOfZone = backToShoot.endTrajectory().fresh()
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .lineToX(0)
                 .build();
 
