@@ -22,23 +22,27 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.TankDrive;
 
 import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.Limelight3ASensor;
 import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.TurretRoadRunner;
 
 //@Config
 @Autonomous(name = "ILT Blue")
 public class ILTBlueAuto extends LinearOpMode {
 
-
+    Pose2d initialPose;
+    TankDrive drive;
+    IntakeRoadRunner intake;
+    ShooterRoadRunner shooter;
+    TransferRoadRunner transfer;
+    TurretRoadRunner turret;
+    private Limelight3ASensor limelightSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d initialPose = new Pose2d(-52, -46, Math.toRadians(-130));
-        TankDrive drive = new TankDrive(hardwareMap, initialPose);
-        IntakeRoadRunner intake= new IntakeRoadRunner(hardwareMap,telemetry);
-        ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
-        TransferRoadRunner transfer = new TransferRoadRunner(hardwareMap,telemetry);
+        initHardware();
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
@@ -103,6 +107,17 @@ public class ILTBlueAuto extends LinearOpMode {
                 )
         );
 
+    } // end of runOpMode
+
+    private void initHardware() {
+        initialPose = new Pose2d(-52, -46, Math.toRadians(-130));
+        drive = new TankDrive(hardwareMap, initialPose);
+        intake= new IntakeRoadRunner(hardwareMap, telemetry);
+        shooter = new ShooterRoadRunner(hardwareMap, telemetry);
+        transfer = new TransferRoadRunner(hardwareMap, telemetry);
+        limelightSensor = new Limelight3ASensor();
+        limelightSensor.initLimelight(hardwareMap, telemetry);
+        turret = new TurretRoadRunner(hardwareMap, telemetry, limelightSensor);
     }
 
 }
