@@ -107,6 +107,7 @@ public class ILTBlueAuto extends LinearOpMode {
                 )
         );
 
+        telemetry.update(); //FIXME check  if this is in the right place
     } // end of runOpMode
 
     private void initHardware() {

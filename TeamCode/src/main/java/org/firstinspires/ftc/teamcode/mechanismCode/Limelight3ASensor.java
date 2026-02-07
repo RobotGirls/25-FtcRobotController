@@ -14,6 +14,8 @@ import java.util.List;
 public class Limelight3ASensor {
     private Limelight3A limelight;
     LLResult result;
+    private double myTx;
+    private boolean isValid;
 
 
     public void initLimelight(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -108,19 +110,26 @@ public class Limelight3ASensor {
         }
         telemetry.update();
     }
+    public boolean isLimeValid() {
+        return isValid;
+    }
+    public double getLimeTx() {
+        return myTx;
+    }
 
-    
     public void limelightProcessing(Telemetry telemetry) {
         result = limelight.getLatestResult();
         if (result.isValid()) {
             telemetry.addData("tx", result.getTx());
-
+            myTx = result.getTx();
+            isValid = true;
 
 
         } else {
             telemetry.addData("Limelight", "No data available");
+            isValid = false;
         }
-        telemetry.update();
+
 
     }
     public void stopLimelightProcessing() {
