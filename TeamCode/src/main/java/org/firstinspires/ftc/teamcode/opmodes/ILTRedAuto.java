@@ -16,24 +16,32 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.TankDrive;
 
 import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.Limelight3ASensor;
 import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.TurretRoadRunner;
 
 //@Config
 @Autonomous(name = "ILT Red")
 public class ILTRedAuto extends LinearOpMode {
 
+    TankDrive drive;
+    IntakeRoadRunner intake;
+    ShooterRoadRunner shooter;
+    TransferRoadRunner transfer;
+    TurretRoadRunner turret;
+    Pose2d initialPose;
+    private Limelight3ASensor limelightSensor;
     @Override
+
     public void runOpMode() throws InterruptedException {
 
+        initHardware();
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-52, 46, Math.toRadians(130));
-        TankDrive drive = new TankDrive(hardwareMap, initialPose);
-        IntakeRoadRunner intake= new IntakeRoadRunner(hardwareMap,telemetry);
-        ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
-        TransferRoadRunner transfer = new TransferRoadRunner(hardwareMap,telemetry);
+
+
 
         // actionBuilder builds from the drive steps passed to it
 
@@ -75,6 +83,7 @@ public class ILTRedAuto extends LinearOpMode {
                 new SequentialAction(
                         shooter.shooterOn(),
                         firstTraj,
+                        turret.aimTurret(),
                         new SleepAction(1.4),
                         new ParallelAction(
                                 transfer.intakeArtifact(),
@@ -100,7 +109,16 @@ public class ILTRedAuto extends LinearOpMode {
 
 
     }
-
+    private void initHardware() {
+        initialPose = new Pose2d(-52, 46, Math.toRadians(130));
+        drive = new TankDrive(hardwareMap, initialPose);
+        intake = new IntakeRoadRunner(hardwareMap, telemetry);
+        shooter = new ShooterRoadRunner(hardwareMap, telemetry);
+        transfer = new TransferRoadRunner(hardwareMap, telemetry);
+        limelightSensor = new Limelight3ASensor();
+        limelightSensor.initLimelight(hardwareMap, telemetry);
+        turret = new TurretRoadRunner(hardwareMap, telemetry, limelightSensor);
+    }
 }
 
 
