@@ -85,6 +85,7 @@ public class ILTBlueAuto extends LinearOpMode {
                         shooter.shooterOn(),
                         firstTraj,
                         new SleepAction(2),
+                        turret.aimTurret(),
                         new ParallelAction(
                                 transfer.intakeArtifact(),
                                 intake.intakeArtifact()

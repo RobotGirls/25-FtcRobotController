@@ -38,12 +38,14 @@ public class TurretRoadRunner {
 
     public class AimTurret implements Action {
         public boolean initialized = false;
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 initialized = true;
                 timer.reset();
             }
+            double timerValue = timer.milliseconds();
             if (myLimelight.isLimeValid()) {
                 error = myLimelight.getLimeTx();
                 timer.reset();
@@ -54,23 +56,36 @@ public class TurretRoadRunner {
                     power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
                     turret.setPower(power);
                     lastError = error;
+                    return true;
                 } else {
                     turret.setPower(0);
+                    return false;
                 }
             } else {
                 // if we don't see an apriltag
-                turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                //FIXME change encoder value to find the right one
-                if (turret.getCurrentPosition() >= -TURRET_POSITION &&
-                        turret.getCurrentPosition() <= TURRET_POSITION) {
-                        turret.setPower(turretPower);
-                        telemetry1.addData("Current Motor Position", turret.getCurrentPosition());
+//                turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//                //FIXME change encoder value to find the right one
+//                if (turret.getCurrentPosition() >= -TURRET_POSITION &&
+//                        turret.getCurrentPosition() <= TURRET_POSITION) {
+//                    turret.setPower(turretPower);
+//                    telemetry1.addData("Current Motor Position", turret.getCurrentPosition());
+//                } else {
+//                    turret.setPower(0);
+//                    telemetry1.addData("Current Motor Position", "Too Far!");
+                if (timerValue < 3000) {
+                    return true;
                 } else {
                     turret.setPower(0);
-                    telemetry1.addData("Current Motor Position", "Too Far!");
-                }  // turret posiion
-            } // if limelight valid
-        } // run
+//                }  // turret posiion
+                } // if limelight valid
+                return true;
+            } // run
 
-    } // class AimTurret
-} // class
+        } // class AimTurret
+
+
+    } // class
+    public Action aimTurret() {
+        return new TurretRoadRunner.AimTurret();
+    }
+}
