@@ -136,4 +136,3 @@ public class Limelight3ASensor {
         limelight.stop();
     }
 }
-

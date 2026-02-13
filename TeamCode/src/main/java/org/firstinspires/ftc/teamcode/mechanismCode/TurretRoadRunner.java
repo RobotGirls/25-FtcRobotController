@@ -23,7 +23,7 @@ public class TurretRoadRunner {
     private double lastError = 0;
     private double derivative = 0;
     private double integralSum = 0;
-    private double Kp = 0.014; //Tx range is 0 to 26--> at max offset 26, when Kp is 0.02, speed is half power
+    private double Kp = 0.0165; //Tx range is 0 to 26--> at max offset 26, when Kp is 0.02, speed is half power
     private double Ki = 0;
     private double Kd = 0;
     private final int TURRET_POSITION = 2000;
@@ -37,55 +37,76 @@ public class TurretRoadRunner {
     }
 
     public class AimTurret implements Action {
-        public boolean initialized = false;
+        private boolean initialized = false;
+        private double lastTime = 0;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
+                timer.reset();
+                lastTime = timer.seconds();
                 initialized = true;
-                timer.reset();
             }
-            double timerValue = timer.milliseconds();
-            if (myLimelight.isLimeValid()) {
-                error = myLimelight.getLimeTx();
-                timer.reset();
-                if (Math.abs(error) > ALIGN_THRESHOLD) {
-                    error = -1 * myLimelight.getLimeTx();
-                    derivative = (error - lastError) / timer.seconds();
-                    integralSum = integralSum + (error * timer.seconds());
-                    power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
-                    turret.setPower(power);
-                    lastError = error;
-                    return true;
-                } else {
-                    turret.setPower(0);
-                    return false;
-                }
-            } else {
-                // if we don't see an apriltag
-//                turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//                //FIXME change encoder value to find the right one
-//                if (turret.getCurrentPosition() >= -TURRET_POSITION &&
-//                        turret.getCurrentPosition() <= TURRET_POSITION) {
-//                    turret.setPower(turretPower);
-//                    telemetry1.addData("Current Motor Position", turret.getCurrentPosition());
-//                } else {
-//                    turret.setPower(0);
-//                    telemetry1.addData("Current Motor Position", "Too Far!");
-                if (timerValue < 3000) {
-                    return true;
-                } else {
-                    turret.setPower(0);
-//                }  // turret posiion
-                } // if limelight valid
-                return true;
-            } // run
 
-        } // class AimTurret
+            if (!myLimelight.isLimeValid()) {
+                turret.setPower(0);
+                return true; // keep waiting
+            }
 
+            double error = -myLimelight.getLimeTx();
+            double currentTime = timer.seconds();
+            double dt = currentTime - lastTime;
 
-    } // class
+            derivative = (error - lastError) / dt;
+            integralSum += error * dt;
+            double power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+            turret.setPower(power);
+
+            lastError = error;
+            lastTime = currentTime;
+
+            telemetry1.addData("Turret Error", error);
+            telemetry1.addData("Turret Power", power);
+            telemetry1.update();
+
+            // stop when aligned
+            if (Math.abs(error) < ALIGN_THRESHOLD) {
+                turret.setPower(0);
+                return false; // action complete
+            }
+
+            return true; // keep running
+        }
+    }
+
     public Action aimTurret() {
         return new TurretRoadRunner.AimTurret();
     }
+
+    public Action aimTurretContinuous() {
+        return packet -> {
+
+            myLimelight.limelightProcessing(telemetry1);
+
+            if (!myLimelight.isLimeValid()) {
+                turret.setPower(0);
+                return true;
+            }
+
+            double error = -myLimelight.getLimeTx();
+            double power = Kp * error;
+
+            turret.setPower(power);
+
+            telemetry1.addData("LL valid", myLimelight.isLimeValid());
+            telemetry1.addData("tx", myLimelight.getLimeTx());
+            telemetry1.addData("turret power", power);
+            telemetry1.update();
+
+            return true; // never ends
+        };
+    }
+
+
 }
+
