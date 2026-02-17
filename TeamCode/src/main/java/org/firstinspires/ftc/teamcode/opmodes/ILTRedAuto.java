@@ -41,23 +41,20 @@ public class ILTRedAuto extends LinearOpMode {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
 
-
-
         // actionBuilder builds from the drive steps passed to it
-
-
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-42.2));
+                .splineTo(new Vector2d(-10,8),Math.toRadians(-36));
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
-                .lineToX(-4)
-                .turn(Math.toRadians(-28))
-                .splineTo(new Vector2d(-4,50),Math.toRadians(90));
+                .lineToX(-3)
+                .turn(Math.toRadians(-38))
+                .splineTo(new Vector2d(-4,38.5),Math.toRadians(90));
 
         TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-40));
+                .splineTo(new Vector2d(-8,8),Math.toRadians(-38));
+
 
         Action outOfZone = backToShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(90))
@@ -85,7 +82,7 @@ public class ILTRedAuto extends LinearOpMode {
                         new SequentialAction(
                                 shooter.shooterOn(),
                                 firstTraj,
-                                new SleepAction(1.4),
+                                new SleepAction(3.5),
                                 new ParallelAction(
                                         transfer.intakeArtifact(),
                                         intake.intakeArtifact()

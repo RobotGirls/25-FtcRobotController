@@ -81,30 +81,32 @@ public class ILTBlueAuto extends LinearOpMode {
         // IN RUNTIME
         // running the action sequence!
         Actions.runBlocking(
-                new SequentialAction(
-                        shooter.shooterOn(),
-                        firstTraj,
-                        new SleepAction(2),
-                        turret.aimTurret(),
-                        new ParallelAction(
-                                transfer.intakeArtifact(),
-                                intake.intakeArtifact()
+                new ParallelAction(
+                        turret.aimTurretContinuous(),
+                        new SequentialAction(
+                                shooter.shooterOn(),
+                                firstTraj,
+                                new SleepAction(1.4),
+                                new ParallelAction(
+                                        transfer.intakeArtifact(),
+                                        intake.intakeArtifact()
 
-                        ),
-                        intake.intakeArtifact(),
-                        new ParallelAction(
-                                secondTraj,
+                                ),
                                 intake.intakeArtifact(),
-                                transfer.outtakeArtifact()
-                        ),
-                        thirdTraj,
-                        new ParallelAction(
-                                transfer.intakeArtifact(),
-                                intake.intakeArtifact()
-                        ),
-                        shooter.shooterOff(),
-                        outOfZone
+                                new ParallelAction(
+                                        secondTraj,
+                                        intake.intakeArtifact(),
+                                        transfer.outtakeArtifact()
+                                ),
+                                thirdTraj,
+                                new ParallelAction(
+                                        transfer.intakeArtifact(),
+                                        intake.intakeArtifact()
+                                ),
+                                shooter.shooterOff(),
+                                outOfZone
 
+                        )
                 )
         );
 

@@ -19,12 +19,12 @@ public class TurretRoadRunner {
     private double power = 0;
     private double error;
     private Limelight3ASensor myLimelight;
-    private final int ALIGN_THRESHOLD = 3;
+    private final double ALIGN_THRESHOLD = 3;
     private double lastError = 0;
     private double derivative = 0;
     private double integralSum = 0;
-    private double Kp = 0.0165; //Tx range is 0 to 26--> at max offset 26, when Kp is 0.02, speed is half power
-    private double Ki = 0;
+    private double Kp = 0.03; //Tx range is 0 to 26--> at max offset 26, when Kp is 0.02, speed is half power
+    private double Ki = 0.03;
     private double Kd = 0;
     private final int TURRET_POSITION = 2000;
 

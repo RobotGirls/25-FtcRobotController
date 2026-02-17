@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
+@Config
 @TeleOp(name = "ILT TELEOP SEQUENCE RED")
 
 public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
@@ -25,9 +26,9 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
     private double derivative = 0;
     private double integralSum = 0;
 
-    private double Kp = 0.0165; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
-    private double Ki = 0;
-    private double Kd = 0;
+    public static double Kp = 0.03; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
+    public static double Ki = 0.03;
+    public static double Kd = 0;
     private double shooterSpeed = -1600; // default speed: far LZ
 
     Limelight3A limelight;
@@ -43,7 +44,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
     public boolean shootingOn = false;
 
 
-    public final double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
+    public static double TURRET_OFFSET = 0; // FIXME figure out how many degrees to the side the turret will be aiming relative to front of robot
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -135,7 +136,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     transfer.setPower(1);
                     intake.setPower(1);
                 }
-                else if (sequenceTimer.milliseconds() > 10000 && sequenceTimer.milliseconds() < 11000){
+                else if (sequenceTimer.milliseconds() > 10000 && sequenceTimer.milliseconds() < 11500){
                     shooter.setVelocity(0);
                     transfer.setPower(0);
                     intake.setPower(0);
@@ -176,7 +177,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     // if robot is very close to the goal
                     shooterSpeed = -1250;
                     hoodServo.setPosition(0.45);
-                } else if (robotx >= -0.6 && robotx < 0.2) {
+                } else if (robotx >= -0.6 && robotx < 0.3) {
                     // if robot is around the tip (farthest end) of the close launch zone
                     shooterSpeed = -1340;
                     hoodServo.setPosition(0.25); // FIXME change servo values to those found in testing
@@ -187,9 +188,10 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     hoodServo.setPosition(0.1);
                 }
 
-                double error = result1.getTx();
+                double error = TURRET_OFFSET+result1.getTx();
                 ElapsedTime timer = new ElapsedTime();
                 if (Math.abs(error) > ALIGN_THRESHOLD) {
+                    telemetry.addData("Turret X",result1.getTx());
                     error = -1 * result1.getTx();
                     derivative = (error - lastError) / timer.seconds();
                     integralSum = integralSum + (error * timer.seconds());
@@ -220,6 +222,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
 
             telemetry.addData("Flywheel Velocity", shooter.getVelocity());
             telemetry.addData("Turret Error",lastError);
+
             telemetry.addData("Flywheel Speed",shooterSpeed);
             telemetry.addData("Hood Height",hoodServo.getPosition());
             telemetry.update();
