@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -22,7 +23,7 @@ public class TransferRoadRunner {
         transfer = hardwareMap.get(DcMotor.class, "transfer");
         timer1 = new ElapsedTime();
         telemetry1 = telemetry;
-
+        transfer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public class IntakeArtifact implements Action {

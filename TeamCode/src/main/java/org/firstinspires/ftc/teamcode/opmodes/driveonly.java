@@ -81,7 +81,6 @@ public class driveonly extends LinearOpMode {
             double leftPower = drive + turn;
             double rightPower = drive - turn;
 
-
             leftFront.setPower(leftPower);
             leftBack.setPower(leftPower);
             rightFront.setPower(rightPower);

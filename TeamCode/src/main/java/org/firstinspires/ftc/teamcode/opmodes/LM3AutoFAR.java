@@ -14,8 +14,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TankDrive;
 import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.Limelight3ASensor;
 import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
+import org.firstinspires.ftc.teamcode.mechanismCode.TurretRoadRunner;
 
 //@Config
 @Autonomous(name = "LM3 FAR")
@@ -23,13 +25,22 @@ public class LM3AutoFAR extends LinearOpMode {
 
     public final double FLYWHEEL_SPEED_LONG = -0.8;
 
+    Pose2d initialPose;
+    TankDrive drive;
+    IntakeRoadRunner intake;
+    ShooterRoadRunner shooter;
+    TransferRoadRunner transfer;
+    TurretRoadRunner turret;
+    private Limelight3ASensor limelightSensor;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
+        initHardware();
         // telemetry.setAutoClear(false);
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(55, -16, Math.toRadians(180));
+
         TankDrive drive = new TankDrive(hardwareMap, initialPose);
         ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
         IntakeRoadRunner intake = new IntakeRoadRunner(hardwareMap,telemetry);
@@ -54,22 +65,35 @@ public class LM3AutoFAR extends LinearOpMode {
         // IN RUNTIME
         // running the action sequence!
         Actions.runBlocking(
-                new SequentialAction(
+                new ParallelAction(
+                        turret.aimTurretContinuous(),
+                        new SequentialAction(
 
-                        shooter.shooterOnFar(),
-                        new SleepAction(5),
-                        new ParallelAction(
+                                shooter.shooterOnFar(),
+                                new SleepAction(5),
+                                new ParallelAction(
 
-                                intake.intakeArtifact(),
-                                transfer.intakeArtifact()
-                        ),
-                        firstTraj
+                                        intake.intakeArtifact(),
+                                        transfer.intakeArtifact()
+                                ),
+                                firstTraj
 
 
+                        )
                 )
+
         );
     }
-
+    private void initHardware() {
+        initialPose = new Pose2d(55, -16, Math.toRadians(180));
+        drive = new TankDrive(hardwareMap, initialPose);
+        intake= new IntakeRoadRunner(hardwareMap, telemetry);
+        shooter = new ShooterRoadRunner(hardwareMap, telemetry);
+        transfer = new TransferRoadRunner(hardwareMap, telemetry);
+        limelightSensor = new Limelight3ASensor();
+        limelightSensor.initLimelight(hardwareMap, telemetry);
+        turret = new TurretRoadRunner(hardwareMap, telemetry, limelightSensor);
+    }
 
 
 }
