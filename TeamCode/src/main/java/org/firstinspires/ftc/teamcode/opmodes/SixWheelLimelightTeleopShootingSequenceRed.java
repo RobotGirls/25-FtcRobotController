@@ -143,6 +143,9 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                 }
             }
             else {
+                if (gamepad2.y) {
+                    hoodServo.setPosition(0);
+                }
                 if (gamepad2.left_bumper) {
                     transfer.setPower(1);
                     intake.setPower(-1);
