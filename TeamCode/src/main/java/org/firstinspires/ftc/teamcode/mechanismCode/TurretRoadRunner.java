@@ -28,9 +28,12 @@ public class TurretRoadRunner {
     private double Kd = 0;
     private final int TURRET_POSITION = 2000;
 
+    boolean aimingEnabled = true;
+
 
     public TurretRoadRunner(HardwareMap hardwareMap, Telemetry telemetry, Limelight3ASensor limelight) {
         turret = hardwareMap.get(DcMotor.class, "turret");
+        turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         timer = new ElapsedTime();
         telemetry1 = telemetry;
         myLimelight = limelight;
@@ -86,6 +89,10 @@ public class TurretRoadRunner {
     public Action aimTurretContinuous() {
         return packet -> {
 
+            if (!aimingEnabled) {
+                turret.setPower(0);
+                return true;
+            }
             myLimelight.limelightProcessing(telemetry1);
 
             if (!myLimelight.isLimeValid()) {
@@ -104,6 +111,21 @@ public class TurretRoadRunner {
             telemetry1.update();
 
             return true; // never ends
+        };
+    }
+
+    public Action enableAiming() {
+        return packet -> {
+            aimingEnabled = true;
+            return false;
+        };
+    }
+
+    public Action disableAiming() {
+        return packet -> {
+            aimingEnabled = false;
+            turret.setPower(0);
+            return false;
         };
     }
 

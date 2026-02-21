@@ -46,6 +46,8 @@ public class ILTRedAuto extends LinearOpMode {
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
                 .splineTo(new Vector2d(-10,8),Math.toRadians(-36));
+
+
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
                 .lineToX(-3)
                 .turn(Math.toRadians(-38))
@@ -53,7 +55,7 @@ public class ILTRedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-38));
+                .splineTo(new Vector2d(-8,8),Math.toRadians(-36));
 
 
         Action outOfZone = backToShoot.endTrajectory().fresh()
@@ -87,6 +89,7 @@ public class ILTRedAuto extends LinearOpMode {
                                         transfer.intakeArtifact(),
                                         intake.intakeArtifact()
                                 ),
+                                turret.disableAiming(),
                                 intake.intakeArtifact(),
                                 new ParallelAction(
                                         secondTraj,
@@ -94,6 +97,7 @@ public class ILTRedAuto extends LinearOpMode {
                                         transfer.outtakeArtifact()
                                 ),
                                 thirdTraj,
+                                turret.enableAiming(),
                                 new ParallelAction(
                                         transfer.intakeArtifact(),
                                         intake.intakeArtifact()

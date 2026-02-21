@@ -25,8 +25,8 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
     private double derivative = 0;
     private double integralSum = 0;
 
-    private double Kp = 0.0165; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power  //turret aiming
-    private double Ki = 0; //turret aiming
+    private double Kp = 0.03; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power  //turret aiming
+    private double Ki = 0.03; //turret aiming
     private double Kd = 0; //turet aiming
     private double shooterSpeed = -1600; // default speed: far LZ
 
@@ -79,6 +79,7 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
         hoodServo = hardwareMap.get(Servo.class, "shooterHood");
 
         transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -147,7 +148,7 @@ public class SixWheelLimelightTeleopShootingSequenceBlue extends LinearOpMode {
                     intake.setPower(-1);
                 }
                 else if (gamepad2.right_bumper) {
-                    transfer.setPower(1);
+                    transfer.setPower(-1);
                     intake.setPower(1);
                 } else {
                     transfer.setPower(0);

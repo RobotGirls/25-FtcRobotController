@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,6 +21,7 @@ public class IntakeRoadRunner {
 
         public IntakeRoadRunner(HardwareMap hardwareMap, Telemetry telemetry) {
             intake = hardwareMap.get(DcMotor.class, "intake");
+            intake.setDirection(DcMotorSimple.Direction.REVERSE);
             timer1 = new ElapsedTime();
             telemetry1 = telemetry;
 

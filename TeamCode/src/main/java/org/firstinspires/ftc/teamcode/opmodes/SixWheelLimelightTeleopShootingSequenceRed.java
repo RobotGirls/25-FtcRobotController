@@ -80,6 +80,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
         hoodServo = hardwareMap.get(Servo.class, "shooterHood");
 
         transfer.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -149,7 +150,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     intake.setPower(-1);
                 }
                 else if (gamepad2.right_bumper) {
-                    transfer.setPower(1);
+                    transfer.setPower(-1);
                     intake.setPower(1);
                 }else {
                     transfer.setPower(0);
