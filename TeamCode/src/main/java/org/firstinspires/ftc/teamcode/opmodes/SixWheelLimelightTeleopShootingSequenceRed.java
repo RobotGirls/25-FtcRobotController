@@ -127,7 +127,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     telemetry.addData("Sequence Status:", "Shooter speeds up and transfer outtakes");
                     telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
                     shooter.setVelocity(shooterSpeed);
-                   // transfer.setPower(1); // transfer out
+                    // transfer.setPower(1); // transfer out
                 } else if (sequenceTimer.milliseconds() < 10000) {
 
                     telemetry.addData("Sequence Status:","Run intake + transfer, shoot ball") ;
@@ -144,15 +144,12 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                 }
             }
             else {
-                if (gamepad2.y) {
-                    hoodServo.setPosition(0);
-                }
                 if (gamepad2.left_bumper) {
-                    transfer.setPower(1);
+                    // INTAKE
                     intake.setPower(-1);
                 }
                 else if (gamepad2.right_bumper) {
-                    transfer.setPower(-1);
+                    transfer.setPower(1);
                     intake.setPower(1);
                 }else {
                     transfer.setPower(0);
@@ -182,12 +179,11 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                     hoodServo.setPosition(0.45);
                 } else if (robotx >= -0.6 && robotx < 0.3) {
                     // if robot is around the tip (farthest end) of the close launch zone
-                    shooterSpeed = -1350;
+                    shooterSpeed = -1340;
                     hoodServo.setPosition(0.25); // FIXME change servo values to those found in testing
-
                 } else {
                     // if robot is in the far launch zone
-                    shooterSpeed = -1650;
+                    shooterSpeed = -1640;
                     hoodServo.setPosition(0.1);
                 }
 
@@ -210,7 +206,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                 telemetry.addData("Limelight", "No data available");
 
                 shooterSpeed = -1250;
-                double turretPower = gamepad2.left_stick_x;
+                double turretPower = 0.5*gamepad2.left_stick_x;
 
                 turret.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 if (turret.getCurrentPosition() >= -2000 && turret.getCurrentPosition() <= 2000) { // FIXME change encoder value after testing
@@ -219,6 +215,10 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
                 } else {
                     turret.setPower(0);
                     //telemetry.addData("Current Motor Position", "Too Far!");
+                }
+
+                if (gamepad2.y) {
+                    hoodServo.setPosition(0.1);
                 }
 
             }

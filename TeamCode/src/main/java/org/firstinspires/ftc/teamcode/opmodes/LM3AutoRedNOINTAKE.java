@@ -9,13 +9,14 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TankDrive;
 import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
-
+@Disabled
 //@Config
 @Autonomous(name = "LM3 Red NO INTAKE")
 public class LM3AutoRedNOINTAKE extends LinearOpMode {

@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TankDrive;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
 
 //@Config
+@Disabled
 @Autonomous(name = "ILT Auto Only Shoot")
 public class ILTAutoONLYSHOOT extends LinearOpMode {
 

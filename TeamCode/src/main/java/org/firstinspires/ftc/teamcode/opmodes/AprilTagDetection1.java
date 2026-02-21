@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import static android.view.Gravity.CENTER;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -69,6 +70,7 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
+@Disabled
 @Config
 @TeleOp(name = "AprilTag Detection", group = "Concept")
 public class AprilTagDetection1 extends LinearOpMode {
