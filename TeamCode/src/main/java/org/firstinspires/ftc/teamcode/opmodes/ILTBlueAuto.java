@@ -47,7 +47,10 @@ public class ILTBlueAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-14.5,-8),Math.toRadians(48.9));
+                .splineTo(new Vector2d(-21,-16),Math.toRadians(48.9));
+
+        TrajectoryActionBuilder goForward = toShoot.endTrajectory().fresh()
+                .splineTo(new Vector2d(-5, -25), Math.toRadians(0));
 
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(25))
@@ -65,6 +68,7 @@ public class ILTBlueAuto extends LinearOpMode {
 
 
         Action firstTraj = toShoot.build();
+        Action extra = goForward.build();
         Action secondTraj = intakeBalls.build();
         Action thirdTraj = backToShoot.build();
 
@@ -87,19 +91,22 @@ public class ILTBlueAuto extends LinearOpMode {
                         new SequentialAction(
                                 shooter.shooterOn(),
                                 firstTraj,
-                                new SleepAction(1.4),
+                                new SleepAction(3.5),
                                 new ParallelAction(
                                         transfer.intakeArtifact(),
                                         intake.intakeArtifact()
-
                                 ),
+                                turret.disableAiming(),
                                 intake.intakeArtifact(),
+                                shooter.shooterOff(),
                                 new ParallelAction(
                                         secondTraj,
                                         intake.intakeArtifact(),
                                         transfer.outtakeArtifact()
                                 ),
+                                shooter.shooterOn(),
                                 thirdTraj,
+                                turret.enableAiming(),
                                 new ParallelAction(
                                         transfer.intakeArtifact(),
                                         intake.intakeArtifact()
@@ -121,7 +128,7 @@ public class ILTBlueAuto extends LinearOpMode {
         shooter = new ShooterRoadRunner(hardwareMap, telemetry);
         transfer = new TransferRoadRunner(hardwareMap, telemetry);
         limelightSensor = new Limelight3ASensor();
-        limelightSensor.initLimelight(hardwareMap, telemetry);
+        limelightSensor.initLimelightBlue(hardwareMap, telemetry);
         turret = new TurretRoadRunner(hardwareMap, telemetry, limelightSensor);
     }
 

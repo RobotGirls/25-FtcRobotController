@@ -15,7 +15,7 @@ public class TurretRoadRunner {
     DcMotor turret;
     private ElapsedTime timer;
     private Telemetry telemetry1;
-    private double turretPower = 0.5;  // FIXME figure out what value we want
+    private double turretPower = 0.8;  // FIXME figure out what value we want
     private double power = 0;
     private double error;
     private Limelight3ASensor myLimelight;

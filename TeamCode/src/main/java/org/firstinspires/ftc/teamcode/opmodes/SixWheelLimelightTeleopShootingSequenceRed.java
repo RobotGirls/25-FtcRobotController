@@ -29,7 +29,7 @@ public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
     public static double Kp = 0.03; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
     public static double Ki = 0.03;
     public static double Kd = 0;
-    private double shooterSpeed = -1600; // default speed: far LZ
+    private double shooterSpeed = -1750; // default speed: far LZ
 
     Limelight3A limelight;
     DcMotorEx shooter;

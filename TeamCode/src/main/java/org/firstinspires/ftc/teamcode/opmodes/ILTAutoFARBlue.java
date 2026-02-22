@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TurretRoadRunner;
 
 //@Config
-@Autonomous(name = "LM3 FAR")
-public class LM3AutoFAR extends LinearOpMode {
+@Autonomous(name = "ILT far blue")
+public class ILTAutoFARBlue extends LinearOpMode {
 
     public final double FLYWHEEL_SPEED_LONG = -0.8;
 
@@ -91,7 +91,7 @@ public class LM3AutoFAR extends LinearOpMode {
         shooter = new ShooterRoadRunner(hardwareMap, telemetry);
         transfer = new TransferRoadRunner(hardwareMap, telemetry);
         limelightSensor = new Limelight3ASensor();
-        limelightSensor.initLimelightBlue(hardwareMap, telemetry);
+        limelightSensor.initLimelightRed(hardwareMap, telemetry);
         turret = new TurretRoadRunner(hardwareMap, telemetry, limelightSensor);
     }
 

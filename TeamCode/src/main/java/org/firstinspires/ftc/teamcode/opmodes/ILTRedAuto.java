@@ -45,7 +45,7 @@ public class ILTRedAuto extends LinearOpMode {
 
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-10,8),Math.toRadians(-36));
+                .splineTo(new Vector2d(-21,16),Math.toRadians(-36));
 
 
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
@@ -118,7 +118,7 @@ public class ILTRedAuto extends LinearOpMode {
         shooter = new ShooterRoadRunner(hardwareMap, telemetry);
         transfer = new TransferRoadRunner(hardwareMap, telemetry);
         limelightSensor = new Limelight3ASensor();
-        limelightSensor.initLimelight(hardwareMap, telemetry);
+        limelightSensor.initLimelightRed(hardwareMap, telemetry);
         turret = new TurretRoadRunner(hardwareMap, telemetry, limelightSensor);
     }
 }

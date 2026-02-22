@@ -41,7 +41,7 @@ public class IntakeRoadRunner {
                 double timerValue = timer1.milliseconds();
                 telemetry1.addData("Intake Timer",timerValue);
                 telemetry1.update();
-                if (timerValue < 6000) {
+                if (timerValue < 4000) {
                     return true;
                 } else {
                     intake.setPower(0);

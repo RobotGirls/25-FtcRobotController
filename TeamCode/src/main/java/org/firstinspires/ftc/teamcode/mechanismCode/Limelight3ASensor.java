@@ -18,10 +18,21 @@ public class Limelight3ASensor {
     private boolean isValid;
 
 
-    public void initLimelight(HardwareMap hardwareMap, Telemetry telemetry) {
+    public void initLimelightBlue(HardwareMap hardwareMap, Telemetry telemetry) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         telemetry.setMsTransmissionInterval(11);
         limelight.pipelineSwitch(0);
+        // Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
+        limelight.start();
+
+        telemetry.addData(">", "Robot Ready.  Press Play.");
+        telemetry.update();
+    }
+
+    public void initLimelightRed(HardwareMap hardwareMap, Telemetry telemetry) {
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        telemetry.setMsTransmissionInterval(11);
+        limelight.pipelineSwitch(1);
         // Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
         limelight.start();
 

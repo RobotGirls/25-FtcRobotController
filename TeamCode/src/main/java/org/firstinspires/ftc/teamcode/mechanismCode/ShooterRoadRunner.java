@@ -54,7 +54,7 @@ public class ShooterRoadRunner {
             double timerValue = timer1.milliseconds();
             telemetry1.addData("timer",timerValue);
             telemetry1.update();
-            if (timerValue < 6500) {
+            if (timerValue < 4000) {
                 return true;
             } else {
                 shooter.setVelocity(0);
@@ -99,7 +99,7 @@ public class ShooterRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            shooter.setVelocity(-1340);
+            shooter.setVelocity(-1310);
             shooterHood.setPosition(0.25);
             telemetry1.addData("velo ", shooter.getVelocity());
             telemetry1.update();
@@ -134,8 +134,8 @@ public class ShooterRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-            shooter.setVelocity(-1620);
-            shooterHood.setPosition(0.1);
+            shooter.setVelocity(-1710);
+            // shooterHood.setPosition(0.1);
             telemetry1.addData("velo ", shooter.getVelocity());
             telemetry1.update();
 
