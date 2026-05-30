@@ -14,96 +14,57 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TankDrive;
-
 import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.ShooterRoadRunner;
 import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
 
 //@Config
-@Autonomous(name = "ILT Red")
-public class ILTRedAuto extends LinearOpMode {
+@Autonomous(name = "ILT Auto Only Shoot")
+public class ILTAutoONLYSHOOT extends LinearOpMode {
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // telemetry.setAutoClear(false);
-        // liftTimer.reset();
-        // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-52, 46, Math.toRadians(130));
+        Pose2d initialPose = new Pose2d(-52, -46, Math.toRadians(-130));
         TankDrive drive = new TankDrive(hardwareMap, initialPose);
         IntakeRoadRunner intake= new IntakeRoadRunner(hardwareMap,telemetry);
         ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
         TransferRoadRunner transfer = new TransferRoadRunner(hardwareMap,telemetry);
 
-        // actionBuilder builds from the drive steps passed to it
 
-
-
-        TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
-                .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-42.2));
-        TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
-                .lineToX(-4)
-                .turn(Math.toRadians(-28))
-                .splineTo(new Vector2d(-4,50),Math.toRadians(90));
-
-        TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
-                .setReversed(true)
-                .splineTo(new Vector2d(-8,8),Math.toRadians(-40));
-
-        Action outOfZone = backToShoot.endTrajectory().fresh()
-                .turn(Math.toRadians(90))
-                .lineToX(2)
-                .build();
-
-
-        Action firstTraj = toShoot.build();
-        Action secondTraj = intakeBalls.build();
-        Action thirdTraj = backToShoot.build();
 
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
+
             telemetry.update();
         }
         waitForStart();
         if (isStopRequested()) return;
+
+
 
         // IN RUNTIME
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
                         shooter.shooterOn(),
-                        firstTraj,
-                        new SleepAction(1.4),
+
+                        new SleepAction(2.5),
                         new ParallelAction(
                                 transfer.intakeArtifact(),
                                 intake.intakeArtifact()
 
                         ),
-                        intake.intakeArtifact(),
-                        new ParallelAction(
-                                secondTraj,
-                                intake.intakeArtifact(),
-                                transfer.outtakeArtifact()
-                        ),
-                        thirdTraj,
-                        new ParallelAction(
-                                transfer.intakeArtifact(),
-                                intake.intakeArtifact()
-                        ),
-                        shooter.shooterOff(),
-                        outOfZone
+                        shooter.shooterOff()
+
 
                 )
         );
 
-
     }
 
 }
-
-
-
-
 

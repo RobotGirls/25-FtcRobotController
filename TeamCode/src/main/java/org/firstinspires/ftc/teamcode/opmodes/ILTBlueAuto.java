@@ -10,9 +10,15 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.TankDrive;
 
 import org.firstinspires.ftc.teamcode.mechanismCode.IntakeRoadRunner;
@@ -23,6 +29,8 @@ import org.firstinspires.ftc.teamcode.mechanismCode.TransferRoadRunner;
 @Autonomous(name = "ILT Blue")
 public class ILTBlueAuto extends LinearOpMode {
 
+
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -32,25 +40,22 @@ public class ILTBlueAuto extends LinearOpMode {
         ShooterRoadRunner shooter = new ShooterRoadRunner(hardwareMap, telemetry);
         TransferRoadRunner transfer = new TransferRoadRunner(hardwareMap,telemetry);
 
-        // actionBuilder builds from the drive steps passed to it
-
-
-
         TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,-8),Math.toRadians(45));
+                .splineTo(new Vector2d(-14.5,-8),Math.toRadians(48.9));
+
         TrajectoryActionBuilder intakeBalls = toShoot.endTrajectory().fresh()
                 .turn(Math.toRadians(25))
                 .splineTo(new Vector2d(-16,-55),Math.toRadians(-90));
 
         TrajectoryActionBuilder backToShoot = intakeBalls.endTrajectory().fresh()
                 .setReversed(true)
-                .splineTo(new Vector2d(-8,-8),Math.toRadians(45))
-                .turnTo(Math.toRadians(-130))
-                .turn(Math.toRadians(46));
+                .splineTo(new Vector2d(-8,-8),Math.toRadians(70.3));
+                //.turn(Math.toRadians(90));
+
         Action outOfZone = backToShoot.endTrajectory().fresh()
-                .turn(Math.toRadians(90))
-                .lineToX(2)
+                .turn(Math.toRadians(-90))
+                .lineToX(0)
                 .build();
 
 
@@ -67,31 +72,28 @@ public class ILTBlueAuto extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
 
+
+
         // IN RUNTIME
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
+                        shooter.shooterOn(),
                         firstTraj,
-                      shooter.shooterOn(),
-                        new SleepAction(0.5),
+                        new SleepAction(2),
                         new ParallelAction(
+                                transfer.intakeArtifact(),
+                                intake.intakeArtifact()
 
-                                intake.intakeArtifact(),
-                                transfer.intakeArtifact()
                         ),
                         intake.intakeArtifact(),
                         new ParallelAction(
                                 secondTraj,
-                                intake.intakeArtifact()
-
+                                intake.intakeArtifact(),
+                                transfer.outtakeArtifact()
                         ),
-
+                        thirdTraj,
                         new ParallelAction(
-                                thirdTraj
-
-                        ),
-                        new ParallelAction(
-
                                 transfer.intakeArtifact(),
                                 intake.intakeArtifact()
                         ),

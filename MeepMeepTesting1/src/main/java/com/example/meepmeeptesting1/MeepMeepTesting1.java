@@ -30,7 +30,7 @@ public class MeepMeepTesting1 {
                 .splineTo(new Vector2d(-12,52),Math.toRadians(90))
                 .setReversed(true)
                 .splineTo(new Vector2d(-8,8),Math.toRadians(-45))
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .lineToX(2)
                 .build());
 

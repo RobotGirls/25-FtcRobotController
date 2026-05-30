@@ -13,9 +13,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-@TeleOp(name = "ILT TELEOP SEQUENCE")
+@TeleOp(name = "ILT TELEOP SEQUENCE RED")
 
-public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
+public class SixWheelLimelightTeleopShootingSequenceRed extends LinearOpMode {
 
     private final int ALIGN_THRESHOLD = 3;
     Servo hoodServo;
@@ -85,7 +85,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(1);
+        limelight.pipelineSwitch(0);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -119,20 +119,21 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
                 shootingOn = true;
             }
 
+
             if (shootingOn) {
                 if (sequenceTimer.milliseconds() < 5000) {
 
                     telemetry.addData("Sequence Status:", "Shooter speeds up and transfer outtakes");
                     telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
                     shooter.setVelocity(shooterSpeed);
-                    transfer.setPower(1); // transfer out
+                   // transfer.setPower(1); // transfer out
                 } else if (sequenceTimer.milliseconds() < 10000) {
 
                     telemetry.addData("Sequence Status:","Run intake + transfer, shoot ball") ;
                     telemetry.addData("Timer Status:", sequenceTimer.milliseconds());
                     shooter.setVelocity(shooterSpeed);
                     transfer.setPower(-1);
-                    intake.setPower(-1);
+                    intake.setPower(1);
                 }
                 else if (sequenceTimer.milliseconds() > 10000 && sequenceTimer.milliseconds() < 11000){
                     shooter.setVelocity(0);
@@ -149,7 +150,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
                 else if (gamepad2.right_bumper) {
                     transfer.setPower(1);
                     intake.setPower(1);
-                } else {
+                }else {
                     transfer.setPower(0);
                     intake.setPower(0);
                 }
@@ -182,7 +183,7 @@ public class SixWheelLimelightTeleopShootingSequence extends LinearOpMode {
 
                 } else {
                     // if robot is in the far launch zone
-                    shooterSpeed = -1620;
+                    shooterSpeed = -1640;
                     hoodServo.setPosition(0.1);
                 }
 

@@ -31,7 +31,7 @@ public class ShooterRoadRunner {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
         shooterHood = hardwareMap.get(Servo.class, "shooterHood");
 
-        shooter.setVelocityPIDFCoefficients(10,3,3,2);
+        shooter.setVelocityPIDFCoefficients(9,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         timer1 = new ElapsedTime();
         telemetry1 = telemetry;
@@ -99,14 +99,14 @@ public class ShooterRoadRunner {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
 
-                shooter.setVelocity(-1340);
-                shooterHood.setPosition(0.25);
-                telemetry1.addData("velo ", shooter.getVelocity());
-                telemetry1.update();
+            shooter.setVelocity(-1365);
+            shooterHood.setPosition(0.25);
+            telemetry1.addData("velo ", shooter.getVelocity());
+            telemetry1.update();
 
-                return false;
-            }
+            return false;
         }
+    }
 
     public Action shooterOn() {
         return new ShooterRoadRunner.ShooterOn();
@@ -128,5 +128,22 @@ public class ShooterRoadRunner {
     public Action shooterOff() {
         return new ShooterRoadRunner.ShooterOff();
     }
-}
 
+    public class ShooterOnFar implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+            shooter.setVelocity(-1620);
+            shooterHood.setPosition(0.1);
+            telemetry1.addData("velo ", shooter.getVelocity());
+            telemetry1.update();
+
+            return false;
+        }
+    }
+
+    public Action shooterOnFar() {
+        return new ShooterRoadRunner.ShooterOnFar();
+    }
+}

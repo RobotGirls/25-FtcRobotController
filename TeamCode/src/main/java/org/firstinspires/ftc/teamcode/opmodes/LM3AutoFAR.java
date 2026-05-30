@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -55,9 +56,10 @@ public class LM3AutoFAR extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
 
-                        shooter.shootArtifact(),
+                        shooter.shooterOnFar(),
+                        new SleepAction(5),
                         new ParallelAction(
-                                shooter.shootArtifact(),
+
                                 intake.intakeArtifact(),
                                 transfer.intakeArtifact()
                         ),
