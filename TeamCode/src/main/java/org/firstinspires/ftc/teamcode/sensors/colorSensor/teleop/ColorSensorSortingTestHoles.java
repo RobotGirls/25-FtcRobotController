@@ -57,7 +57,7 @@ public class ColorSensorSortingTestHoles extends LinearOpMode {
 
         ballServo1.setPosition(SERVO_DOWN);
 
-        colorSensor1.initColorSensor(hardwareMap,"colorSensor");
+        colorSensor1.initColorSensor(hardwareMap);
 
 
     }
