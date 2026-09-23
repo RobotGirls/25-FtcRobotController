@@ -11,11 +11,11 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class Claw {
+public class ClawSimple {
     private CRServo claw;
     private CRServo claw2;
 
-    public Claw(HardwareMap hardwareMap) {
+    public ClawSimple(HardwareMap hardwareMap) {
         claw = hardwareMap.get(CRServo.class, "claw");
         claw2 = hardwareMap.get(CRServo.class, "claw2");
     }
