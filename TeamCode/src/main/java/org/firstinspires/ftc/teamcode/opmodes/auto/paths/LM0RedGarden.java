@@ -14,37 +14,29 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "LM0 Blue Flower", group = "Blue Auto")
-public class LM0BlueFlower extends LinearOpMode {
+@Autonomous(name = "LM0 Red Garden", group = "Red Auto")
+public class LM0RedGarden extends LinearOpMode {
     private boolean first = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(56, 15, Math.toRadians(-150));
+        Pose2d initialPose = new Pose2d(65, -38, Math.toRadians(130));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toShootHive = drive.actionBuilder(initialPose)
-                .splineToLinearHeading(new Pose2d(50, 15, Math.toRadians(180)), Math.toRadians(180));
+        TrajectoryActionBuilder toHive = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(180));
 
-        TrajectoryActionBuilder toIntakePollen = drive.actionBuilder(initialPose)
-                .splineToLinearHeading(new Pose2d(55, 15, Math.toRadians(0)), Math.toRadians(-100));
-
-        TrajectoryActionBuilder toShootAgain = drive.actionBuilder(initialPose)
-                .splineToLinearHeading(new Pose2d(58, 15, Math.toRadians(180)), Math.toRadians(180));
-
-        Action toPark = toShootAgain.endTrajectory().fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(30, 60), 0), Math.toRadians(0))
+        Action toPark = toHive.endTrajectory().fresh()
+                .setTangent(Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-30,-60, Math.toRadians(180)), Math.toRadians(-90))
 
                 .build();
 
-        Action firstTraj = toShootHive.build();
-        Action secondTraj = toIntakePollen.build();
-        Action thirdTraj = toShootAgain.build();
-
+        Action firstTraj = toHive.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -57,12 +49,7 @@ public class LM0BlueFlower extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        // wait to shoot
-                        // go back to flower
-                        // shoot
                         firstTraj,
-                        secondTraj,
-                        thirdTraj,
                         toPark
                 )
         );

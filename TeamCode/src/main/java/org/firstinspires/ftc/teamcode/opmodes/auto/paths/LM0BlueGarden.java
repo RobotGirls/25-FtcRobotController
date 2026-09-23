@@ -22,7 +22,7 @@ public class LM0BlueGarden extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-47, -50, Math.toRadians(225));
+        Pose2d initialPose = new Pose2d(-65, 38, Math.toRadians(330));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
