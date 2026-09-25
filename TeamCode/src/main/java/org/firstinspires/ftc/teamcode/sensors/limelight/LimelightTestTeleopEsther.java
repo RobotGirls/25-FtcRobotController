@@ -22,7 +22,7 @@ public class LimelightTestTeleopEsther extends LinearOpMode {
     }
 
     public void initHardware() {
-        limelightSensor.initLimelight(hardwareMap, telemetry);
+        limelightSensor.initLimelightBlue(hardwareMap, telemetry);
     }
 
 
