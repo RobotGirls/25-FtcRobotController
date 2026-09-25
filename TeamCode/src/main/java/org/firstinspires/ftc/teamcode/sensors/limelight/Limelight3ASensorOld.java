@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import java.util.List;
 
-public class Limelight3ASensor {
+public class Limelight3ASensorOld {
     private Limelight3A limelight;
     LLResult result;
     private double myTx;
@@ -98,6 +98,8 @@ public class Limelight3ASensor {
             telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
         }
     }
+
+
     public void limelightProcessingDetailed(Telemetry telemetry) {
         LLStatus status = limelight.getStatus();
         telemetry.addData("Name", "%s",
