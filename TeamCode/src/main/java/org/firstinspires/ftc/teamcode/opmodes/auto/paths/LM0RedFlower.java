@@ -34,10 +34,10 @@ public class LM0RedFlower extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-55, -15, Math.toRadians(200)), Math.toRadians(200));
 
         TrajectoryActionBuilder toShootAgain = drive.actionBuilder(initialPose)
-                .splineToLinearHeading(new Pose2d(-58, -15, Math.toRadians(0)), Math.toRadians(0));
+                .splineToLinearHeading(new Pose2d(-54, -15, Math.toRadians(0)), Math.toRadians(0));
 
         Action toPark = toShootAgain.endTrajectory().fresh()
-                .splineToLinearHeading(new Pose2d(new Vector2d(-30, -60), 0), Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-30, -60), Math.toRadians(0))
 
                 .build();
 
@@ -72,3 +72,14 @@ public class LM0RedFlower extends LinearOpMode {
     }
 
 }
+
+//MeepMeep path
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-56, -15, Math.toRadians(45)))
+//        .splineToLinearHeading(new Pose2d(-50, -15, Math.toRadians(0)), Math.toRadians(0))
+//        .waitSeconds(2)
+//                .splineToLinearHeading(new Pose2d(-55, -15, Math.toRadians(200)), Math.toRadians(200))
+//        .waitSeconds(2)
+//                .splineToLinearHeading(new Pose2d(-54, -15, Math.toRadians(0)), Math.toRadians(0))
+//        .waitSeconds(2)
+//                .strafeToLinearHeading(new Vector2d(-30, -60), Math.toRadians(0))
+//        .build());

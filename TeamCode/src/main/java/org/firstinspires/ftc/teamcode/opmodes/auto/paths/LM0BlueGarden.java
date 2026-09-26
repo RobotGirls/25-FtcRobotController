@@ -22,7 +22,7 @@ public class LM0BlueGarden extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-65, 38, Math.toRadians(330));
+        Pose2d initialPose = new Pose2d(-62, 35, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
@@ -32,7 +32,7 @@ public class LM0BlueGarden extends LinearOpMode {
 
         Action toPark = toHive.endTrajectory().fresh()
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(new Vector2d(30, 60), 0), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
 
                 .build();
 
@@ -59,3 +59,10 @@ public class LM0BlueGarden extends LinearOpMode {
     }
 
 }
+
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-62, 35, Math.toRadians(0)))
+//        .strafeToLinearHeading(new Vector2d(-50, 15), 0)
+//        .waitSeconds(2)
+//                .setTangent(Math.toRadians(90))
+//        .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
+//        .build());

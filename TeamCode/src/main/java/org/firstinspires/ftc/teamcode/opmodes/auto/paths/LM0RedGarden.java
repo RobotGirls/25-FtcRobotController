@@ -22,7 +22,7 @@ public class LM0RedGarden extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(65, -38, Math.toRadians(130));
+        Pose2d initialPose = new Pose2d(62, -35, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
@@ -59,3 +59,11 @@ public class LM0RedGarden extends LinearOpMode {
     }
 
 }
+
+//MeepMeep path
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(62, -35, Math.toRadians(180)))
+//        .strafeToLinearHeading(new Vector2d(50, -15), Math.toRadians(180))
+//        .waitSeconds(2)
+//                .setTangent(Math.toRadians(-90))
+//        .splineToLinearHeading(new Pose2d(-30,-60, Math.toRadians(180)), Math.toRadians(-90))
+//        .build());
