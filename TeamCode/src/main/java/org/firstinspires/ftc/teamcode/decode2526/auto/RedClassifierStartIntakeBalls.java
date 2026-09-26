@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -25,7 +26,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.Timer;
 
-//@Config
+@Disabled
 @Autonomous(name = "Start at Classifier and Intake",group = "Red Auto")
 public class RedClassifierStartIntakeBalls extends LinearOpMode {
     private boolean first = true;

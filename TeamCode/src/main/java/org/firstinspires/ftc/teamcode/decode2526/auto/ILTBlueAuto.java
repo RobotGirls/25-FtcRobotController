@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.decode2526.mechanismCode.TurretRoadrunner;
 import org.firstinspires.ftc.teamcode.sensors.limelight.Limelight3ASensor;
 
 
-//@Config
+@Disabled
 @Autonomous(name = "ILT Blue")
 public class ILTBlueAuto extends LinearOpMode {
 

@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TankDrive;
@@ -22,7 +23,7 @@ import org.firstinspires.ftc.teamcode.decode2526.mechanismCode.TurretRoadrunner;
 import org.firstinspires.ftc.teamcode.sensors.limelight.Limelight3ASensor;
 
 
-//@Config
+@Disabled
 @Autonomous(name = "ILT Red")
 public class ILTRedAuto extends LinearOpMode {
 

@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.sensors.aprilTag;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+@Disabled
 @TeleOp(name = "JasmineAprilTagTestTeleop3")
 
 public class AprilTagTestTeleop extends LinearOpMode {

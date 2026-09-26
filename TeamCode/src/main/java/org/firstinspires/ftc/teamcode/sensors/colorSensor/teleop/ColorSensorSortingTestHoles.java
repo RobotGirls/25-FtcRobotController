@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sensors.colorSensor.teleop;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensors.colorSensor.referenceFiles.HSVColorSensor;
 
+@Disabled
 @TeleOp(name = "Color Sensor Sorting Testing With Ball Holes")
 
 public class ColorSensorSortingTestHoles extends LinearOpMode {

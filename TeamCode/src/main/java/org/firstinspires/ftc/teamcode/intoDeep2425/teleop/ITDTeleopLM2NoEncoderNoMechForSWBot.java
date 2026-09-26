@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.intoDeep2425.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+@Disabled
 
 @TeleOp(name = "Teleop LM3 BUTTONS NO MECH")
 public class ITDTeleopLM2NoEncoderNoMechForSWBot extends LinearOpMode {

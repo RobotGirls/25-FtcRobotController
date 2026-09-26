@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.TankDrive;
@@ -19,7 +20,7 @@ import org.firstinspires.ftc.teamcode.decode2526.mechanismCode.ShooterRoadrunner
 import org.firstinspires.ftc.teamcode.decode2526.mechanismCode.TransferRoadrunner;
 import org.firstinspires.ftc.teamcode.decode2526.mechanismCode.TurretRoadrunner;
 
-//@Config
+@Disabled
 @Autonomous(name = "ILT far blue")
 public class ILTBlueAutoFAR extends LinearOpMode {
 

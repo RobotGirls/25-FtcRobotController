@@ -1,29 +1,25 @@
-package org.firstinspires.ftc.teamcode.decode2526.teleop;
-
-
+package org.firstinspires.ftc.teamcode.biobuzz2627;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Disabled
 
-@TeleOp(name = "DECODE TELEOP")
-public class DECODETeleopShooting extends LinearOpMode {
+@TeleOp(name = "BIOBUZZ TELEOP")
+public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
 
     /* Declare OpMode members. */
-    public DcMotor leftFront   = null;
-    public DcMotor  rightFront  = null;
-    public DcMotor  rightBack  = null;
-    public DcMotor  leftBack  = null;
+    public DcMotor leftFront = null;
+    public DcMotor rightFront = null;
+    public DcMotor rightBack = null;
+    public DcMotor leftBack = null;
 
     public DcMotor shooter;
     public DcMotor transfer;
@@ -31,8 +27,11 @@ public class DECODETeleopShooting extends LinearOpMode {
 
     private Limelight3A limelight;
     private DcMotor turret;
+
     private final int ALIGN_THRESHOLD = 3;
     private double lastError = 0;
+
+    // Update these values after tuning them
     private double derivative;
     private double integralSum = 0;
 
@@ -45,14 +44,15 @@ public class DECODETeleopShooting extends LinearOpMode {
         ON,
         OFF
     }
-    FlywheelState flywheelState = FlywheelState.OFF;
+
+    BIOBUZZTeleopLM0Blue.FlywheelState flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.OFF;
 
 
     @Override
     public void runOpMode() {
 
         // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "frontLeft") ;
+        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
         rightFront = hardwareMap.get(DcMotor.class, "frontRight");
         rightBack = hardwareMap.get(DcMotor.class, "backRight");
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
@@ -65,6 +65,7 @@ public class DECODETeleopShooting extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
+        // Pipeline 0: blue
         limelight.pipelineSwitch(0);
 
         limelight.start();
@@ -87,7 +88,6 @@ public class DECODETeleopShooting extends LinearOpMode {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -117,33 +117,29 @@ public class DECODETeleopShooting extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            leftFront.setPower(0.8*frontLeftPower);
-            leftBack.setPower(0.8*backLeftPower);
-            rightFront.setPower(0.8*frontRightPower);
-            rightBack.setPower(0.8*backRightPower);
+            leftFront.setPower(0.8 * frontLeftPower);
+            leftBack.setPower(0.8 * backLeftPower);
+            rightFront.setPower(0.8 * frontRightPower);
+            rightBack.setPower(0.8 * backRightPower);
 
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
                 transfer.setPower(1);
-            }
-            else if (gamepad2.right_bumper) {
+            } else if (gamepad2.right_bumper) {
                 intake.setPower(-1);
                 transfer.setPower(-1);
-            }
-            else {
+            } else {
                 intake.setPower(0);
                 transfer.setPower(0);
             }
 
             if (gamepad2.x) {
                 shooter.setPower(-0.72);
-                flywheelState = FlywheelState.ON;
-            }
-            else if (gamepad2.b) {
+                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
+            } else if (gamepad2.b) {
                 shooter.setPower(-0.44);
-                flywheelState = FlywheelState.ON;
-            }
-            else if (gamepad2.a) {
+                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
+            } else if (gamepad2.a) {
                 shooter.setPower(0.5);
             }
 //            else if (gamepad2.y) {
