@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.test;
+package org.firstinspires.ftc.teamcode.mentorSWclassPrivate;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 // I2C port ??  colorSensor
 // Sero Port ??: servoOne
 // https://www.revrobotics.com/rev-31-1557/
+@Disabled
 @TeleOp(name = "Teleop ColorSensor")
 
 // @Disabled
