@@ -1,15 +1,21 @@
-package org.firstinspires.ftc.teamcode.biobuzz2627;
+package org.firstinspires.ftc.teamcode.biobuzz2627.teleop;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-public class BIOBUZZTeleopLM0Red extends LinearOpMode {
+
+@TeleOp(name = "BIOBUZZ TELEOP")
+public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
+
+    /* Declare OpMode members. */
     public DcMotor leftFront = null;
     public DcMotor rightFront = null;
     public DcMotor rightBack = null;
