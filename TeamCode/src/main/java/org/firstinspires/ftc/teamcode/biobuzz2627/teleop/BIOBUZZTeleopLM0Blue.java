@@ -134,16 +134,17 @@ public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
             }
 
             if (gamepad2.x) {
-                shooter.setPower(-0.72);
-                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
-            } else if (gamepad2.b) {
-                shooter.setPower(-0.44);
-                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
-            } else if (gamepad2.a) {
                 shooter.setPower(0.5);
+                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
             }
+//            else if (gamepad2.b) {
+//                shooter.setPower(-0.44);
+//                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
+//            } else if (gamepad2.a) {
+//                shooter.setPower(0.5);
+//            }
 //            else if (gamepad2.y) {
-//                shooter.setPower(MecanumDrive.FLYWHEEL_SPEED_LONG);
+//               shooter.setPower(MecanumDrive.FLYWHEEL_SPEED_LONG);
 //            }
             else {
                 shooter.setPower(0);
@@ -188,10 +189,31 @@ public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
 
             telemetry.update();
         }
-        limelight.stop();
+        //limelight.stop();
 
         // Pace this loop so jaw action is reasonable speed.
         sleep(50);
+
+        // shooter telemetry
+        telemetry.addData("Shooter Power", shooter.getPower());
+        telemetry.addData("Shooter", gamepad2.x ? "ON" : "OFF");
+        telemetry.addData("Intake Power",intake.getPower());
+        telemetry.addData("Transfer Power", transfer.getPower());
+        telemetry.update();
+
+        // STOP EVERYTHING
+
+        shooter.setPower(0);
+        intake.setPower(0);
+        transfer.setPower(0);
+        turret.setPower(0);
+
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+
+        limelight.stop();
 
     }
 }
