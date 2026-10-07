@@ -14,6 +14,13 @@ import java.util.List;
 @TeleOp(name = "ShootingRangeTeleop")
 public class ShootingRangeTeleopTelemetryOnly extends LinearOpMode {
     private Limelight3A limelight;
+    boolean shootBalls;
+    private double minDistanceToTag = 0;
+
+    private double maxDistanceToTag = 0;
+
+    private double minX = 0;
+    private double maxX = 0;
 
 
     @Override
@@ -55,7 +62,6 @@ public class ShootingRangeTeleopTelemetryOnly extends LinearOpMode {
         }
         */
 
-
                     // Get the AprilTag's 3D pose RELATIVE TO THE LIMELIGHT CAMERA
                     Pose3D tagPose = tag.getTargetPoseCameraSpace();
 
@@ -64,7 +70,6 @@ public class ShootingRangeTeleopTelemetryOnly extends LinearOpMode {
                     double x = tagPose.getPosition().x;
                     double y = tagPose.getPosition().y;
                     double z = tagPose.getPosition().z;
-
 
                     /*
                      * Straight-line 3D distance from the center of the
@@ -100,6 +105,12 @@ public class ShootingRangeTeleopTelemetryOnly extends LinearOpMode {
 
                     telemetry.addData("tx", "%.2f deg", tx);
                     telemetry.addData("ty", "%.2f deg", ty);
+
+                    if (x >= minX && x <= maxX && distanceToTag >= minDistanceToTag && distanceToTag <= maxDistanceToTag) {
+                        shootBalls = true;
+                    } else {
+                        telemetry.addData("Invalid Shooting", "Move Robot");
+                    }
 
                 }
             }

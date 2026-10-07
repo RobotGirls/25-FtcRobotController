@@ -28,17 +28,6 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
     private Limelight3A limelight;
     private DcMotor turret;
 
-    private final int ALIGN_THRESHOLD = 3;
-    private double lastError = 0;
-
-    // Update these values after tuning them
-    private double derivative;
-    private double integralSum = 0;
-
-    private double Kp = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
-    private double Ki = 0;
-    private double Kd = 0;
-
 
     public enum FlywheelState {
         ON,
@@ -166,18 +155,6 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 
                 telemetry.addData("Botpose", botpose.toString());
 
-                double error = result.getTx();
-                ElapsedTime timer = new ElapsedTime();
-                if (Math.abs(error) > ALIGN_THRESHOLD) {
-                    error = -1 * result.getTx();
-                    derivative = (error - lastError) / timer.seconds();
-                    integralSum = integralSum + (error * timer.seconds());
-                    double power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
-                    turret.setPower(power);
-                    lastError = error;
-                } else {
-                    turret.setPower(0);  // aligned
-                }
 
 
             } else {
