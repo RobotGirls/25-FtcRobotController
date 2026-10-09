@@ -21,7 +21,7 @@ public class LM0ParkBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-62, 35, Math.toRadians(0));
+        Pose2d initialPose = new Pose2d(-62, 35, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
