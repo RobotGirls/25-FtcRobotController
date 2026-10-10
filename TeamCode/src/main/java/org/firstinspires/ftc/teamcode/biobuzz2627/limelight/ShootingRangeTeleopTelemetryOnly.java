@@ -15,12 +15,12 @@ import java.util.List;
 public class ShootingRangeTeleopTelemetryOnly extends LinearOpMode {
     private Limelight3A limelight;
     boolean shootBalls;
-    private double minDistanceToTag = 0;
+    final double minDistanceToTag = 0;
 
-    private double maxDistanceToTag = 0;
+    final double maxDistanceToTag = 0;
 
-    private double minX = 0;
-    private double maxX = 0;
+    final private double minX = 0;
+    final private double maxX = 0;
 
 
     @Override
@@ -79,9 +79,7 @@ public class ShootingRangeTeleopTelemetryOnly extends LinearOpMode {
                      */
 
                     double distanceToTag = Math.sqrt(
-                            (x * x) +
-                                    (y * y) +
-                                    (z * z)
+                            (x * x) + (y * y) + (z * z)
                     );
 
 
@@ -98,9 +96,7 @@ public class ShootingRangeTeleopTelemetryOnly extends LinearOpMode {
                     telemetry.addData("Z", "%.3f m", z);
 
                     telemetry.addData(
-                            "Camera -> Tag Distance",
-                            "%.3f m",
-                            distanceToTag
+                            "Camera -> Tag Distance", "%.3f m", distanceToTag
                     );
 
                     telemetry.addData("tx", "%.2f deg", tx);
