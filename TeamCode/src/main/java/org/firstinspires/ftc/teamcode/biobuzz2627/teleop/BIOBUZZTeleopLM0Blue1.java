@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.biobuzz2627.teleop;
 
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+//import com.qualcomm.hardware.limelightvision.LLResult;
+//import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,10 +22,10 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
     public DcMotor leftBack = null;
 
     public DcMotor shooter;
-    public DcMotor transfer;
+   // public DcMotor transfer;
     public DcMotor intake;
 
-    private Limelight3A limelight;
+    //private Limelight3A limelight;
     private DcMotor turret;
 
 
@@ -41,23 +41,23 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
     public void runOpMode() {
 
         // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBack = hardwareMap.get(DcMotor.class, "backRight");
-        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        turret = hardwareMap.get(DcMotor.class, "turret");
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+       // turret = hardwareMap.get(DcMotor.class, "turret");
+        //limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         telemetry.setMsTransmissionInterval(11);
 
         // Pipeline 0: blue
-        limelight.pipelineSwitch(0);
+       // limelight.pipelineSwitch(0);
 
-        limelight.start();
+       // limelight.start();
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -68,7 +68,7 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         //drive.setPoseEstimate(startPose);
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
-        transfer = hardwareMap.get(DcMotor.class, "transfer");
+        //transfer = hardwareMap.get(DcMotor.class, "transfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -113,13 +113,13 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
-                transfer.setPower(1);
+                //transfer.setPower(1);
             } else if (gamepad2.right_bumper) {
                 intake.setPower(-1);
-                transfer.setPower(-1);
+                //transfer.setPower(-1);
             } else {
                 intake.setPower(0);
-                transfer.setPower(0);
+                //transfer.setPower(0);
             }
 
             if (gamepad2.x) {
@@ -138,37 +138,37 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            LLResult result = limelight.getLatestResult();
+            //LLResult result = limelight.getLatestResult();
 
-            if (result.isValid()) {
+            //if (result.isValid()) {
 
                 // Access general information
-                Pose3D botpose = result.getBotpose();
-                double captureLatency = result.getCaptureLatency();
-                double targetingLatency = result.getTargetingLatency();
-                double parseLatency = result.getParseLatency();
+//                Pose3D botpose = result.getBotpose();
+//                double captureLatency = result.getCaptureLatency();
+//                double targetingLatency = result.getTargetingLatency();
+//                double parseLatency = result.getParseLatency();
+//
+//                telemetry.addData("tx", result.getTx());
+//                telemetry.addData("txnc", result.getTxNC());
+//                telemetry.addData("ty", result.getTy());
+//                telemetry.addData("tync", result.getTyNC());
+//
+//                telemetry.addData("Botpose", botpose.toString());
 
-                telemetry.addData("tx", result.getTx());
-                telemetry.addData("txnc", result.getTxNC());
-                telemetry.addData("ty", result.getTy());
-                telemetry.addData("tync", result.getTyNC());
-
-                telemetry.addData("Botpose", botpose.toString());
 
 
-
-            } else {
+            //} else {
                 // apriltag not in view of limelight
-                turret.setPower(gamepad1.right_stick_x);
-                telemetry.addData("Limelight", "No data available");
+                //turret.setPower(gamepad1.right_stick_x);
+                //telemetry.addData("Limelight", "No data available");
             }
 
             telemetry.update();
         }
-        limelight.stop();
+        //limelight.stop();
 
         // Pace this loop so jaw action is reasonable speed.
-        sleep(50);
+       // sleep(50);
 
     }
-}
+//}
