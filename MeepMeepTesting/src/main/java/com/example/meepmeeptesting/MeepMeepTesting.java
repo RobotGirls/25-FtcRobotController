@@ -21,25 +21,24 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-62, 35, Math.toRadians(180)))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-62, 35, Math.toRadians(0)))
+                .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
 
-                .setTangent(Math.toRadians(-90))
-                .splineToLinearHeading(new Pose2d(-30,-60, Math.toRadians(180)), Math.toRadians(-90))
                         .build());
 
         // Load the custom BIOBUZZ field image
-        BufferedImage biobuzzField = null;
+        BufferedImage fieldImage = null;
         try {
             // Replace with the actual path to where you saved the image
-            biobuzzField = ImageIO.read(new File("MeepMeepTesting/src/main/java/resources/biobuzz.png"));
+            fieldImage = ImageIO.read(new File("MeepMeepTesting/src/main/java/resources/fieldimage.png"));
         } catch (IOException e) {
             System.out.println("Could not load BIOBUZZ field image!");
             e.printStackTrace();
         }
 
         // Apply the custom image background
-        if (biobuzzField != null) {
-            meepMeep.setBackground(biobuzzField);
+        if (fieldImage != null) {
+            meepMeep.setBackground(fieldImage);
         } else {
             // Fallback to a built-in background if the image fails to load
             meepMeep.setBackground(MeepMeep.Background.GRID_GRAY);

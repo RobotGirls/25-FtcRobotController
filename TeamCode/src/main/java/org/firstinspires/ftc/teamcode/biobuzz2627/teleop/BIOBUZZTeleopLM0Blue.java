@@ -52,16 +52,16 @@ public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
     public void runOpMode() {
 
         // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBack = hardwareMap.get(DcMotor.class, "backRight");
-        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        turret = hardwareMap.get(DcMotor.class, "turret");
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        //turret = hardwareMap.get(DcMotor.class, "turret");
+        //limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         telemetry.setMsTransmissionInterval(11);
 
