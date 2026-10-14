@@ -21,14 +21,16 @@ public class LM0ParkBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-62, 35, Math.toRadians(180));
+        Pose2d initialPose = new Pose2d(60, 0, Math.toRadians(180));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-
-        // actionBuilder builds from the drive steps passed to it
         TrajectoryActionBuilder toPark = drive.actionBuilder(initialPose)
-                .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0));
-
+                .lineToX(59.5)
+                .setTangent(Math.toRadians(90))
+                .strafeToLinearHeading(
+                        new Vector2d(59.5, -25),
+                        Math.toRadians(180)
+                );
 
         Action firstTraj = toPark.build();
 
@@ -36,21 +38,17 @@ public class LM0ParkBlue extends LinearOpMode {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
             telemetry.update();
         }
+
         waitForStart();
+
         if (isStopRequested()) return;
 
-        // IN RUNTIME
-        // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj
                 )
         );
-
-        // add mechanism code below
-
     }
-
 }
 
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-62, 35, Math.toRadians(0)))

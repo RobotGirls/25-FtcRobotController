@@ -21,14 +21,16 @@ public class LM0ParkRed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-56, -15, Math.toRadians(45));
+        Pose2d initialPose = new Pose2d(-60, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
         // actionBuilder builds from the drive steps passed to it
 
         TrajectoryActionBuilder toPark = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-30, -60), Math.toRadians(0));
+                .lineToX(-55)
+                .setTangent(Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-55, 36), Math.toRadians(0));
 
         Action firstTraj = toPark.build();
 
