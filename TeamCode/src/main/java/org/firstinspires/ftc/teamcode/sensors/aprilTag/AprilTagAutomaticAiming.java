@@ -42,8 +42,6 @@
 //import org.firstinspires.ftc.vision.VisionPortal;
 //import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 //import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-//import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
-//
 //import java.util.List;
 //
 ///*
@@ -224,7 +222,7 @@
 //
 //        // Step through the list of detections and display info for each one.
 //        for (AprilTagDetection detection : currentDetections) {
-//            if (detection instanceof AprilTagSingleDetection) {
+//            if (detection.metadata != null) {if (detection instanceof AprilTagSingleDetection) {
 //                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
 //                // Only use tags that don't have Obelisk in them
 //                if (!detection.metadata.name.contains("Obelisk")) {

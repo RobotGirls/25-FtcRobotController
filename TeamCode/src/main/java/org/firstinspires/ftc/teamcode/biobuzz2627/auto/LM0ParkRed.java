@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.paths;
+package org.firstinspires.ftc.teamcode.biobuzz2627.auto;
 
 // RR-specific imports
 
@@ -14,29 +14,26 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "LM0 Blue Garden", group = "Blue Auto")
-public class LM0BlueGarden extends LinearOpMode {
-    private boolean first = true;
+@Autonomous(name = "LM0 Park Red", group = "Red Auto")
+public class LM0ParkRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-62, 35, Math.toRadians(0));
+        Pose2d initialPose = new Pose2d(-60, 0, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
 
         // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toHive = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-50, 15), 0);
 
-        Action toPark = toHive.endTrajectory().fresh()
+        TrajectoryActionBuilder toPark = drive.actionBuilder(initialPose)
+                .lineToX(-55)
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
+                .strafeToLinearHeading(new Vector2d(-55, 36), Math.toRadians(0));
 
-                .build();
+        Action firstTraj = toPark.build();
 
-        Action firstTraj = toHive.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
@@ -49,8 +46,7 @@ public class LM0BlueGarden extends LinearOpMode {
         // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
-                        firstTraj,
-                        toPark
+                        firstTraj
                 )
         );
 
@@ -60,9 +56,3 @@ public class LM0BlueGarden extends LinearOpMode {
 
 }
 
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-62, 35, Math.toRadians(0)))
-//        .strafeToLinearHeading(new Vector2d(-50, 15), 0)
-//        .waitSeconds(2)
-//                .setTangent(Math.toRadians(90))
-//        .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
-//        .build());

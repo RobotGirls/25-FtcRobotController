@@ -1,37 +1,32 @@
-package org.firstinspires.ftc.teamcode.biobuzz2627;
+package org.firstinspires.ftc.teamcode.biobuzz2627.teleop;
 
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+//import com.qualcomm.hardware.limelightvision.LLResult;
+//import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-public class BIOBUZZTeleopLM0Red extends LinearOpMode {
+
+@TeleOp(name = "BIOBUZZ TELEOP esther")
+public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
+
+    /* Declare OpMode members. */
     public DcMotor leftFront = null;
     public DcMotor rightFront = null;
     public DcMotor rightBack = null;
     public DcMotor leftBack = null;
 
     public DcMotor shooter;
-    public DcMotor transfer;
+   // public DcMotor transfer;
     public DcMotor intake;
 
-    private Limelight3A limelight;
+    //private Limelight3A limelight;
     private DcMotor turret;
-
-    private final int ALIGN_THRESHOLD = 3;
-    private double lastError = 0;
-
-    // Update these values after tuning them
-    private double derivative;
-    private double integralSum = 0;
-
-    private double Kp = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
-    private double Ki = 0;
-    private double Kd = 0;
 
 
     public enum FlywheelState {
@@ -39,30 +34,30 @@ public class BIOBUZZTeleopLM0Red extends LinearOpMode {
         OFF
     }
 
-    BIOBUZZTeleopLM0Blue.FlywheelState flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.OFF;
+    BIOBUZZTeleopLM0Blue1.FlywheelState flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.OFF;
 
 
     @Override
     public void runOpMode() {
 
         // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBack = hardwareMap.get(DcMotor.class, "backRight");
-        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        turret = hardwareMap.get(DcMotor.class, "turret");
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+       // turret = hardwareMap.get(DcMotor.class, "turret");
+        //limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         telemetry.setMsTransmissionInterval(11);
 
         // Pipeline 0: blue
-        limelight.pipelineSwitch(0);
+       // limelight.pipelineSwitch(0);
 
-        limelight.start();
+       // limelight.start();
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -73,7 +68,7 @@ public class BIOBUZZTeleopLM0Red extends LinearOpMode {
         //drive.setPoseEstimate(startPose);
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
-        transfer = hardwareMap.get(DcMotor.class, "transfer");
+        //transfer = hardwareMap.get(DcMotor.class, "transfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -118,21 +113,21 @@ public class BIOBUZZTeleopLM0Red extends LinearOpMode {
 
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
-                transfer.setPower(1);
+                //transfer.setPower(1);
             } else if (gamepad2.right_bumper) {
                 intake.setPower(-1);
-                transfer.setPower(-1);
+                //transfer.setPower(-1);
             } else {
                 intake.setPower(0);
-                transfer.setPower(0);
+                //transfer.setPower(0);
             }
 
             if (gamepad2.x) {
                 shooter.setPower(-0.72);
-                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
+                flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
             } else if (gamepad2.b) {
                 shooter.setPower(-0.44);
-                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
+                flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
             } else if (gamepad2.a) {
                 shooter.setPower(0.5);
             }
@@ -143,49 +138,37 @@ public class BIOBUZZTeleopLM0Red extends LinearOpMode {
                 shooter.setPower(0);
             }
 
-            LLResult result = limelight.getLatestResult();
+            //LLResult result = limelight.getLatestResult();
 
-            if (result.isValid()) {
+            //if (result.isValid()) {
 
                 // Access general information
-                Pose3D botpose = result.getBotpose();
-                double captureLatency = result.getCaptureLatency();
-                double targetingLatency = result.getTargetingLatency();
-                double parseLatency = result.getParseLatency();
-
-                telemetry.addData("tx", result.getTx());
-                telemetry.addData("txnc", result.getTxNC());
-                telemetry.addData("ty", result.getTy());
-                telemetry.addData("tync", result.getTyNC());
-
-                telemetry.addData("Botpose", botpose.toString());
-
-                double error = result.getTx();
-                ElapsedTime timer = new ElapsedTime();
-                if (Math.abs(error) > ALIGN_THRESHOLD) {
-                    error = -1 * result.getTx();
-                    derivative = (error - lastError) / timer.seconds();
-                    integralSum = integralSum + (error * timer.seconds());
-                    double power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
-                    turret.setPower(power);
-                    lastError = error;
-                } else {
-                    turret.setPower(0);  // aligned
-                }
+//                Pose3D botpose = result.getBotpose();
+//                double captureLatency = result.getCaptureLatency();
+//                double targetingLatency = result.getTargetingLatency();
+//                double parseLatency = result.getParseLatency();
+//
+//                telemetry.addData("tx", result.getTx());
+//                telemetry.addData("txnc", result.getTxNC());
+//                telemetry.addData("ty", result.getTy());
+//                telemetry.addData("tync", result.getTyNC());
+//
+//                telemetry.addData("Botpose", botpose.toString());
 
 
-            } else {
+
+            //} else {
                 // apriltag not in view of limelight
-                turret.setPower(gamepad1.right_stick_x);
-                telemetry.addData("Limelight", "No data available");
+                //turret.setPower(gamepad1.right_stick_x);
+                //telemetry.addData("Limelight", "No data available");
             }
 
             telemetry.update();
         }
-        limelight.stop();
+        //limelight.stop();
 
         // Pace this loop so jaw action is reasonable speed.
-        sleep(50);
+       // sleep(50);
 
     }
-}
+//}
