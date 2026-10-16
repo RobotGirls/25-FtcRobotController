@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
-@TeleOp(name = "BIOBUZZ TELEOP")
+@TeleOp(name = "BIOBUZZ TELEOP esther")
 public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 
     /* Declare OpMode members. */
