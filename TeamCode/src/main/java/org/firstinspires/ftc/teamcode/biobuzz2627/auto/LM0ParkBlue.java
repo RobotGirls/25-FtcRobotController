@@ -25,12 +25,9 @@ public class LM0ParkBlue extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         TrajectoryActionBuilder toPark = drive.actionBuilder(initialPose)
-                .lineToX(59.5)
+                .lineToX(59.8)
                 .setTangent(Math.toRadians(90))
-                .strafeToLinearHeading(
-                        new Vector2d(59.5, -25),
-                        Math.toRadians(180)
-                );
+                .strafeToLinearHeading(new Vector2d(59.8, -15), Math.toRadians(180));
 
         Action firstTraj = toPark.build();
 
@@ -51,9 +48,9 @@ public class LM0ParkBlue extends LinearOpMode {
     }
 }
 
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-62, 35, Math.toRadians(0)))
-//        .strafeToLinearHeading(new Vector2d(-50, 15), 0)
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, 0, Math.toRadians(180)))
+//        .strafeToLinearHeading(new Vector2d(59.8, -15), 0)
 //        .waitSeconds(2)
-//                .setTangent(Math.toRadians(90))
-//        .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
+//                .setTangent(Math.toRadians(180))
+//        .splineToLinearHeading(new Pose2d(new Vector2d(59.8, -15), 0), Math.toRadians(180))
 //        .build());
