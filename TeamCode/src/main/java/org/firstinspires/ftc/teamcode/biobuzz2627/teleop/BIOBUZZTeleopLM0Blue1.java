@@ -73,6 +73,9 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -114,27 +117,21 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
                 //transfer.setPower(1);
-            } else if (gamepad2.right_bumper) {
+            } else if(gamepad2.right_bumper) {
                 intake.setPower(-1);
-                //transfer.setPower(-1);
-            } else {
+                } else {
                 intake.setPower(0);
                 //transfer.setPower(0);
             }
 
             if (gamepad2.x) {
-                shooter.setPower(-0.72);
+                shooter.setPower(-0.8);
                 flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
-            } else if (gamepad2.b) {
-                shooter.setPower(-0.44);
-                flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
-            } else if (gamepad2.a) {
-                shooter.setPower(0.5);
             }
-//            else if (gamepad2.y) {
-//                shooter.setPower(MecanumDrive.FLYWHEEL_SPEED_LONG);
-//            }
-            else {
+            else if(gamepad2.a) {
+                shooter.setPower(0.8);
+                flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
+            } else {
                 shooter.setPower(0);
             }
 
