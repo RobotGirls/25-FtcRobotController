@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.biobuzz2627.teleop;
 //import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -22,7 +23,8 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
     public DcMotor leftBack = null;
 
     public DcMotor shooter;
-   // public DcMotor transfer;
+    public CRServo leftTransfer;
+    public CRServo rightTransfer;
     public DcMotor intake;
 
     //private Limelight3A limelight;
@@ -68,8 +70,12 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         //drive.setPoseEstimate(startPose);
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
-        //transfer = hardwareMap.get(DcMotor.class, "transfer");
+        leftTransfer = hardwareMap.get(CRServo.class, "leftTransfer");
+        rightTransfer = hardwareMap.get(CRServo.class, "rightTransfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
+
+        // Reverse rightTransfer so both servos rotate in the same physical direction
+        rightTransfer.setDirection(CRServo.Direction.REVERSE);
 
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -114,21 +120,30 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
             rightFront.setPower(0.8 * frontRightPower);
             rightBack.setPower(0.8 * backRightPower);
 
-            if (gamepad2.left_bumper) {
+            if (gamepad2.y) {
                 intake.setPower(1);
-                //transfer.setPower(1);
-            } else if(gamepad2.right_bumper) {
+            } else if(gamepad2.x) {
                 intake.setPower(-1);
-                } else {
+            } else {
                 intake.setPower(0);
-                //transfer.setPower(0);
             }
 
-            if (gamepad2.x) {
+            if (gamepad2.a) {
+                leftTransfer.setPower(1);
+                rightTransfer.setPower(1);
+            } else if (gamepad2.b) {
+                leftTransfer.setPower(-1);
+                rightTransfer.setPower(-1);
+            } else {
+                leftTransfer.setPower(0);
+                rightTransfer.setPower(0);
+            }
+
+            if (gamepad2.right_bumper) {
                 shooter.setPower(-0.8);
                 flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
             }
-            else if(gamepad2.a) {
+            else if(gamepad2.left_bumper) {
                 shooter.setPower(0.8);
                 flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
             } else {
