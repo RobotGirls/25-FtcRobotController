@@ -21,10 +21,11 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-60, 0, Math.toRadians(0)))
-                .lineToX(-55)
-                .setTangent(Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-55, 36), Math.toRadians(0))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-10, -61, Math.toRadians(90)))
+                .lineToY(-40)
+                .strafeToLinearHeading(new Vector2d(-48,-40), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-58,40), Math.toRadians(360))
+
                 .build());
 
         // Load the custom BIOBUZZ field image

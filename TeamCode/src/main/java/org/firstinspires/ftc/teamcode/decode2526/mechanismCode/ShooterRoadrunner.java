@@ -31,7 +31,7 @@ public class ShooterRoadrunner {
 
     public ShooterRoadrunner(HardwareMap hardwareMap, Telemetry telemetry) {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        shooterHood = hardwareMap.get(Servo.class, "shooterHood");
+        // shooterHood = hardwareMap.get(Servo.class, "shooterHood");
 
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

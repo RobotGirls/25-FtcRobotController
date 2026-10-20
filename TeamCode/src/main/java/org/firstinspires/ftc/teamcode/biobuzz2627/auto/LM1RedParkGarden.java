@@ -14,55 +14,41 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 //@Config
-@Autonomous(name = "LM0 Blue Garden", group = "Blue Auto")
-public class LM0BlueGarden extends LinearOpMode {
-    private boolean first = true;
+@Autonomous(name = "LM1 Red Park Garden", group = "Red Auto")
+public class LM1RedParkGarden extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         // liftTimer.reset();
         // instantiating the robot at a specific pose
-        Pose2d initialPose = new Pose2d(-62, 35, Math.toRadians(0));
+        Pose2d initialPose = new Pose2d(-10, -61, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
+        TrajectoryActionBuilder toShoot = drive.actionBuilder(initialPose)
+                .lineToY(-40);
 
-        // actionBuilder builds from the drive steps passed to it
-        TrajectoryActionBuilder toHive = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-50, 15), 0);
-
-        Action toPark = toHive.endTrajectory().fresh()
-                .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
-
+        Action toPark = toShoot.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-48,-40), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-58,40), Math.toRadians(360))
                 .build();
 
-        Action firstTraj = toHive.build();
+
+        Action firstTraj = toShoot.build();
 
         while (!isStopRequested() && !opModeIsActive()) {
             telemetry.addData("Robot position: ", drive.updatePoseEstimate());
             telemetry.update();
         }
+
         waitForStart();
+
         if (isStopRequested()) return;
 
-        // IN RUNTIME
-        // running the action sequence!
         Actions.runBlocking(
                 new SequentialAction(
                         firstTraj,
                         toPark
                 )
         );
-
-        // add mechanism code below
-
     }
-
 }
-
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-62, 35, Math.toRadians(0)))
-//        .strafeToLinearHeading(new Vector2d(-50, 15), 0)
-//        .waitSeconds(2)
-//                .setTangent(Math.toRadians(90))
-//        .splineToLinearHeading(new Pose2d(new Vector2d(30, 58), 0), Math.toRadians(0))
-//        .build());
