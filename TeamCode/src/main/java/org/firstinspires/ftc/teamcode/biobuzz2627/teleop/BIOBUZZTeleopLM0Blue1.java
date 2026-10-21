@@ -139,11 +139,11 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
                 rightTransfer.setPower(0);
             }
 
-            if (gamepad2.right_bumper) {
+            if (gamepad2.left_bumper) {
                 shooter.setPower(-0.8);
                 flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
             }
-            else if(gamepad2.left_bumper) {
+            else if(gamepad2.right_bumper) {
                 shooter.setPower(0.8);
                 flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
             } else {
