@@ -67,7 +67,6 @@ public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
 
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
-
        /* shooter = hardwareMap.get(DcMotor.class, "shooter");
         transfer = hardwareMap.get(DcMotor.class, "transfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
