@@ -27,6 +27,8 @@ public class ShootingRangeTeleopRed extends LinearOpMode {
 
     double distanceToTagCenter;
 
+    private DcMotor turret;
+
 
     @Override
     public void runOpMode() {
@@ -47,6 +49,8 @@ public class ShootingRangeTeleopRed extends LinearOpMode {
         LimelightSensor limelight = new LimelightSensor(hardwareMap, telemetry, IS_RED);
         Shooter shooter = new Shooter(hardwareMap, telemetry);
         intake = hardwareMap.get(DcMotor.class, "intake");
+        turret = hardwareMap.get(DcMotor.class, "turret");
+
 
         telemetry.setMsTransmissionInterval(11);
 
@@ -82,7 +86,8 @@ public class ShootingRangeTeleopRed extends LinearOpMode {
                 validResult = limelight.checkTag();
 
                 if (validResult) {
-                    distanceToTagCenter = limelight.getDistance(telemetry);
+                    limelight.turretAdjustment(turret);
+                    distanceToTagCenter = limelight.getDistance();
                     xValue = limelight.getXValue();
                     validShooting = limelight.isValidShooting(xValue, distanceToTagCenter);
                     if (validShooting) {

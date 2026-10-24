@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode.biobuzz2627.limelight;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
@@ -14,6 +17,8 @@ public class LimelightSensor {
     private Limelight3A limelight;
 
     LLResultTypes.FiducialResult tag1;
+
+    LLResult result1;
 
     double minX = 1.5;
     double maxX = 2.5;
@@ -25,11 +30,17 @@ public class LimelightSensor {
 
     int[] targetIds;
     boolean isRed = false;
-
-
     public static final int[] BLUE_TAGS = {38, 39, 40, 41, 42, 43, 44, 45};
 
     public static final int[] RED_TAGS = {30, 31, 32, 33, 34, 35, 36, 37};
+
+    private final int ALIGN_THRESHOLD = 3;
+    private double lastError = 0;
+    private double derivative;
+    private double integralSum = 0;
+    private double Kp = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
+    private double Ki = 0;
+    private double Kd = 0;
 
     public LimelightSensor(HardwareMap hardwareMap, Telemetry telemetry, boolean isRedAlliance) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -75,6 +86,7 @@ public class LimelightSensor {
 
                 for (int targetId : targetIds) {
                     if (tagID == targetId) {
+                        result1 = result;
                         return true;
                     } // end if
                 }  // inner for
@@ -87,7 +99,7 @@ public class LimelightSensor {
 
 
 
-    public double getDistance(Telemetry telemetry) {
+    public double getDistance() {
         // Get the AprilTag's 3D pose relative to target space
         // Index 2 of translation array corresponds to z-axis (distance)
         Pose3D tagPose = tag1.getRobotPoseTargetSpace();
@@ -111,9 +123,7 @@ public class LimelightSensor {
     public double getXValue() {
         Pose3D tagPose = tag1.getRobotPoseTargetSpace();
 
-        double x = tagPose.getPosition().x;
-
-        return x;
+        return tagPose.getPosition().x;
     }
 
     public boolean isValidShooting(double xValue1, double dToTag1) {
@@ -123,6 +133,21 @@ public class LimelightSensor {
         }
 
         return validShooting;
+    }
+
+    public void turretAdjustment(DcMotor turret) {
+        double error = result1.getTx();
+        ElapsedTime timer = new ElapsedTime();
+        if (Math.abs(error) > ALIGN_THRESHOLD) {
+            error = -1 * result1.getTx();
+            derivative = (error - lastError) / timer.seconds();
+            integralSum = integralSum + (error * timer.seconds());
+            double power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+            turret.setPower(power);
+            lastError = error;
+        } else {
+            turret.setPower(0);  // aligned
+        }
     }
 
 
