@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.biobuzz2627.limelight;
+package org.firstinspires.ftc.teamcode.biobuzz2627.limelight.reference;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.decode2526.mechanismCode.ShooterRoadrunner
 import java.util.Arrays;
 import java.util.List;
 
-@TeleOp(name = "ShootingRangeTeleop Red")
-public class ShootingRangeTeleopTelemetryRed extends LinearOpMode {
+@TeleOp(name = "ShootingRangeTeleop Blue Test")
+public class ShootingRangeTeleopBlue extends LinearOpMode {
     private Limelight3A limelight;
 
     ShooterRoadrunner shooter;
@@ -66,7 +66,7 @@ public class ShootingRangeTeleopTelemetryRed extends LinearOpMode {
                     // AprilTag ID
                     int tagID = tag.getFiducialId();
 
-                    if (Arrays.stream(redTags).anyMatch(x -> x == tagID)) {
+                    if (Arrays.stream(blueTags).anyMatch(x -> x == tagID)) {
                         // Get the AprilTag's 3D pose relative to target space
                         // Index 2 of translation array corresponds to z-axis (distance)
                         Pose3D tagPose = tag.getRobotPoseTargetSpace();

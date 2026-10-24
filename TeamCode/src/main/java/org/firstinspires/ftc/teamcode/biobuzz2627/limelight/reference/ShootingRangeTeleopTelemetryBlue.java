@@ -1,23 +1,22 @@
-package org.firstinspires.ftc.teamcode.biobuzz2627.limelight;
+package org.firstinspires.ftc.teamcode.biobuzz2627.limelight.reference;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
-import org.firstinspires.ftc.teamcode.decode2526.mechanismCode.ShooterRoadrunner;
 
 import java.util.Arrays;
 import java.util.List;
 
-@TeleOp(name = "ShootingRangeTeleop Blue Test")
-public class ShootingRangeTeleopBlue extends LinearOpMode {
+@TeleOp(name = "ShootingRangeTeleop Blue")
+public class ShootingRangeTeleopTelemetryBlue extends LinearOpMode {
     private Limelight3A limelight;
 
-    ShooterRoadrunner shooter;
+    DcMotorEx shooter;
 
      double targetVelocity;
 
@@ -39,7 +38,7 @@ public class ShootingRangeTeleopBlue extends LinearOpMode {
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        shooter = new ShooterRoadrunner(hardwareMap,telemetry);
+        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
 
         telemetry.setMsTransmissionInterval(11);
 
@@ -101,7 +100,7 @@ public class ShootingRangeTeleopBlue extends LinearOpMode {
                         telemetry.addData("ty", "%.2f deg", ty);
 
                         if (x >= minX && x <= maxX && distanceToTag >= minDistanceToTag && distanceToTag <= maxDistanceToTag) {
-                            shootBalls = true;
+                            shooter.setVelocity(-1200);
                         } else {
                             telemetry.addData("Invalid Shooting", "Move Robot");
                         }
