@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "ShootingRangeTeleop Blue")
-public class ShootingRangeTeleopBlue extends LinearOpMode {
+@TeleOp(name = "Shooting Range Teleop", group = "AAAAAAAA")
+public class ShootingRangeSMTeleop extends LinearOpMode {
 
     public DcMotor leftFront = null;
     public DcMotor rightFront = null;
@@ -18,7 +18,7 @@ public class ShootingRangeTeleopBlue extends LinearOpMode {
 
     public DcMotor intake;
 
-    final boolean IS_RED = true;
+     boolean IS_RED = false;
 
     boolean validResult;
     boolean validShooting;
@@ -28,6 +28,14 @@ public class ShootingRangeTeleopBlue extends LinearOpMode {
     double distanceToTagCenter;
 
     private DcMotor turret;
+
+    public enum TeleopStates {
+        INIT,
+        RED,
+        BLUE,
+    }
+
+    ShootingRangeSMTeleop.TeleopStates currentState = TeleopStates.INIT;
 
 
     @Override
@@ -46,6 +54,13 @@ public class ShootingRangeTeleopBlue extends LinearOpMode {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        if (gamepad2.dpad_up) {
+            currentState = TeleopStates.BLUE;
+            IS_RED = false;
+        } else if (gamepad2.dpad_down) {
+            currentState = TeleopStates.RED;
+        }
+
         LimelightSensor limelight = new LimelightSensor(hardwareMap, telemetry, IS_RED);
         Shooter shooter = new Shooter(hardwareMap, telemetry);
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -56,6 +71,7 @@ public class ShootingRangeTeleopBlue extends LinearOpMode {
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
+
         waitForStart();
 
         while (opModeIsActive()) {

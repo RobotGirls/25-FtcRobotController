@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "ShootingRangeTeleop Red Test")
+@TeleOp(name = "ShootingRangeTeleop Red")
 public class ShootingRangeTeleopRed extends LinearOpMode {
 
     public DcMotor leftFront = null;

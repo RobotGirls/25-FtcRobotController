@@ -135,7 +135,7 @@ public class LimelightSensor {
         return validShooting;
     }
 
-    public void turretAdjustment(DcMotor turret) {
+    public void turretAdjustment(DcMotor turret1) {
         double error = result1.getTx();
         ElapsedTime timer = new ElapsedTime();
         if (Math.abs(error) > ALIGN_THRESHOLD) {
@@ -143,10 +143,10 @@ public class LimelightSensor {
             derivative = (error - lastError) / timer.seconds();
             integralSum = integralSum + (error * timer.seconds());
             double power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
-            turret.setPower(power);
+            turret1.setPower(power);
             lastError = error;
         } else {
-            turret.setPower(0);  // aligned
+            turret1.setPower(0);  // aligned
         }
     }
 
