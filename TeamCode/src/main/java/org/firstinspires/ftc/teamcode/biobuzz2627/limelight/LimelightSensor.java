@@ -15,32 +15,30 @@ import java.util.List;
 
 public class LimelightSensor {
     private Limelight3A limelight;
-
     LLResultTypes.FiducialResult tag1;
 
     LLResult result1;
 
-    double minX = 1.5;
-    double maxX = 2.5;
-    double minD = -2.5;
-    double maxD = 2.5;
+    final double MIN_X = 1.5;
+    final double MAX_X = 2.5;
+    final double MIN_D = -2.5;
+    final double MAX_D = 2.5;
     boolean validShooting;
 
     Telemetry telemetry1;
-
-    int[] targetIds;
     boolean isRed;
     public static final int[] BLUE_TAGS = {38, 39, 40, 41, 42, 43, 44, 45};
-
     public static final int[] RED_TAGS = {30, 31, 32, 33, 34, 35, 36, 37};
+    int[] targetIds;
+
 
     private final int ALIGN_THRESHOLD = 3;
     private double lastError = 0;
     private double derivative;
     private double integralSum = 0;
-    private double Kp = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
-    private double Ki = 0;
-    private double Kd = 0;
+    private final double KP = 0.014; // Tx range is 0 to 26 --> at max offset 26, when Kp is 0.02, speed is half power
+    private final double KI = 0;
+    private final double KD = 0;
 
     public LimelightSensor(HardwareMap hardwareMap, Telemetry telemetry, boolean isRedAlliance) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -128,11 +126,10 @@ public class LimelightSensor {
 
     public boolean isValidShooting(double xValue1, double dToTag1) {
 
-        telemetry1.addData("Current X", xValue1);
         telemetry1.addData("Distance to Tag", dToTag1);
         telemetry1.update();
 
-        if (xValue1 >= minX && xValue1 <= maxX && dToTag1 >= minD && dToTag1 <= maxD) {
+        if (xValue1 >= MIN_X && xValue1 <= MAX_X && dToTag1 >= MIN_D && dToTag1 <= MAX_D) {
             validShooting = true;
         }
 
@@ -146,7 +143,7 @@ public class LimelightSensor {
             error = -1 * result1.getTx();
             derivative = (error - lastError) / timer.seconds();
             integralSum = integralSum + (error * timer.seconds());
-            double power = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+            double power = (KP * error) + (KI * integralSum) + (KD * derivative);
             turret1.setPower(power);
             lastError = error;
         } else {
