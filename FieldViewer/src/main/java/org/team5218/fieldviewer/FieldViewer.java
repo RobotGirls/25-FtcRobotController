@@ -36,7 +36,7 @@ import javax.imageio.ImageIO;
  */
 public final class FieldViewer {
     /** Team number, so it's easy to remember. */
-    public static final int DEFAULT_PORT = 5218;
+    public static final int DEFAULT_PORT = 25;
 
     private FieldViewer() {}
 
