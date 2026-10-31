@@ -1,33 +1,40 @@
-/**
- * Top-level build file for ftc_app project.
- *
- * It is extraordinarily rare that you will ever need to edit this file.
- */
+apply plugin: 'com.android.application'
 
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-    }
+//
+// build.gradle in TeamCode
+//
+// Most of the definitions for building your module reside in a common, shared
+// file 'build.common.gradle'. Being factored in this way makes it easier to
+// integrate updates to the FTC into your code. If you really need to customize
+// the build definitions, you can place those customizations in this file, but
+// please think carefully as to whether such customizations are really necessary
+// before doing so.
 
-}
+// Custom definitions may go here
 
-plugins {
-    // Note for FTC Teams: Do not modify this yourself.
-    id 'com.android.application' version '8.13.2' apply false
-    id 'com.android.library' version '8.13.2' apply false
+// Include common definitions from above.
+apply from: '../build.common.gradle'
+apply from: '../build.dependencies.gradle'
 
-}
+android {
+    namespace = 'org.firstinspires.ftc.teamcode'
 
-// This is now required because aapt2 has to be downloaded from the
-// google() repository beginning with version 3.2 of the Android Gradle Plugin
-allprojects {
-    repositories {
-        mavenCentral()
-        google()
+    packagingOptions {
+        jniLibs.useLegacyPackaging true
     }
 }
-
 repositories {
-    mavenCentral()
+    maven {
+        url = 'https://maven.brott.dev/'
+    }
 }
+dependencies {
+    implementation project(':FtcRobotController')
+    // pure pursuit follower + route definitions, shared with the FieldViewer desktop app
+    implementation project(':PurePursuit')
+    implementation "com.acmerobotics.roadrunner:ftc:0.1.23"
+    implementation "com.acmerobotics.roadrunner:core:1.0.1"
+    implementation "com.acmerobotics.roadrunner:actions:1.0.1"
+    implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
+}
+
