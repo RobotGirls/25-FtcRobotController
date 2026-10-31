@@ -3,40 +3,26 @@ package org.firstinspires.ftc.teamcode.biobuzz2627.limelight;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "Shooting Range Teleop", group = "AAAAAAAA")
-public class ShootingRangeSMTeleop extends LinearOpMode {
+@TeleOp(name = "Shooting Range Teleop", group = "A")
+public class ShootingRangeTeleopCombined extends LinearOpMode {
 
     public DcMotor leftFront = null;
     public DcMotor rightFront = null;
     public DcMotor rightBack = null;
     public DcMotor leftBack = null;
 
-    public DcMotorEx shooter;
-
+    Shooter shooter;
     public DcMotor intake;
+    public DcMotor turret;
 
-     boolean IS_RED = false;
+    boolean isRed = false;
 
-    boolean validResult;
-    boolean validShooting;
-
+    boolean validResult = false;
+    boolean validShooting = false;
     double xValue;
-
     double distanceToTagCenter;
-
-    private DcMotor turret;
-
-    public enum TeleopStates {
-        INIT,
-        RED,
-        BLUE,
-    }
-
-    ShootingRangeSMTeleop.TeleopStates currentState = TeleopStates.INIT;
-
 
     @Override
     public void runOpMode() {
@@ -55,19 +41,18 @@ public class ShootingRangeSMTeleop extends LinearOpMode {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         if (gamepad2.dpad_up) {
-            currentState = TeleopStates.BLUE;
-            IS_RED = false;
+            isRed = false;
         } else if (gamepad2.dpad_down) {
-            currentState = TeleopStates.RED;
+            isRed = true;
         }
 
-        LimelightSensor limelight = new LimelightSensor(hardwareMap, telemetry, IS_RED);
-        Shooter shooter = new Shooter(hardwareMap, telemetry);
+        LimelightSensor limelight = new LimelightSensor(hardwareMap, telemetry, isRed);
+        shooter = new Shooter(hardwareMap, telemetry);
         intake = hardwareMap.get(DcMotor.class, "intake");
         turret = hardwareMap.get(DcMotor.class, "turret");
 
-
-        telemetry.setMsTransmissionInterval(11);
+       // Change back to 50 for comp
+        telemetry.setMsTransmissionInterval(20);
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -98,7 +83,7 @@ public class ShootingRangeSMTeleop extends LinearOpMode {
                 intake.setPower(0.7);
             }
 
-            if(!gamepad2.x) {
+            if (!gamepad2.x) {
                 validResult = limelight.checkTag();
 
                 if (validResult) {
@@ -107,8 +92,9 @@ public class ShootingRangeSMTeleop extends LinearOpMode {
                     xValue = limelight.getXValue();
                     validShooting = limelight.isValidShooting(xValue, distanceToTagCenter);
                     if (validShooting) {
-                        shooter.setVelocity(distanceToTagCenter);
+                        shooter.setVelocity(-1200);
                     }
+                }
             } else {
                     if (gamepad2.a) {
                         shooter.setVelocity(-1200);
@@ -117,7 +103,6 @@ public class ShootingRangeSMTeleop extends LinearOpMode {
                     }
                 }
 
-
             }
         }
 
@@ -125,5 +110,4 @@ public class ShootingRangeSMTeleop extends LinearOpMode {
 
 
     }
-}
 

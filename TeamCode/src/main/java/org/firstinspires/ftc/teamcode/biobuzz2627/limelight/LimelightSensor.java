@@ -29,7 +29,7 @@ public class LimelightSensor {
     Telemetry telemetry1;
 
     int[] targetIds;
-    boolean isRed = false;
+    boolean isRed;
     public static final int[] BLUE_TAGS = {38, 39, 40, 41, 42, 43, 44, 45};
 
     public static final int[] RED_TAGS = {30, 31, 32, 33, 34, 35, 36, 37};
@@ -127,6 +127,10 @@ public class LimelightSensor {
     }
 
     public boolean isValidShooting(double xValue1, double dToTag1) {
+
+        telemetry1.addData("Current X", xValue1);
+        telemetry1.addData("Distance to Tag", dToTag1);
+        telemetry1.update();
 
         if (xValue1 >= minX && xValue1 <= maxX && dToTag1 >= minD && dToTag1 <= maxD) {
             validShooting = true;
