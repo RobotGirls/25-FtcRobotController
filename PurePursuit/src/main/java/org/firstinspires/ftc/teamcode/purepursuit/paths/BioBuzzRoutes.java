@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import org.firstinspires.ftc.teamcode.purepursuit.PurePursuitPath;
 import org.firstinspires.ftc.teamcode.purepursuit.Route;
 import org.firstinspires.ftc.teamcode.purepursuit.Route.Alliance;
+import org.firstinspires.ftc.teamcode.purepursuit.RouteSimulation;
 
 /**
  * BioBuzz autonomous routes. These are the same start poses and moves as the Road Runner autos
@@ -91,5 +92,15 @@ public final class BioBuzzRoutes {
                     .reversed()
                     .build())
             .marker(SHOOT, 3.5)
+            .build();
+
+    public static final Route RNRR_BLUE_SHOOT = Route.builder(
+                    "RNRR_BLUE_SHOOT", Alliance.BLUE, new Pose2d(-63, 12, Math.toRadians(0)))
+            .description("BLUE Garden Park, then spin up the launcher and feed artifacts.")
+            .follow(PurePursuitPath.builder().name("Near blue garden and shooter")
+                    .to(-42, 12)
+                    .to(-42, 53)
+                    .to(36, 57)
+                    .build())
             .build();
 }
