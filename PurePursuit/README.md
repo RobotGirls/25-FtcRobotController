@@ -10,8 +10,8 @@ exact same code.
 
 | Where | What |
 | --- | --- |
-| `PurePursuit/.../purepursuit/` | `PurePursuitFollower`, `PurePursuitPath`, `CurvePoint`, `Route`, simulator, FieldViewer link |
-| `PurePursuit/.../purepursuit/paths/` | `BioBuzzRoutes` (this season's autos), `TestRoutes`, `Routes.ALL` |
+| `../../TeamCode/PurePursuit/.../purepursuit/` | `PurePursuitFollower`, `PurePursuitPath`, `CurvePoint`, `Route`, simulator, FieldViewer link |
+| `../../TeamCode/PurePursuit/.../purepursuit/paths/` | `BioBuzzRoutes` (this season's autos), `TestRoutes`, `Routes.ALL` |
 | `TeamCode/.../purepursuit/ftc/` | `PurePursuitDrive` (Road Runner Actions), `PurePursuitConfig` (Dashboard tuning) |
 | `TeamCode/.../purepursuitautos/` | `PP ...` OpModes, `PP Path Tester`, `PP Localization Test` |
 

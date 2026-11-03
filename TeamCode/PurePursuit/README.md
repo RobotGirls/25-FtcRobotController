@@ -5,13 +5,13 @@ drive encoder localizers in TeamCode) and **pure pursuit for path following**. T
 ported from Gluten Free's `MovementEssentials` (`followCurve` / `gunToPosition` / `pointAngle`,
 https://github.com/nwatx/Gluten-Free-Code-Reuploaded).
 
-This module is plain Java so the robot and the [FieldViewer](../FieldViewer/README.md) run the
+This module is plain Java so the robot and the [FieldViewer](../../FieldViewer/README.md) run the
 exact same code.
 
 | Where | What |
 | --- | --- |
-| `PurePursuit/.../purepursuit/` | `PurePursuitFollower`, `PurePursuitPath`, `CurvePoint`, `Route`, simulator, FieldViewer link |
-| `PurePursuit/.../purepursuit/paths/` | `BioBuzzRoutes` (this season's autos), `TestRoutes`, `Routes.ALL` |
+| `/.../purepursuit/` | `PurePursuitFollower`, `PurePursuitPath`, `CurvePoint`, `Route`, simulator, FieldViewer link |
+| `/.../purepursuit/paths/` | `BioBuzzRoutes` (this season's autos), `TestRoutes`, `Routes.ALL` |
 | `TeamCode/.../purepursuit/ftc/` | `PurePursuitDrive` (Road Runner Actions), `PurePursuitConfig` (Dashboard tuning) |
 | `TeamCode/.../purepursuitautos/` | `PP ...` OpModes, `PP Path Tester`, `PP Localization Test` |
 

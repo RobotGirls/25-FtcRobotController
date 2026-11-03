@@ -16,7 +16,7 @@ This package produces a modified copy of the `FieldViewer` simulator from `issue
 
    **Tip:** In Terminal, type `python3 `, drag `build_team25_simulator.py` into Terminal, type a space, drag the repository folder into Terminal, then press Return.
 
-6. The script downloads the exact branch source and copies `FieldViewer/` and `PurePursuit/`, adds the field background resource if missing, and updates `settings.gradle` only to register those modules. It won't modify unrelated robot code.
+6. The script downloads the exact branch source and copies `FieldViewer/` and `../TeamCode/PurePursuit/`, adds the field background resource if missing, and updates `settings.gradle` only to register those modules. It won't modify unrelated robot code.
 7. **Review the changed files in GitHub Desktop before committing.** If everything looks right, commit to the `issue-39` branch and click **Push origin**.
 
 ## Test the simulator
