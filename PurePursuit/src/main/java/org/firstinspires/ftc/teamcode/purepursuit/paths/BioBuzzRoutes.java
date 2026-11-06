@@ -20,14 +20,6 @@ public final class BioBuzzRoutes {
     /** Marker name the shooter auto maps to its launch Action. */
     public static final String SHOOT = "shoot";
 
-    public static final Route BLUE_FLOWER_PARK = Route.builder(
-                    "BLUE Flower Park", Alliance.BLUE, new Pose2d(-10, 60, 0))
-            .description("Drive forward along the blue wall into the blue zone.")
-            .follow(PurePursuitPath.builder().name("to park")
-                    .to(30, 60)
-                    .build())
-            .build();
-
     public static final Route BLUE_GARDEN_PARK = Route.builder(
                     "BLUE Garden Park", Alliance.BLUE, new Pose2d(-66, 34, 0))
             .description("Drive above the center structure, then back into the blue zone.")
@@ -101,6 +93,15 @@ public final class BioBuzzRoutes {
                     .to(-42, 12)
                     .to(-42, 53)
                     .to(36, 57)
+                    .build())
+            .build();
+    public static final Route BLUE_FLOWER_PARK_COPY = Route.builder(
+                    "BLUE Flower Park copy", Alliance.NONE, new Pose2d(-60, 24, Math.toRadians(0)))
+            .follow(PurePursuitPath.builder().name("blue flower park copy")
+                    .moveSpeed(0.85)
+                    .to(-29, 55)
+                    .to(18, 60)
+                    .to(42, 43)
                     .build())
             .build();
 }

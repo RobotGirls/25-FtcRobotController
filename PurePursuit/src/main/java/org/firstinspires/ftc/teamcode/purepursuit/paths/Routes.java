@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.purepursuit.paths;
 
+import org.firstinspires.ftc.teamcode.purepursuit.BioBuzzField;
 import org.firstinspires.ftc.teamcode.purepursuit.Route;
 
 import java.util.Arrays;
@@ -11,7 +12,6 @@ public final class Routes {
     private Routes() {}
 
     public static final List<Route> ALL = Collections.unmodifiableList(Arrays.asList(
-            BioBuzzRoutes.BLUE_FLOWER_PARK,
             BioBuzzRoutes.BLUE_GARDEN_PARK,
             BioBuzzRoutes.BLUE_CORNER_PARK,
             BioBuzzRoutes.BLUE_GARDEN_SHOOTER,
@@ -26,7 +26,8 @@ public final class Routes {
             TestRoutes.S_CURVE,
             TestRoutes.TURN_IN_PLACE,
             TestRoutes.STRAFE_SQUARE,
-            BioBuzzRoutes.RNRR_BLUE_SHOOT
+            BioBuzzRoutes.RNRR_BLUE_SHOOT,
+            BioBuzzRoutes.BLUE_FLOWER_PARK_COPY
     ));
 
     /** Looks a route up by name, or returns null. */

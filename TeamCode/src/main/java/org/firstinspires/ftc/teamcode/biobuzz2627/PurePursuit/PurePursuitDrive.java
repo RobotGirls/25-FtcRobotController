@@ -15,11 +15,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.CompMecanumDrive;
+import org.firstinspires.ftc.teamcode.CompMechanumDrive;
 import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TankDrive;
-import org.firstinspires.ftc.teamcode.biobuzz2627.PurePursuit.PurePursuitConfig;
 import org.firstinspires.ftc.teamcode.purepursuit.CurvePoint;
 import org.firstinspires.ftc.teamcode.purepursuit.DrivePowers;
 import org.firstinspires.ftc.teamcode.purepursuit.FieldViewerLink;
@@ -37,7 +36,6 @@ import java.util.Map;
 
 /**
  * Road Runner for localization, pure pursuit for following.
- *
  * Wraps one of the existing drive classes (TankDrive, MecanumDrive, Comp5218MecanumDrive) and
  * uses only its Road Runner localizer and setDrivePowers(); the tuned drive classes themselves
  * are untouched. Paths run as Road Runner Actions so they still mix with SequentialAction,
@@ -76,7 +74,7 @@ public final class PurePursuitDrive {
             case MECANUM:
                 return mecanum(new MecanumDrive(hardwareMap, startPose));
             case COMP_MECANUM:
-                return compMecanum(new CompMecanumDrive(hardwareMap, startPose));
+                return compMecanum(new CompMechanumDrive(hardwareMap, startPose));
             case TANK:
             default:
                 return tank(new TankDrive(hardwareMap, startPose));
@@ -143,7 +141,7 @@ public final class PurePursuitDrive {
         }, true);
     }
 
-    public static PurePursuitDrive compMecanum(final CompMecanumDrive drive) {
+    public static PurePursuitDrive compMecanum(final CompMechanumDrive drive) {
         return new PurePursuitDrive(new Hardware() {
             @Override
             public PoseVelocity2d updatePoseEstimate() {
