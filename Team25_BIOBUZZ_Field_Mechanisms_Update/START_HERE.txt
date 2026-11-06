@@ -1,0 +1,17 @@
+TEAM 25 PURPLE BIOBUZZ FIELD + MECHANISMS — PATCH
+
+IMPORTANT: This is an overlay for your existing working simulator, NOT a replacement project.
+
+1. GitHub Desktop: check out issue-39-purePursuitStimulatorTesting.
+2. Find repository root in Finder (where settings.gradle is).
+3. Copy/merge the FieldViewer and PurePursuit folders from this ZIP into the folders at that root.
+   Replace only matching files listed here, NOT your TeamCode or settings.gradle.
+   Do not create a nested extra folder at the repository root.
+4. View MECHANISMS_AND_FIELD_SETUP.md for orientation checks and mechanism class examples.
+5. Restart the desktop viewer: cd FieldViewer/web && npm start.
+6. In your browser, http://localhost:2525/field-dark.png should show the real Hives/Flowers.
+7. Review with GitHub Desktop before committing.
+
+NOTES: No TeamCode or build.gradle changes are included. Original field image is provided for
+viewing but darkened on the fly; PREVIEW_Purple_BIOBUZZ_Field.png previews its color scheme.
+The simulator is a visualization, not an official dimensional or mechanism physics test.
