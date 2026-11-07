@@ -56,9 +56,5 @@ public class HardwareMapClass {
         rightBack.setPower(0.8 * backRightPower);
     }
 
-    public void runIntake(double speed) {
-        intake.setPower(speed);
-    }
-
 
 }

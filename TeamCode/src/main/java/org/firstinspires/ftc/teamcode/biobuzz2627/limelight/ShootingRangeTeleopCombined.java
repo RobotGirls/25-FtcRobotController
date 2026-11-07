@@ -12,7 +12,7 @@ public class ShootingRangeTeleopCombined extends LinearOpMode {
     boolean isRed = false;
 
     boolean validResult = false;
-    boolean validShooting = false;
+    boolean inShootingRange = false;
     double xValue;
     double distanceToTagCenter;
 
@@ -22,9 +22,9 @@ public class ShootingRangeTeleopCombined extends LinearOpMode {
         HardwareMapClass robot = new HardwareMapClass(hardwareMap, telemetry);
 
         if (gamepad2.dpad_up) {
-            isRed = false;
+            isRed = false; // blue
         } else if (gamepad2.dpad_down) {
-            isRed = true;
+            isRed = true; // red
         }
 
         LimelightSensor limelight = new LimelightSensor(hardwareMap, telemetry, isRed);
@@ -40,23 +40,20 @@ public class ShootingRangeTeleopCombined extends LinearOpMode {
             robot.drive(gamepad1);
 
             if (!gamepad2.x) {
-                validResult = limelight.checkTag();
-
-                if (validResult) {
-                    limelight.turretAdjustment(robot.turret);
-                    distanceToTagCenter = limelight.getDistance();
-                    xValue = limelight.getXValue();
-                    validShooting = limelight.isValidShooting(xValue, distanceToTagCenter);
-                    if (validShooting) {
-                        shooter.setVelocity(-1200);
-                    }
+                limelight.turretAdjustment(robot.turret);
+                inShootingRange = limelight.isShootingValid();
+                if (inShootingRange) {
+                    shooter.setVelocity(limelight.getDistanceToTag());
                 }
-            } else {
+
+            } else if (gamepad2.xWasPressed()) {
                     if (gamepad2.a) {
                         shooter.setVelocity(-1200);
                     } else if (gamepad2.b) {
                         shooter.setVelocity(-1350);
                     }
+
+                    robot.turret.setPower(gamepad2.left_stick_x);
                 }
 
             }

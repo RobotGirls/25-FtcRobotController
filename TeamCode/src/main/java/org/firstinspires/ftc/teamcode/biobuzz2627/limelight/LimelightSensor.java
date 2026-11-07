@@ -23,7 +23,11 @@ public class LimelightSensor {
     final double MAX_X = 2.5;
     final double MIN_D = -2.5;
     final double MAX_D = 2.5;
+
+    double x;
     boolean validShooting;
+
+    double distanceToTag;
 
     Telemetry telemetry1;
     boolean isRed;
@@ -56,12 +60,9 @@ public class LimelightSensor {
         } else {
             limelight.pipelineSwitch(0);
         }
-
-        telemetry.addData(">", "Robot Ready.  Press Play.");
-        telemetry.update();
     }
 
-    public boolean checkTag() {
+    public boolean isShootingValid() {
         LLResult result = limelight.getLatestResult();
 
         if (result != null && result.isValid()) {
@@ -80,12 +81,11 @@ public class LimelightSensor {
                 // AprilTag ID
                 int tagID = tag.getFiducialId();
 
-                tag1 = tag;
-
                 for (int targetId : targetIds) {
                     if (tagID == targetId) {
+                        //tag1 = tag;
                         result1 = result;
-                        return true;
+                        return checkShooting(tag);
                     } // end if
                 }  // inner for
             } // outer for
@@ -97,59 +97,39 @@ public class LimelightSensor {
 
 
 
-    public double getDistance() {
+    public boolean checkShooting(LLResultTypes.FiducialResult myTag) {
 
-        telemetry1.addData("Entered getDistance"," method");
+        telemetry1.addData("Entered getDistance","method");
 
-        // Get the AprilTag's 3D pose relative to target space
-        // Index 2 of translation array corresponds to z-axis (distance)
-        Pose3D tagPose = tag1.getRobotPoseTargetSpace();
+        Pose3D tagPose = myTag.getRobotPoseTargetSpace();
 
-        double x = tagPose.getPosition().x;
+        x = tagPose.getPosition().x;
         double y = tagPose.getPosition().y;
         double z = tagPose.getPosition().z;
 
 
-        double distanceToTag = Math.sqrt(
+         distanceToTag = Math.sqrt(
                 (x*x) + (y*y) + (z*z));
 
         telemetry1.addData("X", "%.3f m", x);
         telemetry1.addData("Y", "%.3f m", y);
         telemetry1.addData("Z", "%.3f m", z);
 
-        telemetry1.update();
-
-        return distanceToTag;
-
-    }
-
-    public double getXValue() {
-
-        telemetry1.addData("Entered getX"," method");
-
-        Pose3D tagPose = tag1.getRobotPoseTargetSpace();
-
-        telemetry1.update();
-
-        return tagPose.getPosition().x;
-    }
-
-    public boolean isValidShooting(double xValue1, double dToTag1) {
-
-        telemetry1.addData("Entered valid shooting "," method");
-
-        telemetry1.addData("Distance to Tag", dToTag1);
-        telemetry1.update();
-
-        if (xValue1 >= MIN_X && xValue1 <= MAX_X && dToTag1 >= MIN_D && dToTag1 <= MAX_D) {
+        if (x >= MIN_X && x <= MAX_X && distanceToTag >= MIN_D && distanceToTag <= MAX_D) {
             validShooting = true;
+        } else {
+            validShooting = false;
         }
 
         return validShooting;
+
+    }
+
+    public double getDistanceToTag() {
+        return distanceToTag;
     }
 
     public void turretAdjustment(DcMotor turret1) {
-        telemetry1.addData("Entered turretAdjustment "," method");
         double error = result1.getTx();
         ElapsedTime timer = new ElapsedTime();
         if (Math.abs(error) > ALIGN_THRESHOLD) {
