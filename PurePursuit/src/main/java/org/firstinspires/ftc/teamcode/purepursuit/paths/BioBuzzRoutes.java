@@ -15,9 +15,12 @@ import org.firstinspires.ftc.teamcode.purepursuit.RouteSimulation;
  * backwards; those legs use .reversed() here so the robot doesn't spin around first.
  */
 public final class BioBuzzRoutes {
-    private BioBuzzRoutes() {}
+    private BioBuzzRoutes() {
+    }
 
-    /** Marker name the shooter auto maps to its launch Action. */
+    /**
+     * Marker name the shooter auto maps to its launch Action.
+     */
     public static final String SHOOT = "shoot";
 
     public static final Route BLUE_GARDEN_PARK = Route.builder(
@@ -58,6 +61,7 @@ public final class BioBuzzRoutes {
                     .to(-34, -34)
                     .reversed()
                     .build())
+            .marker("collect", 4.0)
             .follow(PurePursuitPath.builder().name("into zone")
                     .moveSpeed(0.5)
                     .to(-34, -60)
@@ -93,15 +97,6 @@ public final class BioBuzzRoutes {
                     .to(-42, 12)
                     .to(-42, 53)
                     .to(36, 57)
-                    .build())
-            .build();
-    public static final Route BLUE_FLOWER_PARK_COPY = Route.builder(
-                    "BLUE Flower Park copy", Alliance.NONE, new Pose2d(-60, 24, Math.toRadians(0)))
-            .follow(PurePursuitPath.builder().name("blue flower park copy")
-                    .moveSpeed(0.85)
-                    .to(-29, 55)
-                    .to(18, 60)
-                    .to(42, 43)
                     .build())
             .build();
 }

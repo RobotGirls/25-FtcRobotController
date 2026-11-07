@@ -97,6 +97,9 @@ export class FieldView {
       this.imageReady = true;
       this.onChange();
     };
+    this.image.onerror = () => {
+      console.error('BIOBUZZ field image did not load. Check FieldViewer/src/main/resources/biobuzz-field.png and restart the backend.');
+    };
     this.image.src = '/field-dark.png';
     new ResizeObserver(() => {
       this.resize();

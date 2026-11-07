@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.biobuzz2627.auto.mechCode.IntakePedroPathing;
+import org.firstinspires.ftc.teamcode.biobuzz2627.auto.mechCode.IntakePurePursuit;
 import org.firstinspires.ftc.teamcode.purepursuit.Route;
 import org.firstinspires.ftc.teamcode.biobuzz2627.PurePursuit.PurePursuitDrive;
 
@@ -25,7 +25,7 @@ public abstract class PurePursuitAutoBase extends LinearOpMode {
 
     /** Set up mechanism hardware (called during init). */
     protected void initMechanisms() {
-        IntakePedroPathing intake = new IntakePedroPathing(hardwareMap, telemetry);
+        IntakePurePursuit intake = new IntakePurePursuit(hardwareMap, telemetry);
     }
 
     /** Turn mechanisms off; always called when the OpMode ends, even if stopped early. */

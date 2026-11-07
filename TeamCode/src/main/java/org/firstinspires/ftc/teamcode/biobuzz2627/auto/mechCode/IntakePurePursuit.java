@@ -18,7 +18,7 @@ import com.acmerobotics.roadrunner.Action;
 
 
 
-public class IntakePedroPathing {
+public class IntakePurePursuit {
 
 
     private DcMotor intake;
@@ -26,7 +26,7 @@ public class IntakePedroPathing {
     private Telemetry telemetry1;
 
 
-    public IntakePedroPathing(HardwareMap hardwareMap, Telemetry telemetry) {
+    public IntakePurePursuit(HardwareMap hardwareMap, Telemetry telemetry) {
         intake = hardwareMap.get(DcMotor.class, "intake");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         timer1 = new ElapsedTime();
@@ -90,6 +90,6 @@ public class IntakePedroPathing {
 
 
     public Action outtakeArtifact() {
-        return new IntakePedroPathing.OuttakeArtifact();
+        return new IntakePurePursuit.OuttakeArtifact();
     }
 }

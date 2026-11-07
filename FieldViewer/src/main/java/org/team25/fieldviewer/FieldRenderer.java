@@ -58,15 +58,15 @@ public final class FieldRenderer {
     }
 
     // the original FieldViewer palette
-    static final Color CYAN = new Color(0, 255, 255);
-    static final Color DEBUG_LINE = new Color(0, 255, 255, 153);
-    static final Color TEAL = new Color(0, 168, 168);
+    static final Color CYAN = new Color(192, 132, 252);
+    static final Color DEBUG_LINE = new Color(192, 132, 252, 173);
+    static final Color TEAL = new Color(167, 139, 250);
     static final Color RED = new Color(190, 10, 10);
     static final Color AMBER = new Color(225, 160, 40);
     static final Color WHITE_RING = new Color(255, 255, 255, 220);
     static final Color GRID = new Color(255, 255, 255, 36);
     static final Color SKETCH = new Color(255, 64, 200);
-    static final Color LOG_TEXT = new Color(0, 70, 74);
+    static final Color LOG_TEXT = new Color(44, 25, 74);
 
     static final Font MONO = new Font("Courier New", Font.PLAIN, 12);
 
@@ -91,38 +91,36 @@ public final class FieldRenderer {
         } catch (IOException ignored) {
             // fall through to the plain grid
         }
-        return null;
+        throw new IllegalStateException("Missing /biobuzz-field.png: check FieldViewer/src/main/resources");
     }
 
     /**
-     * Turns the light field drawing into the dark style: white floor goes black, black lines go
-     * gray, and the alliance colors become the muted teal / red of the original dark field.
+     * Recolors ONLY the neutral floor/grid in purple tones, while preserving colored game
+     * elements. Previously the posterization swallowed narrow FLOWER rings and HIVE details.
+     * Orientation: source pixels are top-down, BLUE +Y at the top, RED -Y at the bottom.
+     * Route/path/robot overlays are still drawn separately over this background.
      */
     static BufferedImage darken(BufferedImage light) {
         int w = light.getWidth(), h = light.getHeight();
         int[] px = light.getRGB(0, 0, w, h, null, 0, w);
         for (int i = 0; i < px.length; i++) {
-            int r = (px[i] >> 16) & 0xFF, g = (px[i] >> 8) & 0xFF, b = px[i] & 0xFF;
+            int r = (px[i] >> 16) & 255, g = (px[i] >> 8) & 255, b = px[i] & 255;
             int max = Math.max(r, Math.max(g, b)), min = Math.min(r, Math.min(g, b));
-            int sat = max - min;
-            int out;
-            if (sat < 50) {
-                int v = (int) ((255 - (r + g + b) / 3.0) * 0.30);
-                out = (v << 16) | (v << 8) | v;
+            int nr, ng, nb;
+            if (max - min < 36) {
+                // Near-white becomes a dark purple floor; black geometry remains visible.
+                double brightness = (r + g + b) / 765.0;
+                nr = (int) (110 - brightness * 89);
+                ng = (int) (91 - brightness * 72);
+                nb = (int) (138 - brightness * 102);
             } else {
-                double k = Math.max(0.45, Math.min(1, sat / 170.0));
-                Color tint;
-                if (b >= r && b >= g) {
-                    tint = TEAL;
-                } else if (r >= g && g < r * 0.6) {
-                    tint = RED;
-                } else {
-                    tint = AMBER;
-                }
-                out = ((int) (tint.getRed() * k) << 16) | ((int) (tint.getGreen() * k) << 8)
-                        | (int) (tint.getBlue() * k);
+                // Keep RED, BLUE and golden FLOWER rings legible and identifiable.
+                // Mild lavender grading ties them visually to the purple simulator chrome.
+                nr = (int) (0.91 * r + 0.09 * 141);
+                ng = (int) (0.91 * g + 0.09 * 108);
+                nb = (int) (0.91 * b + 0.09 * 188);
             }
-            px[i] = 0xFF000000 | out;
+            px[i] = 0xFF000000 | (nr << 16) | (ng << 8) | nb;
         }
         BufferedImage dark = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         dark.setRGB(0, 0, w, h, px, 0, w);
