@@ -42,7 +42,7 @@ public class LimelightSensor {
 
     public LimelightSensor(HardwareMap hardwareMap, Telemetry telemetry, boolean isRedAlliance) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        telemetry.setMsTransmissionInterval(11);
+        telemetry.setMsTransmissionInterval(20);
 
         telemetry1 = telemetry;
         // Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -98,6 +98,9 @@ public class LimelightSensor {
 
 
     public double getDistance() {
+
+        telemetry1.addData("Entered getDistance"," method");
+
         // Get the AprilTag's 3D pose relative to target space
         // Index 2 of translation array corresponds to z-axis (distance)
         Pose3D tagPose = tag1.getRobotPoseTargetSpace();
@@ -114,17 +117,26 @@ public class LimelightSensor {
         telemetry1.addData("Y", "%.3f m", y);
         telemetry1.addData("Z", "%.3f m", z);
 
+        telemetry1.update();
+
         return distanceToTag;
 
     }
 
     public double getXValue() {
+
+        telemetry1.addData("Entered getX"," method");
+
         Pose3D tagPose = tag1.getRobotPoseTargetSpace();
+
+        telemetry1.update();
 
         return tagPose.getPosition().x;
     }
 
     public boolean isValidShooting(double xValue1, double dToTag1) {
+
+        telemetry1.addData("Entered valid shooting "," method");
 
         telemetry1.addData("Distance to Tag", dToTag1);
         telemetry1.update();
@@ -137,6 +149,7 @@ public class LimelightSensor {
     }
 
     public void turretAdjustment(DcMotor turret1) {
+        telemetry1.addData("Entered turretAdjustment "," method");
         double error = result1.getTx();
         ElapsedTime timer = new ElapsedTime();
         if (Math.abs(error) > ALIGN_THRESHOLD) {

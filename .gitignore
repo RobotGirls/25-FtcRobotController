@@ -13,11 +13,25 @@
 *.class
 *.hprof
 
+TeamCode/FieldViewer/web/node_modules/electron/dist/Electron.app/Contents/Frameworks/
+
+# Node.js dependencies
+**/node_modules/
+
+# Android Studio files
+**/.idea/
+
+# Build output
+**/dist/
+
 # Generated files
 bin/
 gen/
 out/
 #  Uncomment the following line in case you need and you don't have the release build type files in your app
+
+TeamCode/FieldViewer/web/node_modules/electron/dist/Electron.app/Contents/Frameworks/
+
 # release/
 
 # Gradle files
