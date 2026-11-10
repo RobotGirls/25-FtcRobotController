@@ -77,17 +77,21 @@ public final class BioBuzzRoutes {
             .build();
 
     public static final Route BLUE_GARDEN_SHOOTER = Route.builder(
-                    "BLUE Garden Park + Shooter", Alliance.BLUE, new Pose2d(-66, 34, 0))
+                    "BLUE Garden Park + Shooter", Alliance.BLUE, new Pose2d(-66, 12, 0))
             .description("BLUE Garden Park, then spin up the launcher and feed artifacts.")
-            .follow(PurePursuitPath.builder().name("across the field")
-                    .to(34, 34)
+            .follow(PurePursuitPath.builder().name("to hive")
+                    .to(-36, 12)
                     .build())
-            .follow(PurePursuitPath.builder().name("back into zone")
+
+            .marker(SHOOT, 3.5)
+
+            .follow(PurePursuitPath.builder().name("to hive")
+                    .to(-36, 40)
+                    .to(0, 40)
+                    .to(34, 40)
                     .moveSpeed(0.5)
                     .to(34, 60)
-                    .reversed()
                     .build())
-            .marker(SHOOT, 3.5)
             .build();
 
     public static final Route RNRR_BLUE_SHOOT = Route.builder(
@@ -99,4 +103,16 @@ public final class BioBuzzRoutes {
                     .to(36, 57)
                     .build())
             .build();
+    public static final Route BLUE_GARDEN_PARK_SHOOTER_COPY = Route.builder(
+                    "BLUE Garden Park + Shooter copy", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
+            .follow(PurePursuitPath.builder().name("blue garden park + shooter copy")
+                    .to(-36, 12)
+                    .to(-36, 40)
+                    .to(0, 40)
+                    .to(34, 40)
+                    .to(34, 60)
+                    .build())
+            .build();
+
+
 }

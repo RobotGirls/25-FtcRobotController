@@ -26,4 +26,14 @@ public final class PurePursuitConfig {
 
     /** Send frames to the FieldViewer laptop app when it's connected. */
     public static boolean STREAM_TO_FIELD_VIEWER = true;
+
+    /** Relay the Limelight MJPEG feed through the robot for FieldViewer Live mode. */
+    public static boolean STREAM_LIMELIGHT_TO_FIELD_VIEWER = true;
+
+    /** Limelight 3A address on the Control Hub's USB-Ethernet network. */
+    public static String LIMELIGHT_HOST = "172.29.0.1";
+    public static int LIMELIGHT_STREAM_PORT = 5800;
+
+    /** Port exposed by the Control Hub to the laptop on the robot Wi-Fi network. */
+    public static int LIMELIGHT_RELAY_PORT = 11117;
 }

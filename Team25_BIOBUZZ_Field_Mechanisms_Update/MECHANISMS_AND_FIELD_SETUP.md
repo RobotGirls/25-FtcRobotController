@@ -66,7 +66,7 @@ methods invented for this example. **Important:** their `Action.run()` implement
 production pattern; refactor those classes to use elapsed time/state, and always stop motors
 in `stopMechanisms()`, before running real hardware.
 
-For your `Shooter` class, add an `Action`-returning method after implementing the necessary
+For your `ShooterPurePursuit` class, add an `Action`-returning method after implementing the necessary
 logic and register it under the matching route marker name (e.g. `"shoot"`). Never map a
 marker to a nonexistent method. In simulation, the estimated seconds are visualization only;
 on the robot, your `Action` determines completion. `PurePursuitAutoBase` already supports

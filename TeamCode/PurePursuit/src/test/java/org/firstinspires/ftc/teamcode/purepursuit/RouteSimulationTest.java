@@ -91,11 +91,21 @@ public class RouteSimulationTest {
 
     @Test
     public void markerStepWaitsItsTime() {
-        RouteSimulation withShooter = new RouteSimulation(BioBuzzRoutes.BLUE_GARDEN_SHOOTER, false);
-        withShooter.runToEnd(MAX_SECONDS);
-        RouteSimulation without = new RouteSimulation(BioBuzzRoutes.BLUE_GARDEN_PARK, false);
+        Pose2d start = new Pose2d(0, 0, 0);
+        PurePursuitPath path = PurePursuitPath.builder().to(24, 0).build();
+        Route withMarker = Route.builder("with marker", Route.Alliance.NONE, start)
+                .follow(path)
+                .marker("test", 3.5)
+                .build();
+        Route withoutMarker = Route.builder("without marker", Route.Alliance.NONE, start)
+                .follow(path)
+                .build();
+
+        RouteSimulation with = new RouteSimulation(withMarker, false);
+        with.runToEnd(MAX_SECONDS);
+        RouteSimulation without = new RouteSimulation(withoutMarker, false);
         without.runToEnd(MAX_SECONDS);
-        assertEquals(3.5, withShooter.getRouteDoneTime() - without.getRouteDoneTime(), 0.1);
+        assertEquals(3.5, with.getRouteDoneTime() - without.getRouteDoneTime(), 0.1);
     }
 
     private static void checkRoute(Route route, boolean holonomic) {

@@ -88,9 +88,12 @@ you can change tuning (or Tank / Mecanum) and compare.
 
 ## Recording matches
 
-In **Live**, press **Record run** before the auto starts and **Stop** after. The run shows up
-under **Recordings** in the sidebar and replays on the timeline with graphs and results.
-**Save recording…** writes a `.json` file; **Open recording…** loads one back.
+In **Live**, press **Record run** before the auto starts and **Stop** after. FieldViewer
+automatically saves the run as a timestamped `.json` file in
+`~/Documents/FieldViewer Recordings/`. Saved runs load back into **Recordings** in the sidebar the
+next time FieldViewer starts and replay on the timeline with graphs and results. This is entirely
+local and works while the laptop has no internet access. **Save recording…** exports another copy;
+**Open recording…** loads a recording from elsewhere.
 
 ## Live
 
@@ -102,6 +105,37 @@ under **Recordings** in the sidebar and replays on the timeline with graphs and 
 The backend says hello to the robot on UDP port 11116 and the robot streams frames back, so no
 laptop IP is hard coded on the robot. Nothing is sent when no viewer is connected; set
 `PurePursuitConfig.STREAM_TO_FIELD_VIEWER = false` to switch it off completely.
+
+### Limelight video in Live mode
+
+Any OpMode using `LimelightPurePursuit` starts a camera relay when it initializes its Limelight.
+Use the camera-only **Limelight FieldViewer Stream** TeleOp when you do not want motors or servos
+initialized. The Limelight's
+MJPEG server is only visible to the Control Hub over USB Ethernet, so the relay exposes it to the
+laptop on robot port `11117`; the FieldViewer backend then proxies it into the Live panel.
+
+1. In the Limelight web UI, select **MJPEG** streaming (the FieldViewer `<img>` does not decode
+   the optional WebRTC mode).
+2. Connect the laptop to the robot Wi-Fi, switch FieldViewer to **Live**, and connect to the robot.
+3. Initialize the PP OpMode. The video panel retries automatically while the camera boots.
+
+Use the video layout buttons in the Live connection card:
+
+- **Field** keeps the field in the main view and the video in the connection card.
+- **Half** splits the main view evenly between the field and camera.
+- **Camera** gives the camera the full main view.
+
+### Driver Station camera preview
+
+During OpMode INIT, open the Driver Station's three-dot menu and choose **Camera Stream**. The FTC
+Driver Station preview is intentionally snapshot-based rather than continuous video; tap the image
+to request a fresh Limelight frame. The custom `LimelightDriverStationStream` adapter makes this
+available for OpModes that use `LimelightPurePursuit`, including **Limelight FieldViewer Stream**.
+
+Defaults are `172.29.0.1:5800` for the first USB Limelight and `11117` for the robot relay. If the
+Limelight's USB index or address is different, change `LIMELIGHT_HOST`, `LIMELIGHT_STREAM_PORT`, or
+`LIMELIGHT_RELAY_PORT` in `PurePursuitConfig` (also update the FieldViewer relay-port constant if
+you change `11117`). Set `STREAM_LIMELIGHT_TO_FIELD_VIEWER = false` to disable video forwarding.
 
 ## Layout
 

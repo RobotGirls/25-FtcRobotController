@@ -25,6 +25,16 @@ export async function fetchDefaults() {
     }
     return (await response.json());
 }
+export async function fetchRecordings() {
+    const response = await fetch('/api/recordings', { cache: 'no-store' });
+    if (!response.ok) {
+        throw new Error(`couldn't load recordings (${response.status})`);
+    }
+    return (await response.json());
+}
+export function saveRecording(recording) {
+    return postJson('/api/recordings', recording);
+}
 export function simulateRoute(route, holonomic, tuning) {
     return postJson('/api/simulate', { route, holonomic, ...tuning });
 }

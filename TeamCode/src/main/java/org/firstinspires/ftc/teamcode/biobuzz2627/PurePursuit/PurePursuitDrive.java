@@ -223,6 +223,26 @@ public final class PurePursuitDrive {
     }
 
     /**
+     * Builds the Action for one route step. This is useful for autonomous state machines that
+     * want each path, turn, or mechanism marker to be its own named state.
+     */
+    public Action runStep(Route.Step step, Map<String, Action> markers) {
+        if (step instanceof Route.Follow) {
+            return follow(((Route.Follow) step).path);
+        }
+        if (step instanceof Route.Turn) {
+            return turnTo(((Route.Turn) step).heading);
+        }
+        if (step instanceof Route.Marker) {
+            Route.Marker marker = (Route.Marker) step;
+            Action action = markers.get(marker.name);
+            return new MarkerAction(marker.name,
+                    action != null ? action : new SleepAction(marker.seconds));
+        }
+        throw new IllegalArgumentException("Unknown route step: " + step.getClass().getName());
+    }
+
+    /**
      * Every step of a route as one Action. Marker steps run the Action with the same name from
      * markers, or just wait for the marker's estimated time if there isn't one.
      */
@@ -233,16 +253,7 @@ public final class PurePursuitDrive {
             return false;
         });
         for (Route.Step step : route.steps) {
-            if (step instanceof Route.Follow) {
-                actions.add(follow(((Route.Follow) step).path));
-            } else if (step instanceof Route.Turn) {
-                actions.add(turnTo(((Route.Turn) step).heading));
-            } else if (step instanceof Route.Marker) {
-                Route.Marker marker = (Route.Marker) step;
-                Action action = markers.get(marker.name);
-                actions.add(new MarkerAction(marker.name,
-                        action != null ? action : new SleepAction(marker.seconds)));
-            }
+            actions.add(runStep(step, markers));
         }
         return new SequentialAction(actions);
     }

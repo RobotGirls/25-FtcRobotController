@@ -40,8 +40,12 @@ public static final Route BLUE_GARDEN_PARK = Route.builder(
   strafing only), `timeout(s)`.
 - Add new routes to `Routes.ALL` so they show up in the FieldViewer and `PP Path Tester`.
 
-To run a route, extend `PurePursuitAutoBase` and return it from `route()`; override `markers()`
-for mechanism Actions (see `PPBlueGardenShooter`).
+To run a route, extend `PurePursuitAutoBase<State>`, define an enum for the autonomous states,
+and return the shared route from `route()`. In `mainStateMachine()`, call
+`runRouteStepThen(stepIndex, nextState)` for path, turn, and marker states. Use
+`runActionThen(actionFactory, nextState)` for mechanism-only states, and override `markers()` to
+connect named route markers to mechanism Actions. The base class ticks one Action per OpMode loop
+and provides state/program timers, `nextState()`, and `isTimedOut()`.
 
 ## Robot setup and tuning
 

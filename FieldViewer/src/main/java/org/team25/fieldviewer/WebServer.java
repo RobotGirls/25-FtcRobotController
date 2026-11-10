@@ -26,8 +26,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +61,11 @@ import javax.imageio.ImageIO;
  */
 final class WebServer {
     private static final double MAX_SIM_SECONDS = 60;
+    private static final int LIMELIGHT_RELAY_PORT = 11117;
 
     private final HttpServer server;
     private final File webRoot;
+    private final File recordingsDir;
     private final byte[] darkFieldPng;
     private final LiveConnection live = new LiveConnection();
     private final AtomicReference<ViewerFrame> liveFrame = new AtomicReference<>();
@@ -68,6 +75,10 @@ final class WebServer {
     /** @param webRoot folder holding the built UI (index.html), or null if it isn't built */
     WebServer(int port, File webRoot) throws IOException {
         this.webRoot = webRoot == null ? null : webRoot.getCanonicalFile();
+        String configuredRecordingsDir = System.getProperty("fieldviewer.recordingsDir", "").trim();
+        recordingsDir = configuredRecordingsDir.isEmpty()
+                ? new File(new File(System.getProperty("user.home"), "Documents"), "FieldViewer Recordings")
+                : new File(configuredRecordingsDir);
         darkFieldPng = png(new FieldRenderer().getDarkField());
 
         server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0);
@@ -81,6 +92,7 @@ final class WebServer {
         server.createContext("/api/defaults", ex -> safely(ex, () -> sendJson(ex, defaultsJson())));
         server.createContext("/api/routes", ex -> safely(ex, () -> sendJson(ex, routesJson())));
         server.createContext("/api/simulate", ex -> safely(ex, () -> sendJson(ex, simulate(readJson(ex)))));
+        server.createContext("/api/recordings", ex -> safely(ex, () -> recordings(ex)));
         server.createContext("/api/live/connect", ex -> safely(ex, () -> {
             Object host = readJson(ex).get("host");
             liveHost = host == null ? "192.168.43.1" : host.toString().trim();
@@ -95,12 +107,112 @@ final class WebServer {
             sendJson(ex, "{\"ok\":true}");
         }));
         server.createContext("/api/live/events", this::liveEvents);
+        server.createContext("/api/live/limelight", this::limelightStream);
         server.createContext("/field-dark.png", ex -> safely(ex, () -> send(ex, 200, "image/png", darkFieldPng)));
         server.createContext("/", ex -> safely(ex, () -> staticFile(ex)));
     }
 
     void start() {
         server.start();
+    }
+
+    // ---- recordings ---------------------------------------------------------------------------
+
+    private void recordings(HttpExchange ex) throws IOException {
+        if ("GET".equalsIgnoreCase(ex.getRequestMethod())) {
+            sendJson(ex, recordingsJson());
+            return;
+        }
+        if (!"POST".equalsIgnoreCase(ex.getRequestMethod())) {
+            send(ex, 405, "application/json; charset=utf-8",
+                    "{\"error\":\"method not allowed\"}".getBytes(StandardCharsets.UTF_8));
+            return;
+        }
+
+        String json = new String(readAll(ex.getRequestBody()), StandardCharsets.UTF_8).trim();
+        Map<String, Object> recording = parseRecording(json);
+        if (recording == null) {
+            send(ex, 400, "application/json; charset=utf-8",
+                    "{\"error\":\"invalid FieldViewer recording\"}".getBytes(StandardCharsets.UTF_8));
+            return;
+        }
+        if (!recordingsDir.isDirectory() && !recordingsDir.mkdirs()) {
+            throw new IOException("could not create " + recordingsDir);
+        }
+
+        File file = uniqueRecordingFile(recording);
+        Files.write(file.toPath(), json.getBytes(StandardCharsets.UTF_8));
+        sendJson(ex, "{\"name\":" + Json.quote(file.getName())
+                + ",\"path\":" + Json.quote(file.getCanonicalPath()) + "}");
+    }
+
+    private String recordingsJson() throws IOException {
+        StringBuilder json = new StringBuilder("{\"directory\":")
+                .append(Json.quote(recordingsDir.getCanonicalPath())).append(",\"recordings\":[");
+        File[] files = recordingsDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".json"));
+        if (files != null) {
+            Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+            boolean first = true;
+            for (File file : files) {
+                String recordingJson = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8).trim();
+                if (parseRecording(recordingJson) == null) {
+                    continue;
+                }
+                if (!first) {
+                    json.append(',');
+                }
+                first = false;
+                json.append("{\"name\":").append(Json.quote(file.getName()))
+                        .append(",\"recording\":").append(recordingJson).append('}');
+            }
+        }
+        return json.append("]}").toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> parseRecording(String json) {
+        try {
+            Object parsed = Json.parse(json);
+            if (!(parsed instanceof Map)) {
+                return null;
+            }
+            Map<String, Object> recording = (Map<String, Object>) parsed;
+            Object version = recording.get("version");
+            Object frames = recording.get("frames");
+            if (!(version instanceof Number) || ((Number) version).intValue() != 1
+                    || !(frames instanceof List) || ((List<?>) frames).size() < 2) {
+                return null;
+            }
+            int poseFrames = 0;
+            for (Object frame : (List<?>) frames) {
+                if (frame instanceof Map && ((Map<?, ?>) frame).get("pose") instanceof List
+                        && ((List<?>) ((Map<?, ?>) frame).get("pose")).size() >= 3) {
+                    poseFrames++;
+                }
+            }
+            if (poseFrames < 2) {
+                return null;
+            }
+            return recording;
+        } catch (RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private File uniqueRecordingFile(Map<String, Object> recording) {
+        String route = String.valueOf(recording.get("route"));
+        String slug = route.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("(^-|-$)", "");
+        if (slug.isEmpty()) {
+            slug = "recording";
+        }
+        String stamp = String.valueOf(recording.get("recordedAt")).replaceAll("[^0-9]", "");
+        stamp = stamp.length() >= 14 ? stamp.substring(0, 14) : String.valueOf(System.currentTimeMillis());
+        String base = slug + "-" + stamp;
+        File file = new File(recordingsDir, base + ".json");
+        for (int copy = 2; file.exists(); copy++) {
+            file = new File(recordingsDir, base + "-" + copy + ".json");
+        }
+        return file;
     }
 
     // ---- routes -------------------------------------------------------------------------------
@@ -416,6 +528,48 @@ final class WebServer {
                 .append(",\"colliding\":").append(f.pose != null && BioBuzzField.hitsCenterStructure(
                         f.pose, BioBuzzField.ROBOT_LENGTH, BioBuzzField.ROBOT_WIDTH));
         return sb.append('}').toString();
+    }
+
+    /** Proxies the robot's MJPEG relay so the local UI can display it under its strict CSP. */
+    private void limelightStream(HttpExchange ex) throws IOException {
+        if (liveHost.isEmpty()) {
+            send(ex, 409, "text/plain; charset=utf-8",
+                    "Connect to the robot first".getBytes(StandardCharsets.UTF_8));
+            return;
+        }
+
+        HttpURLConnection camera = (HttpURLConnection) new URL(
+                "http", liveHost, LIMELIGHT_RELAY_PORT, "/").openConnection();
+        camera.setConnectTimeout(3000);
+        camera.setReadTimeout(10000);
+        camera.setRequestProperty("User-Agent", "Team25-FieldViewer");
+        try {
+            int code = camera.getResponseCode();
+            if (code != 200) {
+                send(ex, 502, "text/plain; charset=utf-8",
+                        ("Robot camera relay returned " + code).getBytes(StandardCharsets.UTF_8));
+                return;
+            }
+
+            String type = camera.getContentType();
+            ex.getResponseHeaders().set("Content-Type", type == null
+                    ? "multipart/x-mixed-replace" : type);
+            ex.getResponseHeaders().set("Cache-Control", "no-store");
+            ex.sendResponseHeaders(200, 0);
+            try (InputStream input = camera.getInputStream();
+                 OutputStream output = ex.getResponseBody()) {
+                byte[] buffer = new byte[16 * 1024];
+                int count;
+                while ((count = input.read(buffer)) >= 0) {
+                    output.write(buffer, 0, count);
+                    output.flush();
+                }
+            } catch (IOException ignored) {
+                // The UI closed the image or the robot/camera stream ended.
+            }
+        } finally {
+            camera.disconnect();
+        }
     }
 
     // ---- helpers ------------------------------------------------------------------------------

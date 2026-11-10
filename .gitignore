@@ -17,6 +17,12 @@
 bin/
 gen/
 out/
+
+# Node / Electron dependencies (restored with npm install)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 #  Uncomment the following line in case you need and you don't have the release build type files in your app
 # release/
 

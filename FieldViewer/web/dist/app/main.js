@@ -1,4 +1,4 @@
-import { connectLive, disconnectLive, fetchDefaults, fetchRoutes, simulateRoute, simulateSketch, subscribeLive, } from './api.js';
+import { connectLive, disconnectLive, fetchDefaults, fetchRecordings, fetchRoutes, saveRecording, simulateRoute, simulateSketch, subscribeLive, } from './api.js';
 import { emptySeries, TelemetryChart } from './chart.js';
 import { FieldView } from './field.js';
 import { download, parseRecording, Recorder, recordingToSim, slug } from './recording.js';
@@ -9,6 +9,7 @@ const SKETCH = '__sketch__';
 const REC = 'rec:';
 const state = {
     mode: 'sim',
+    liveLayout: 'field',
     holonomic: false,
     routes: [],
     selected: '',
@@ -68,6 +69,7 @@ let backendDown = false;
 let lastTick = performance.now();
 let sketchTimer = 0;
 let tuningTimer = 0;
+let limelightRetry = 0;
 /** What a mouse drag on the field is doing right now. */
 let gesture = null;
 const $ = (id) => document.getElementById(id);
@@ -82,8 +84,12 @@ async function init() {
     }
     for (;;) {
         try {
-            const [data, defaults] = await Promise.all([fetchRoutes(), fetchDefaults()]);
+            const [data, defaults, saved] = await Promise.all([fetchRoutes(), fetchDefaults(), fetchRecordings()]);
             state.routes = data.routes;
+            $('recording-location').title = saved.directory;
+            for (const item of saved.recordings) {
+                addRecording(item.recording, item.name, false);
+            }
             field = new FieldView(canvas, data.field);
             field.onChange = invalidate;
             tuning = new TuningPanel($('tuning'), defaults, onTuningChanged);
@@ -460,6 +466,54 @@ function onLiveStatus(status) {
     $('connect').textContent = status.running ? 'Disconnect' : 'Connect';
     $('live-status').textContent = status.text;
     $('live-badge').hidden = !(state.mode === 'live' && receiving);
+    syncLimelightStream(state.mode === 'live' && status.running);
+}
+function syncLimelightStream(shouldRun) {
+    const feed = $('limelight-feed');
+    const placeholder = activeLimelightPlaceholder();
+    window.clearTimeout(limelightRetry);
+    if (!shouldRun) {
+        feed.dataset.active = 'false';
+        feed.removeAttribute('src');
+        feed.hidden = true;
+        setLimelightPlaceholders(true);
+        setLimelightBadges(false);
+        $('limelight-status').textContent = 'Connect to the robot to view video';
+        return;
+    }
+    if (feed.dataset.active === 'true')
+        return;
+    feed.dataset.active = 'true';
+    feed.hidden = true;
+    setLimelightPlaceholders(false);
+    placeholder.hidden = false;
+    placeholder.textContent = 'Connecting to Limelight…';
+    $('limelight-status').textContent = 'Opening robot camera relay…';
+    feed.src = `/api/live/limelight?time=${Date.now()}`;
+}
+function activeLimelightPlaceholder() {
+    return state.liveLayout === 'field' ? $('limelight-placeholder') : $('limelight-stage-placeholder');
+}
+function setLimelightPlaceholders(showActive) {
+    $('limelight-placeholder').hidden = !(showActive && state.liveLayout === 'field');
+    $('limelight-stage-placeholder').hidden = !(showActive && state.liveLayout !== 'field');
+}
+function setLimelightBadges(show) {
+    $('limelight-live').hidden = !(show && state.liveLayout === 'field');
+    $('limelight-stage-live').hidden = !(show && state.liveLayout !== 'field');
+}
+function setLiveLayout(layout) {
+    state.liveLayout = layout;
+    document.body.classList.remove('live-layout-field', 'live-layout-split', 'live-layout-camera');
+    document.body.classList.add(`live-layout-${layout}`);
+    document.querySelectorAll('#video-layout button').forEach((button) => button.classList.toggle('active', button.dataset.videoLayout === layout));
+    const feed = $('limelight-feed');
+    const target = layout === 'field' ? $('limelight-preview') : $('limelight-stage-target');
+    target.prepend(feed);
+    const loaded = feed.dataset.active === 'true' && !feed.hidden;
+    setLimelightPlaceholders(!loaded);
+    setLimelightBadges(loaded);
+    invalidate();
 }
 function onLiveFrame(frame) {
     const live = state.live;
@@ -515,7 +569,7 @@ function onLiveFrame(frame) {
     }
     invalidate();
 }
-function toggleRecording() {
+async function toggleRecording() {
     const button = $('record');
     if (!recorder.active) {
         recorder.begin();
@@ -529,18 +583,28 @@ function toggleRecording() {
         toast('Nothing recorded: no frames came in from the robot', true);
         return;
     }
-    addRecording(recording);
-    toast('Saved under Recordings in the sidebar');
+    try {
+        const saved = await saveRecording(recording);
+        addRecording(recording, saved.name);
+        toast(`Auto-saved ${saved.name}`);
+    }
+    catch (error) {
+        addRecording(recording);
+        toast(`Recording kept in this session; auto-save failed: ${error.message}`, true);
+    }
 }
-function addRecording(recording) {
-    const id = `${REC}${state.recordings.size + 1}`;
+function addRecording(recording, storageName, rebuild = true) {
+    const id = `${REC}${storageName ?? `session-${state.recordings.size + 1}`}`;
     state.recordings.set(id, recording);
-    buildRouteList();
+    if (rebuild)
+        buildRouteList();
     return id;
 }
 function setMode(mode) {
     state.mode = mode;
     document.body.classList.toggle('mode-live', mode === 'live');
+    if (mode === 'live')
+        setLiveLayout(state.liveLayout);
     document.querySelectorAll('#mode button').forEach((b) => b.classList.toggle('active', b.dataset.mode === mode));
     const live = mode === 'live';
     $('timeline').hidden = live;
@@ -557,6 +621,8 @@ function setMode(mode) {
     }
     if (state.live.status)
         onLiveStatus(state.live.status);
+    else
+        syncLimelightStream(false);
     updateSketchHint();
     invalidate();
 }
@@ -779,6 +845,7 @@ function pinRun() {
 function wireControls() {
     $('search').addEventListener('input', buildRouteList);
     document.querySelectorAll('#mode button').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+    document.querySelectorAll('#video-layout button').forEach((button) => button.addEventListener('click', () => setLiveLayout(button.dataset.videoLayout)));
     document.querySelectorAll('#drive button').forEach((b) => b.addEventListener('click', () => {
         state.holonomic = b.dataset.drive === 'mecanum';
         document.querySelectorAll('#drive button').forEach((x) => x.classList.toggle('active', x === b));
@@ -886,7 +953,25 @@ function wireControls() {
         state.live.trail = [];
         invalidate();
     });
-    $('record').addEventListener('click', toggleRecording);
+    $('record').addEventListener('click', () => void toggleRecording());
+    const limelight = $('limelight-feed');
+    limelight.addEventListener('load', () => {
+        limelight.hidden = false;
+        setLimelightPlaceholders(false);
+        setLimelightBadges(true);
+        $('limelight-status').textContent = 'Live video';
+    });
+    limelight.addEventListener('error', () => {
+        limelight.dataset.active = 'false';
+        limelight.hidden = true;
+        setLimelightPlaceholders(true);
+        setLimelightBadges(false);
+        activeLimelightPlaceholder().textContent = 'Waiting for Limelight video';
+        $('limelight-status').textContent = 'Camera relay unavailable — retrying…';
+        if (state.mode === 'live' && state.live.status?.running) {
+            limelightRetry = window.setTimeout(() => syncLimelightStream(true), 2500);
+        }
+    });
     document.querySelectorAll('[data-layer]').forEach((input) => input.addEventListener('change', () => {
         state.layers[input.dataset.layer] = input.checked;
         invalidate();

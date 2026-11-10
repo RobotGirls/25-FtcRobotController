@@ -1,4 +1,4 @@
-import type { Defaults, LiveFrame, LiveStatus, RoutesResponse, SimResult, SketchRequest, Tuning } from './types.js';
+import type { Defaults, LiveFrame, LiveStatus, Recording, RoutesResponse, SimResult, SketchRequest, Tuning } from './types.js';
 
 /** Talks to the Java backend that runs the real PurePursuitFollower. */
 
@@ -29,6 +29,28 @@ export async function fetchDefaults(): Promise<Defaults> {
     throw new Error(`couldn't load tuning defaults (${response.status})`);
   }
   return (await response.json()) as Defaults;
+}
+
+export interface SavedRecording {
+  name: string;
+  recording: Recording;
+}
+
+export interface RecordingIndex {
+  directory: string;
+  recordings: SavedRecording[];
+}
+
+export async function fetchRecordings(): Promise<RecordingIndex> {
+  const response = await fetch('/api/recordings', { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`couldn't load recordings (${response.status})`);
+  }
+  return (await response.json()) as RecordingIndex;
+}
+
+export function saveRecording(recording: Recording): Promise<{ name: string; path: string }> {
+  return postJson('/api/recordings', recording);
 }
 
 export function simulateRoute(route: string, holonomic: boolean, tuning: Tuning): Promise<SimResult> {
