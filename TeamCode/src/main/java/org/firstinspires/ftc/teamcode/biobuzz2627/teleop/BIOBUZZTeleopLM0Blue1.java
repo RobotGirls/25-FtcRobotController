@@ -22,10 +22,11 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
     public DcMotor rightBack = null;
     public DcMotor leftBack = null;
 
-    public DcMotor shooter;
+    private DcMotor shooterSmall;
+    private DcMotor shooterBig;
+    private DcMotor intake;
     public CRServo leftTransfer;
     public CRServo rightTransfer;
-    public DcMotor intake;
 
     //private Limelight3A limelight;
     private DcMotor turret;
@@ -51,15 +52,15 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-       // turret = hardwareMap.get(DcMotor.class, "turret");
+        // turret = hardwareMap.get(DcMotor.class, "turret");
         //limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         telemetry.setMsTransmissionInterval(11);
 
         // Pipeline 0: blue
-       // limelight.pipelineSwitch(0);
+        // limelight.pipelineSwitch(0);
 
-       // limelight.start();
+        // limelight.start();
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
@@ -69,15 +70,16 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         //drive.setPoseEstimate(startPose);
 
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
+        shooterSmall = hardwareMap.get(DcMotor.class, "shooterSmall");
+        shooterBig = hardwareMap.get(DcMotor.class, "shooterBig");
         leftTransfer = hardwareMap.get(CRServo.class, "leftTransfer");
         rightTransfer = hardwareMap.get(CRServo.class, "rightTransfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
-        // Reverse rightTransfer so both servos rotate in the same physical direction
-        rightTransfer.setDirection(CRServo.Direction.REVERSE);
+        //rightTransfer.setDirection(CRServo.Direction.REVERSE);
 
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterSmall.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterBig.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -120,39 +122,46 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
             rightFront.setPower(0.8 * frontRightPower);
             rightBack.setPower(0.8 * backRightPower);
 
-            if (gamepad2.y) {
+//            if (gamepad2.y) {
+//                intake.setPower(1);
+//            } else if (gamepad2.x) {
+//                intake.setPower(-1);
+//            } else {
+//                intake.setPower(0);
+//            }
+            while (opModeIsActive()) {
+            if (gamepad2.left_bumper) {
                 intake.setPower(1);
-            } else if(gamepad2.x) {
+            } else if (gamepad2.right_bumper) {
                 intake.setPower(-1);
             } else {
                 intake.setPower(0);
             }
 
-            if (gamepad2.a) {
-                leftTransfer.setPower(1);
-                rightTransfer.setPower(1);
-            } else if (gamepad2.b) {
-                leftTransfer.setPower(-1);
-                rightTransfer.setPower(-1);
-            } else {
-                leftTransfer.setPower(0);
-                rightTransfer.setPower(0);
-            }
+//            if (gamepad2.aWasPressed()) {
+//                leftTransfer.setPower(1);
+//                rightTransfer.setPower(1);
+//            } else if (gamepad2.bWasPressed()) {
+//                leftTransfer.setPower(-1);
+//                rightTransfer.setPower(-1);
+//            } else {
+//                leftTransfer.setPower(0);
+//                rightTransfer.setPower(0);
+//            }
 
-            if (gamepad2.left_bumper) {
-                shooter.setPower(-0.8);
-                flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
-            }
-            else if(gamepad2.right_bumper) {
-                shooter.setPower(0.8);
-                flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.ON;
-            } else {
-                shooter.setPower(0);
-            }
+                if (opModeIsActive()) {
+                    if (gamepad2.a) {
+                        shooterSmall.setPower(0.4);
+                        shooterBig.setPower(-0.4);
+                    } else {
+                        shooterBig.setPower(0);
+                        shooterSmall.setPower(0);
+                    }
+                }
 
-            //LLResult result = limelight.getLatestResult();
+                //LLResult result = limelight.getLatestResult();
 
-            //if (result.isValid()) {
+                //if (result.isValid()) {
 
                 // Access general information
 //                Pose3D botpose = result.getBotpose();
@@ -168,8 +177,7 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 //                telemetry.addData("Botpose", botpose.toString());
 
 
-
-            //} else {
+                //} else {
                 // apriltag not in view of limelight
                 //turret.setPower(gamepad1.right_stick_x);
                 //telemetry.addData("Limelight", "No data available");
@@ -177,10 +185,12 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 
             telemetry.update();
         }
+    }
+}
         //limelight.stop();
 
         // Pace this loop so jaw action is reasonable speed.
        // sleep(50);
 
-    }
+
 //}
