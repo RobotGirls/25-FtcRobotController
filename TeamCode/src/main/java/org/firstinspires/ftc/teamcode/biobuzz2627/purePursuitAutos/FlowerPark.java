@@ -2,17 +2,13 @@ package org.firstinspires.ftc.teamcode.biobuzz2627.purePursuitAutos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.IntakePurePursuit;
-import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.LimelightPurePursuit;
-import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.ShooterPurePursuit;
-import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.TurretPurePursuit;
 import org.firstinspires.ftc.teamcode.purepursuit.Route;
 import org.firstinspires.ftc.teamcode.purepursuit.paths.BioBuzzRoutes;
 
 
 /** Pure pursuit version of biobuzzautos/blueGardenAuto. */
-@Autonomous(name = "Sample Pure Pursuit Auto", group = "Test")
-public class ParkAuto extends PurePursuitAutoBase<ParkAuto.State> {
+@Autonomous(name = "Flower Park", group = "Pure Pursuit")
+public class FlowerPark extends PurePursuitAutoBase<FlowerPark.State> {
 
     public enum State {
         PARK,
@@ -21,7 +17,7 @@ public class ParkAuto extends PurePursuitAutoBase<ParkAuto.State> {
 
     @Override
     protected Route route() {
-        return BioBuzzRoutes.BLUE_CORNER_PARK;
+        return BioBuzzRoutes.FLOWER_PARK;
     }
 
     @Override

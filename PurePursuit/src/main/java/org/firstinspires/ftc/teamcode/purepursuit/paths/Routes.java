@@ -12,14 +12,14 @@ public final class Routes {
     private Routes() {}
 
     public static final List<Route> ALL = Collections.unmodifiableList(Arrays.asList(
-            BioBuzzRoutes.BLUE_GARDEN_PARK,
-            BioBuzzRoutes.BLUE_CORNER_PARK,
-            BioBuzzRoutes.BLUE_GARDEN_SHOOTER,
-            BioBuzzRoutes.RED_FLOWER_PARK,
-            BioBuzzRoutes.RED_GARDEN_PARK,
-            BioBuzzRoutes.RED_CORNER_PARK,
-            BioBuzzRoutes.RNRR_BLUE_SHOOT,
-            BioBuzzRoutes.BLUE_GARDEN_PARK_SHOOTER_COPY
+            BioBuzzRoutes.FLOWER_PARK,
+            //BioBuzzRoutes.BLUE_CORNER_PARK,
+            //BioBuzzRoutes.BLUE_GARDEN_SHOOTER,
+            //BioBuzzRoutes.RED_FLOWER_PARK,
+            //BioBuzzRoutes.RED_GARDEN_PARK,
+            //BioBuzzRoutes.RED_CORNER_PARK,
+            //BioBuzzRoutes.RNRR_BLUE_SHOOT,
+            BioBuzzRoutes.MAIN_SHOOT
     ));
 
     /** Looks a route up by name, or returns null. */

@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.purepursuit.paths.BioBuzzRoutes;
 
 
 /** Pure pursuit version of biobuzzautos/blueGardenAuto. */
-@Autonomous(name = "PP BLUE Garden Park", group = "Pure Pursuit")
-public class PPBlueGardenPark extends PurePursuitAutoBase<PPBlueGardenPark.State> {
+@Autonomous(name = "Main Shoot", group = "Pure Pursuit")
+public class MainShoot extends PurePursuitAutoBase<MainShoot.State> {
     private static final long SHOOT_TIME_MS = 4000;
 
     enum State {
@@ -29,7 +29,7 @@ public class PPBlueGardenPark extends PurePursuitAutoBase<PPBlueGardenPark.State
 
     @Override
     protected Route route() {
-        return BioBuzzRoutes.BLUE_GARDEN_PARK;
+        return BioBuzzRoutes.MAIN_SHOOT;
     }
 
     @Override
