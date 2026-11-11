@@ -52,7 +52,10 @@ public class RouteSimulationTest {
     @Test
     public void reversedLegsKeepTheRobotFacingTheSameWay() {
         // the Road Runner version backed up without turning around; pure pursuit should too
-        RouteSimulation sim = new RouteSimulation(BioBuzzRoutes.BLUE_CORNER_PARK, false);
+        Route reversed = Route.builder("reversed", Route.Alliance.NONE, new Pose2d(0, 0, 0))
+                .follow(PurePursuitPath.builder().to(-24, 0).reversed().build())
+                .build();
+        RouteSimulation sim = new RouteSimulation(reversed, false);
         double maxHeadingChange = 0;
         while (!sim.isFinished()) {
             sim.loop();
@@ -61,6 +64,16 @@ public class RouteSimulationTest {
         }
         assertTrue("turned " + Math.toDegrees(maxHeadingChange) + " deg",
                 maxHeadingChange < Math.toRadians(5));
+    }
+
+    @Test
+    public void productionRoutesStayClearOfTheCenterStructure() {
+        for (Route route : Routes.ALL) {
+            RouteSimulation sim = new RouteSimulation(route, true);
+            sim.runToEnd(MAX_SECONDS);
+            assertEquals(route.name + " hit the center structure",
+                    0, sim.getCollisionSeconds(), 0);
+        }
     }
 
     @Test

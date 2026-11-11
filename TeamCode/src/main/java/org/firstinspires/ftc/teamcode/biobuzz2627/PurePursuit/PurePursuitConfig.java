@@ -12,14 +12,20 @@ public final class PurePursuitConfig {
     public enum DriveType {
         /** BioBuzz starter bot: TankDrive with the Pinpoint localizer. */
         TANK,
-        /** Road Runner quickstart MecanumDrive with the Pinpoint localizer. */
+        /** MecanumDrive using the four drive-motor encoders plus the Control Hub IMU. */
         MECANUM,
-        /** Comp5218MecanumDrive with drive encoder + IMU localization. */
+        /** Competition mecanum drive using drive-motor encoders plus the Control Hub IMU. */
         COMP_MECANUM
     }
 
     /** Which drive class (and therefore which Road Runner localizer) the pure pursuit OpModes use. */
-    public static DriveType DRIVE_TYPE = DriveType.TANK;
+    public static DriveType DRIVE_TYPE = DriveType.MECANUM;
+
+    /**
+     * Safety gate. Keep false until LocalizationTest reports correct forward, strafe, and heading
+     * distances. It can be enabled temporarily from FTC Dashboard during testing.
+     */
+    public static boolean LOCALIZATION_VERIFIED = false;
 
     /** Follower tuning shared by every path. */
     public static PurePursuitFollower.Params FOLLOWER = new PurePursuitFollower.Params();

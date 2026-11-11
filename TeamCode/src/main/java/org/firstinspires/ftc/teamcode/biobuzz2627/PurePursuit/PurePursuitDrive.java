@@ -62,6 +62,7 @@ public final class PurePursuitDrive {
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
     private String routeName = "";
+    private boolean lastFollowTimedOut;
 
     public PurePursuitDrive(Hardware hardware, boolean holonomic) {
         this.hardware = hardware;
@@ -197,6 +198,13 @@ public final class PurePursuitDrive {
         hardware.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
     }
 
+    /** Returns and clears whether the most recently completed follow action hit its safety timeout. */
+    public boolean consumeLastFollowTimedOut() {
+        boolean timedOut = lastFollowTimedOut;
+        lastFollowTimedOut = false;
+        return timedOut;
+    }
+
     /** Coasting lets the wheels roll freely so the robot can be pushed by hand; otherwise brake. */
     public void setCoasting(boolean coasting) {
         DcMotor.ZeroPowerBehavior behavior = coasting
@@ -275,6 +283,7 @@ public final class PurePursuitDrive {
         public boolean run(@NonNull TelemetryPacket p) {
             if (startNanos < 0) {
                 startNanos = System.nanoTime();
+                lastFollowTimedOut = false;
             }
             PoseVelocity2d velocity = updatePoseEstimate();
             PurePursuitFollower.Output out = follower.update(getPose(), velocity);
@@ -283,6 +292,7 @@ public final class PurePursuitDrive {
             boolean timedOut = timeoutSeconds > 0 && elapsed > timeoutSeconds;
             if (out.isDone() || timedOut) {
                 stop();
+                lastFollowTimedOut = timedOut;
                 report(p, follower, out, name + (timedOut ? ": TIMED OUT" : ": done"));
                 return false;
             }

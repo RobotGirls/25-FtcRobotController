@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.biobuzz2627.PurePursuit.PurePursuitDrive;
+import org.firstinspires.ftc.teamcode.biobuzz2627.PurePursuit.PurePursuitConfig;
 import org.firstinspires.ftc.teamcode.purepursuit.Route;
 
 import java.util.Collections;
@@ -112,7 +113,11 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
             initializeStateVariables(drive.runStep(activeRoute.steps.get(stepIndex), markerActions));
         }
         if (updateStateAction()) {
-            nextState(next);
+            if (drive.consumeLastFollowTimedOut()) {
+                abortAutonomous("Path timed out in state " + programState);
+            } else {
+                nextState(next);
+            }
         }
     }
 
@@ -133,6 +138,17 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
         programState = next;
         stateStartTime = nowMillis();
         stageFinished = true;
+    }
+
+    /** Stops the drivetrain and the OpMode instead of continuing after a localization/path fault. */
+    protected final void abortAutonomous(String reason) {
+        drive.stop();
+        stateAction = null;
+        telemetry.addLine("AUTO ABORTED");
+        telemetry.addLine(reason);
+        telemetry.addData("Last pose", drive.getPose());
+        telemetry.update();
+        requestOpModeStop();
     }
 
     /** State-relative timeout helper, disabled while the OpMode is in init. */
@@ -159,9 +175,20 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
                 }
                 telemetry.addData("Start pose", activeRoute.startPose);
                 telemetry.addData("Localizer pose", drive.getPose());
+                if (!PurePursuitConfig.LOCALIZATION_VERIFIED) {
+                    telemetry.addLine("AUTO LOCKED: run LocalizationTest, then set");
+                    telemetry.addLine("PurePursuitConfig.LOCALIZATION_VERIFIED = true");
+                }
                 telemetry.update();
             }
             if (isStopRequested()) {
+                return;
+            }
+            if (!PurePursuitConfig.LOCALIZATION_VERIFIED) {
+                drive.stop();
+                telemetry.addLine("AUTO BLOCKED: localization is not verified");
+                telemetry.update();
+                sleep(1500);
                 return;
             }
 
@@ -175,6 +202,7 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
                 telemetry.addData("State", programState);
                 telemetry.addData("State time (ms)", stateElapsedMillis());
                 telemetry.addData("Program time (ms)", programElapsedMillis());
+                telemetry.addData("Localizer pose", drive.getPose());
                 telemetry.update();
 
                 if (stageFinished) {

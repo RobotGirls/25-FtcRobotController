@@ -24,13 +24,15 @@ public final class BioBuzzRoutes {
     public static final String SHOOT = "shoot";
 
     public static final Route FLOWER_PARK = Route.builder(
-                    "BLUE Garden Park", Alliance.NONE, new Pose2d(-12, 69, Math.toRadians(-90)))
-            .follow(PurePursuitPath.builder().name("blue garden park copy")
+                    "BLUE Flower Park", Alliance.BLUE, new Pose2d(-12, 69, Math.toRadians(-90)))
+            .description("Move off the wall, then strafe right into the blue parking zone.")
+            .follow(PurePursuitPath.builder().name("flower park")
                     .followDistance(6)
                     .to(-12, 60)
                     .moveSpeed(0.5)
                     .to(34, 60)
                     .fixedHeading(Math.toRadians(-90))
+                    .timeout(8)
                     .build())
             .build();
 
@@ -102,13 +104,19 @@ public final class BioBuzzRoutes {
 //                    .build())
 //            .build();
     public static final Route MAIN_SHOOT = Route.builder(
-                    "BLUE Garden Park + Shooter copy", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
-            .follow(PurePursuitPath.builder().name("blue garden park + shooter copy")
+                    "BLUE Main Shoot", Alliance.BLUE, new Pose2d(-66, 12, Math.toRadians(0)))
+            .description("Drive around the Hive, then enter the blue parking zone.")
+            .follow(PurePursuitPath.builder().name("across field")
                     .to(-36, 12)
                     .to(-36, 40)
                     .to(0, 40)
                     .to(34, 40)
+                    .timeout(12)
+                    .build())
+            .follow(PurePursuitPath.builder().name("into parking zone")
+                    .moveSpeed(0.5)
                     .to(34, 60)
+                    .timeout(5)
                     .build())
             .build();
 
