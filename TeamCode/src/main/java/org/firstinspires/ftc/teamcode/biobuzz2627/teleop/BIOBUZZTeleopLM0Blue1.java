@@ -55,8 +55,6 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         // turret = hardwareMap.get(DcMotor.class, "turret");
         //limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        telemetry.setMsTransmissionInterval(11);
-
         // Pipeline 0: blue
         // limelight.pipelineSwitch(0);
 
@@ -66,14 +64,10 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-
-        //RNRRMecanumDrive drive = new RNRRMecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        //drive.setPoseEstimate(startPose);
-
         shooterSmall = hardwareMap.get(DcMotor.class, "shooterSmall");
         shooterBig = hardwareMap.get(DcMotor.class, "shooterBig");
-        leftTransfer = hardwareMap.get(CRServo.class, "leftTransfer");
-        rightTransfer = hardwareMap.get(CRServo.class, "rightTransfer");
+//        leftTransfer = hardwareMap.get(CRServo.class, "leftTransfer");
+//        rightTransfer = hardwareMap.get(CRServo.class, "rightTransfer");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         //rightTransfer.setDirection(CRServo.Direction.REVERSE);
@@ -122,14 +116,6 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
             rightFront.setPower(0.8 * frontRightPower);
             rightBack.setPower(0.8 * backRightPower);
 
-//            if (gamepad2.y) {
-//                intake.setPower(1);
-//            } else if (gamepad2.x) {
-//                intake.setPower(-1);
-//            } else {
-//                intake.setPower(0);
-//            }
-            while (opModeIsActive()) {
             if (gamepad2.left_bumper) {
                 intake.setPower(1);
             } else if (gamepad2.right_bumper) {
@@ -152,7 +138,7 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
                 if (opModeIsActive()) {
                     if (gamepad2.a) {
                         shooterSmall.setPower(0.4);
-                        shooterBig.setPower(-0.4);
+                        shooterBig.setPower(-0.3);
                     } else {
                         shooterBig.setPower(0);
                         shooterSmall.setPower(0);
@@ -186,7 +172,7 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
             telemetry.update();
         }
     }
-}
+
         //limelight.stop();
 
         // Pace this loop so jaw action is reasonable speed.

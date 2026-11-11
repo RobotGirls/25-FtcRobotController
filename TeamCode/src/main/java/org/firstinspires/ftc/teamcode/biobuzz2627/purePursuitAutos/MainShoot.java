@@ -17,7 +17,6 @@ public class MainShoot extends PurePursuitAutoBase<MainShoot.State> {
 
     enum State {
         DRIVE_ACROSS_FIELD,
-        SHOOT_POLLEN,
         DRIVE_BACK_INTO_ZONE,
         END
     }
@@ -41,18 +40,7 @@ public class MainShoot extends PurePursuitAutoBase<MainShoot.State> {
     protected void mainStateMachine() {
         switch (getState()) {
             case DRIVE_ACROSS_FIELD:
-                runRouteStepThen(0, State.SHOOT_POLLEN);
-                break;
-            case SHOOT_POLLEN:
-                if (stageFinished) {
-                    initializeStateVariables();
-                    shooter.startShooting();
-                }
-                shooter.addTelemetry();
-                if (isTimedOut(SHOOT_TIME_MS)) {
-                    shooter.stop();
-                    nextState(State.DRIVE_BACK_INTO_ZONE);
-                }
+                runRouteStepThen(0, State.DRIVE_BACK_INTO_ZONE);
                 break;
             case DRIVE_BACK_INTO_ZONE:
                 runRouteStepThen(1, State.END);
