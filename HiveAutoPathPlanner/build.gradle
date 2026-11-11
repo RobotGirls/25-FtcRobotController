@@ -1,0 +1,26 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+}
+
+// PlannerTests is intentionally a dependency-free main program so it can also run with plain
+// javac on a pit laptop. Wire it into Gradle's normal check lifecycle.
+test {
+    failOnNoDiscoveredTests = false
+}
+
+tasks.register('plannerTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'org.ftc.hiveplanner.PlannerTests'
+}
+
+check.dependsOn plannerTest

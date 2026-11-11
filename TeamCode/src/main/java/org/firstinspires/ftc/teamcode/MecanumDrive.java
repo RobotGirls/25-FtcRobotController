@@ -52,6 +52,11 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
+    public enum LocalizerMode {
+        DRIVE_ENCODERS,
+        PINPOINT
+    }
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -223,6 +228,10 @@ public final class MecanumDrive {
     }
 
     public MecanumDrive(HardwareMap hardwareMap, Pose2d pose) {
+        this(hardwareMap, pose, LocalizerMode.DRIVE_ENCODERS);
+    }
+
+    public MecanumDrive(HardwareMap hardwareMap, Pose2d pose, LocalizerMode localizerMode) {
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
@@ -254,7 +263,11 @@ public final class MecanumDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer(pose);
+        if (localizerMode == LocalizerMode.PINPOINT) {
+            localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);
+        } else {
+            localizer = new DriveLocalizer(pose);
+        }
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
