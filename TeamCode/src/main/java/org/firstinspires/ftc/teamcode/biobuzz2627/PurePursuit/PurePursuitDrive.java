@@ -301,6 +301,7 @@ public final class PurePursuitDrive {
         private long startNanos = -1;
         private long lastProgressNanos = -1;
         private double lastProgress;
+        private double lastProgressHeading = Double.NaN;
 
         FollowAction(PurePursuitFollower follower, double timeoutSeconds, String name) {
             this.follower = follower;
@@ -340,8 +341,20 @@ public final class PurePursuitDrive {
                 return false;
             }
 
-            if (out.progress >= lastProgress + PurePursuitConfig.MIN_PROGRESS_INCHES) {
+            double heading = getPose().heading.toDouble();
+            if (Double.isNaN(lastProgressHeading)) {
+                lastProgressHeading = heading;
+            }
+            double headingProgress = Math.abs(Math.atan2(
+                    Math.sin(heading - lastProgressHeading),
+                    Math.cos(heading - lastProgressHeading)));
+            boolean advancedAlongPath = out.progress >= lastProgress
+                    + PurePursuitConfig.MIN_PROGRESS_INCHES;
+            boolean madeTurningProgress = headingProgress >= Math.toRadians(
+                    PurePursuitConfig.MIN_HEADING_PROGRESS_DEGREES);
+            if (advancedAlongPath || madeTurningProgress) {
                 lastProgress = out.progress;
+                lastProgressHeading = heading;
                 lastProgressNanos = now;
             }
 
@@ -349,7 +362,7 @@ public final class PurePursuitDrive {
             double noProgressSeconds = (now - lastProgressNanos) / 1e9;
             if (translationPower >= PurePursuitConfig.WATCHDOG_MIN_TRANSLATION_POWER
                     && noProgressSeconds > PurePursuitConfig.NO_PROGRESS_TIMEOUT_SECONDS) {
-                fault(String.format("%s stopped: no Pinpoint path progress for %.2f seconds",
+                fault(String.format("%s stopped: no Pinpoint motion for %.2f seconds",
                         name, noProgressSeconds));
                 p.put("FAULT", fault);
                 report(p, follower, out, name + ": NO PROGRESS - STOPPED");
@@ -357,7 +370,7 @@ public final class PurePursuitDrive {
             }
 
             setPowers(out.powers);
-            p.put("no progress (s)", noProgressSeconds);
+            p.put("no useful motion (s)", noProgressSeconds);
             report(p, follower, out, name + " (" + out.phase.name().toLowerCase() + ")");
             return true;
         }

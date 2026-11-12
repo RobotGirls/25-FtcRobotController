@@ -13,9 +13,11 @@ public final class PurePursuitConfig {
     public static PurePursuitFollower.Params FOLLOWER = new PurePursuitFollower.Params();
 
     /** Stop if a path requests translation but makes no meaningful progress for this long. */
-    public static double NO_PROGRESS_TIMEOUT_SECONDS = 0.75;
+    public static double NO_PROGRESS_TIMEOUT_SECONDS = 1.25;
     /** Progress needed to reset the no-progress timer. */
     public static double MIN_PROGRESS_INCHES = 0.35;
+    /** A real turn also proves that Pinpoint and the robot are responding at a path corner. */
+    public static double MIN_HEADING_PROGRESS_DEGREES = 3.0;
     /** Ignore the watchdog while translation power is below this value. */
     public static double WATCHDOG_MIN_TRANSLATION_POWER = 0.12;
     /** Send frames to the FieldViewer laptop app when it's connected. */

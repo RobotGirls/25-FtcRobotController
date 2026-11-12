@@ -105,6 +105,9 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
 
     /** Initializes and runs one shared route step, then advances when that step is complete. */
     protected final void runRouteStepThen(int stepIndex, S next) {
+        if (stopForDriveFault()) {
+            return;
+        }
         if (stageFinished) {
             if (stepIndex < 0 || stepIndex >= activeRoute.steps.size()) {
                 throw new IllegalArgumentException("Route step index out of range: " + stepIndex);
@@ -118,6 +121,9 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
 
     /** Initializes and runs any custom Action, then advances when that Action is complete. */
     protected final void runActionThen(Supplier<Action> actionFactory, S next) {
+        if (stopForDriveFault()) {
+            return;
+        }
         if (stageFinished) {
             initializeStateVariables(actionFactory.get());
         }
@@ -133,10 +139,19 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
             return;
         }
 
+        stopForDriveFault();
+    }
+
+    /** Safe to call repeatedly while the SDK finishes processing an OpMode stop request. */
+    private boolean stopForDriveFault() {
+        if (!drive.hasFault()) {
+            return false;
+        }
         drive.stop();
         telemetry.addData("AUTONOMOUS STOPPED", drive.getFault());
         telemetry.update();
         requestOpModeStop();
+        return true;
     }
 
     /** Change states. The new state's entry block runs on the next OpMode loop. */
@@ -189,6 +204,9 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
 
             while (opModeIsActive()) {
                 mainStateMachine();
+                if (drive.hasFault()) {
+                    break;
+                }
                 telemetry.addData("State", programState);
                 telemetry.addData("State time (ms)", stateElapsedMillis());
                 telemetry.addData("Program time (ms)", programElapsedMillis());
