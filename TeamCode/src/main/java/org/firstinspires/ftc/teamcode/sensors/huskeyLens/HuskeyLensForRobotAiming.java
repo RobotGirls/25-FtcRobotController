@@ -39,10 +39,10 @@ public class HuskeyLensForRobotAiming extends LinearOpMode {
 
     private HuskyLens huskyLens;
 
-    public DcMotor  leftFront   = null;
-    public DcMotor  rightFront  = null;
-    public DcMotor  rightBack  = null;
-    public DcMotor  leftBack  = null;
+    public DcMotor  frontLeft   = null;
+    public DcMotor  frontRight  = null;
+    public DcMotor  backRight  = null;
+    public DcMotor  backLeft  = null;
 
     public static final int CENTER = 160;
     private static final int ALIGN_THRESHOLD = 10;
@@ -98,17 +98,17 @@ public class HuskeyLensForRobotAiming extends LinearOpMode {
 //                            double power = 0.0009 * offset;
 //                            power = Math.max(-0.3, Math.min(0.3, power));
                     lastError = offset;
-                    leftFront.setPower(-power);
-                    leftBack.setPower(-power);
-                    rightFront.setPower(power);
-                    rightBack.setPower(power);
+                    frontLeft.setPower(-power);
+                    backLeft.setPower(-power);
+                    frontRight.setPower(power);
+                    backRight.setPower(power);
                     timer.reset();
 
                 } else {
-                    leftFront.setPower(0); // aligned
-                    rightBack.setPower(0);
-                    leftBack.setPower(0);
-                    rightFront.setPower(0);
+                    frontLeft.setPower(0); // aligned
+                    backRight.setPower(0);
+                    backLeft.setPower(0);
+                    frontRight.setPower(0);
                 }
 
                 telemetry.addData("Tag X", huskeyLensSensor.findXValue(blocks));

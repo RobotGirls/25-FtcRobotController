@@ -17,10 +17,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 
     /* Declare OpMode members. */
-    public DcMotor leftFront = null;
-    public DcMotor rightFront = null;
-    public DcMotor rightBack = null;
-    public DcMotor leftBack = null;
+    public DcMotor frontLeft = null;
+    public DcMotor frontRight = null;
+    public DcMotor backRight = null;
+    public DcMotor backLeft = null;
 
     private DcMotor shooterSmall;
     private DcMotor shooterBig;
@@ -44,13 +44,13 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
     public void runOpMode() {
 
         // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        frontLeft = hardwareMap.get(DcMotor.class, "backRight");
+        frontRight = hardwareMap.get(DcMotor.class, "frontLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backLeft");
+        backLeft = hardwareMap.get(DcMotor.class, "frontRight");
 
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // turret = hardwareMap.get(DcMotor.class, "turret");
         //limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -84,10 +84,10 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -117,10 +117,10 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
 
-            leftFront.setPower(0.8 * frontLeftPower);
-            leftBack.setPower(0.8 * backLeftPower);
-            rightFront.setPower(0.8 * frontRightPower);
-            rightBack.setPower(0.8 * backRightPower);
+            frontLeft.setPower(0.8 * frontLeftPower);
+            backLeft.setPower(0.8 * backLeftPower);
+            frontRight.setPower(0.8 * frontRightPower);
+            backRight.setPower(0.8 * backRightPower);
 
 //            if (gamepad2.y) {
 //                intake.setPower(1);

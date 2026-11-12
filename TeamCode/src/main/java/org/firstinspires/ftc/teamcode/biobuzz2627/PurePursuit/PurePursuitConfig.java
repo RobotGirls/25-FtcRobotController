@@ -9,21 +9,15 @@ import org.firstinspires.ftc.teamcode.purepursuit.PurePursuitFollower;
 public final class PurePursuitConfig {
     private PurePursuitConfig() {}
 
-    public enum DriveType {
-        /** BioBuzz starter bot: TankDrive with the Pinpoint localizer. */
-        TANK,
-        /** Road Runner quickstart MecanumDrive with the Pinpoint localizer. */
-        MECANUM,
-        /** Comp5218MecanumDrive with drive encoder + IMU localization. */
-        COMP_MECANUM
-    }
-
-    /** Which drive class (and therefore which Road Runner localizer) the pure pursuit OpModes use. */
-    public static DriveType DRIVE_TYPE = DriveType.TANK;
-
     /** Follower tuning shared by every path. */
     public static PurePursuitFollower.Params FOLLOWER = new PurePursuitFollower.Params();
 
+    /** Stop if a path requests translation but makes no meaningful progress for this long. */
+    public static double NO_PROGRESS_TIMEOUT_SECONDS = 0.75;
+    /** Progress needed to reset the no-progress timer. */
+    public static double MIN_PROGRESS_INCHES = 0.35;
+    /** Ignore the watchdog while translation power is below this value. */
+    public static double WATCHDOG_MIN_TRANSLATION_POWER = 0.12;
     /** Send frames to the FieldViewer laptop app when it's connected. */
     public static boolean STREAM_TO_FIELD_VIEWER = true;
 

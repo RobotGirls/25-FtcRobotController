@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.PinpointView;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -16,8 +20,14 @@ import java.util.Objects;
 @Config
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = 0.0; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
+        /** Sideways offset of the forward/parallel pod from the tracking point. */
+        public double parallelPodYOffsetInches = 0.0;
+        /** Forward offset of the sideways/perpendicular pod from the tracking point. */
+        public double perpendicularPodXOffsetInches = 0.0;
+        /** Flip if pushing the robot forward makes its reported X position decrease. */
+        public boolean reverseParallelEncoder = false;
+        /** Flip if pushing the robot left makes its reported Y position decrease. */
+        public boolean reversePerpendicularEncoder = false;
     }
 
     public static Params PARAMS = new Params();
@@ -28,24 +38,36 @@ public final class PinpointLocalizer implements Localizer {
     private Pose2d txWorldPinpoint;
     private Pose2d txPinpointRobot = new Pose2d(0, 0, 0);
 
-    public PinpointLocalizer(HardwareMap hardwareMap, double inPerTick, Pose2d initialPose) {
+    public PinpointLocalizer(HardwareMap hardwareMap, Pose2d initialPose) {
         // TODO: make sure your config has a Pinpoint device with this name
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        double mmPerTick = inPerTick * 25.4;
-        driver.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
-        driver.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
+        driver.setEncoderResolution(
+                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        driver.setOffsets(PARAMS.parallelPodYOffsetInches,
+                PARAMS.perpendicularPodXOffsetInches, DistanceUnit.INCH);
 
-        // TODO: reverse encoder directions if needed
-        initialParDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
-        initialPerpDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+        initialParDirection = PARAMS.reverseParallelEncoder
+                ? GoBildaPinpointDriver.EncoderDirection.REVERSED
+                : GoBildaPinpointDriver.EncoderDirection.FORWARD;
+        initialPerpDirection = PARAMS.reversePerpendicularEncoder
+                ? GoBildaPinpointDriver.EncoderDirection.REVERSED
+                : GoBildaPinpointDriver.EncoderDirection.FORWARD;
 
         driver.setEncoderDirections(initialParDirection, initialPerpDirection);
 
         driver.resetPosAndIMU();
 
         txWorldPinpoint = initialPose;
+    }
+
+    public boolean isReady() {
+        return driver.getDeviceStatus() == GoBildaPinpointDriver.DeviceStatus.READY;
+    }
+
+    public String getStatus() {
+        return String.valueOf(driver.getDeviceStatus());
     }
 
     @Override
@@ -69,5 +91,61 @@ public final class PinpointLocalizer implements Localizer {
             return new PoseVelocity2d(robotVelocity, driver.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS));
         }
         return new PoseVelocity2d(new Vector2d(0, 0), 0);
+    }
+
+    /** Road Runner tuning view backed by this Pinpoint, including its internal heading sensor. */
+    public PinpointView asRoadRunnerView() {
+        return new PinpointView() {
+            private GoBildaPinpointDriver.EncoderDirection parDirection = initialParDirection;
+            private GoBildaPinpointDriver.EncoderDirection perpDirection = initialPerpDirection;
+
+            @Override
+            public void update() {
+                driver.update();
+            }
+
+            @Override
+            public int getParEncoderPosition() {
+                return driver.getEncoderX();
+            }
+
+            @Override
+            public int getPerpEncoderPosition() {
+                return driver.getEncoderY();
+            }
+
+            @Override
+            public float getHeadingVelocity() {
+                return (float) driver.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
+            }
+
+            @Override
+            public void setParDirection(@NonNull DcMotorSimple.Direction direction) {
+                parDirection = direction == DcMotorSimple.Direction.FORWARD
+                        ? GoBildaPinpointDriver.EncoderDirection.FORWARD
+                        : GoBildaPinpointDriver.EncoderDirection.REVERSED;
+                driver.setEncoderDirections(parDirection, perpDirection);
+            }
+
+            @Override
+            public DcMotorSimple.Direction getParDirection() {
+                return parDirection == GoBildaPinpointDriver.EncoderDirection.FORWARD
+                        ? DcMotorSimple.Direction.FORWARD : DcMotorSimple.Direction.REVERSE;
+            }
+
+            @Override
+            public void setPerpDirection(@NonNull DcMotorSimple.Direction direction) {
+                perpDirection = direction == DcMotorSimple.Direction.FORWARD
+                        ? GoBildaPinpointDriver.EncoderDirection.FORWARD
+                        : GoBildaPinpointDriver.EncoderDirection.REVERSED;
+                driver.setEncoderDirections(parDirection, perpDirection);
+            }
+
+            @Override
+            public DcMotorSimple.Direction getPerpDirection() {
+                return perpDirection == GoBildaPinpointDriver.EncoderDirection.FORWARD
+                        ? DcMotorSimple.Direction.FORWARD : DcMotorSimple.Direction.REVERSE;
+            }
+        };
     }
 }

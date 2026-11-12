@@ -112,7 +112,7 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
             initializeStateVariables(drive.runStep(activeRoute.steps.get(stepIndex), markerActions));
         }
         if (updateStateAction()) {
-            nextState(next);
+            finishActionOrStop(next);
         }
     }
 
@@ -122,8 +122,21 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
             initializeStateVariables(actionFactory.get());
         }
         if (updateStateAction()) {
-            nextState(next);
+            finishActionOrStop(next);
         }
+    }
+
+    /** A localization or follower fault is fatal: stop instead of entering the next state. */
+    private void finishActionOrStop(S next) {
+        if (!drive.hasFault()) {
+            nextState(next);
+            return;
+        }
+
+        drive.stop();
+        telemetry.addData("AUTONOMOUS STOPPED", drive.getFault());
+        telemetry.update();
+        requestOpModeStop();
     }
 
     /** Change states. The new state's entry block runs on the next OpMode loop. */
@@ -159,6 +172,10 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
                 }
                 telemetry.addData("Start pose", activeRoute.startPose);
                 telemetry.addData("Localizer pose", drive.getPose());
+                telemetry.addData("Pinpoint", drive.getLocalizationStatus());
+                if (!drive.isLocalizationReady()) {
+                    telemetry.addLine("STOP: Pinpoint must say READY before this auto can drive");
+                }
                 telemetry.update();
             }
             if (isStopRequested()) {
@@ -175,6 +192,10 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
                 telemetry.addData("State", programState);
                 telemetry.addData("State time (ms)", stateElapsedMillis());
                 telemetry.addData("Program time (ms)", programElapsedMillis());
+                telemetry.addData("Pinpoint", drive.getLocalizationStatus());
+                if (drive.hasFault()) {
+                    telemetry.addData("AUTONOMOUS STOPPED", drive.getFault());
+                }
                 telemetry.update();
 
                 if (stageFinished) {

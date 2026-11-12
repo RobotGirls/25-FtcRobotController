@@ -103,12 +103,18 @@ public final class BioBuzzRoutes {
 //            .build();
     public static final Route MAIN_SHOOT = Route.builder(
                     "BLUE Garden Park + Shooter copy", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
-            .follow(PurePursuitPath.builder().name("blue garden park + shooter copy")
+            .description("Drive around the Hive, shoot, then enter the parking zone.")
+            .follow(PurePursuitPath.builder().name("drive around hive")
                     .to(-36, 12)
                     .to(-36, 40)
                     .to(0, 40)
                     .to(34, 40)
+                    .timeout(12)
+                    .build())
+            .follow(PurePursuitPath.builder().name("enter parking zone")
+                    .moveSpeed(0.5)
                     .to(34, 60)
+                    .timeout(5)
                     .build())
             .build();
 

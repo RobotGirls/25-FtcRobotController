@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode.biobuzz2627.purePursuitAutos;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.IntakePurePursuit;
-import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.LimelightPurePursuit;
 import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.ShooterPurePursuit;
-import org.firstinspires.ftc.teamcode.biobuzz2627.mechCode.TurretPurePursuit;
 import org.firstinspires.ftc.teamcode.purepursuit.Route;
 import org.firstinspires.ftc.teamcode.purepursuit.paths.BioBuzzRoutes;
 
@@ -24,8 +22,6 @@ public class MainShoot extends PurePursuitAutoBase<MainShoot.State> {
 
     IntakePurePursuit intake;
     ShooterPurePursuit shooter;
-    TurretPurePursuit turret;
-    LimelightPurePursuit limelight;
 
     @Override
     protected Route route() {
@@ -68,15 +64,11 @@ public class MainShoot extends PurePursuitAutoBase<MainShoot.State> {
     protected void initMechanisms() {
         intake = new IntakePurePursuit(hardwareMap, telemetry);
         shooter = new ShooterPurePursuit(hardwareMap, telemetry);
-        limelight = new LimelightPurePursuit();
-        limelight.initLimelightBlue(hardwareMap, telemetry);
-        turret = new TurretPurePursuit(hardwareMap, telemetry, limelight);
 
     }
 
     @Override
     protected void stopMechanisms() {
         shooter.stop();
-        limelight.stop();
     }
 }

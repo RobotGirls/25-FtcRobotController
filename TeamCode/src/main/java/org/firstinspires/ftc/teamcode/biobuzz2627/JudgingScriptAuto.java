@@ -13,10 +13,10 @@ import java.util.Objects;
 public class JudgingScriptAuto extends LinearOpMode {
 
     /* Declare OpMode members. */
-    public DcMotor leftFront = null;
-    public DcMotor rightFront = null;
-    public DcMotor rightBack = null;
-    public DcMotor leftBack = null;
+    public DcMotor frontLeft = null;
+    public DcMotor frontRight = null;
+    public DcMotor backRight = null;
+    public DcMotor backLeft = null;
 
     public ElapsedTime timer;
 
@@ -28,24 +28,24 @@ public class JudgingScriptAuto extends LinearOpMode {
     public void runOpMode() {
 
         // Define and Initialize Motors
-        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBack = hardwareMap.get(DcMotor.class, "backRight");
-        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+        frontLeft = hardwareMap.get(DcMotor.class, "backRight");
+        frontRight = hardwareMap.get(DcMotor.class, "frontLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backLeft");
+        backLeft = hardwareMap.get(DcMotor.class, "frontRight");
 
         ledLights = hardwareMap.get(RevBlinkinLedDriver.class, "ledLights");
 
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
         waitForStart();
 
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -70,19 +70,19 @@ public class JudgingScriptAuto extends LinearOpMode {
             if (timer.seconds() > 5) {
                 // Add robot motion
                 ledLights(ledLights, "sparkle");
-                turnRight(leftFront, rightFront, leftBack, rightBack);
+                turnRight(frontLeft, frontRight, backLeft, backRight);
             } else if (timer.seconds() > 7) {
-                turnLeft(leftFront, rightFront, leftBack, rightBack);
+                turnLeft(frontLeft, frontRight, backLeft, backRight);
             } else if (timer.seconds() > 9) {
                 ledLights(ledLights, "purple");
-                driveBack(leftFront, rightFront, leftBack, rightBack);
+                driveBack(frontLeft, frontRight, backLeft, backRight);
             } else if (timer.seconds() > 11) {
-                driveForward(leftFront, rightFront, leftBack, rightBack);
+                driveForward(frontLeft, frontRight, backLeft, backRight);
             } else {
-                leftFront.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
+                frontLeft.setPower(0);
+                frontLeft.setPower(0);
+                backRight.setPower(0);
+                frontRight.setPower(0);
             }
 
         }
@@ -92,29 +92,29 @@ public class JudgingScriptAuto extends LinearOpMode {
 
     }
 
-    public void turnRight(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(1);
-        leftBack.setPower(1);
-        rightBack.setPower(-1);
-        rightFront.setPower(-1);
+    public void turnRight(DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
+        frontLeft.setPower(1);
+        backLeft.setPower(1);
+        backRight.setPower(-1);
+        frontRight.setPower(-1);
     }
-    public void turnLeft(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(-1);
-        leftBack.setPower(-1);
-        rightBack.setPower(1);
-        rightFront.setPower(1);
+    public void turnLeft(DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
+        frontLeft.setPower(-1);
+        backLeft.setPower(-1);
+        backRight.setPower(1);
+        frontRight.setPower(1);
     }
-    public void driveForward(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(1);
-        leftBack.setPower(1);
-        rightBack.setPower(1);
-        rightFront.setPower(1);
+    public void driveForward(DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
+        frontLeft.setPower(1);
+        backLeft.setPower(1);
+        backRight.setPower(1);
+        frontRight.setPower(1);
     }
-    public void driveBack(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(-1);
-        leftBack.setPower(-1);
-        rightBack.setPower(-1);
-        rightFront.setPower(-1);
+    public void driveBack(DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
+        frontLeft.setPower(-1);
+        backLeft.setPower(-1);
+        backRight.setPower(-1);
+        frontRight.setPower(-1);
     }
 
     public void ledLights(RevBlinkinLedDriver blinkin, String color) {
