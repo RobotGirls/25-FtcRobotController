@@ -2,14 +2,14 @@ package org.firstinspires.ftc.teamcode.biobuzz2627;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.Objects;
 
-@TeleOp(name = "BIOBUZZ TELEOP")
+@Autonomous(name = "Judging Script")
 public class JudgingScriptAuto extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -18,9 +18,7 @@ public class JudgingScriptAuto extends LinearOpMode {
     public DcMotor rightBack = null;
     public DcMotor leftBack = null;
 
-    public ElapsedTime timer;
-
-    public RevBlinkinLedDriver ledLights;
+    public ElapsedTime timer = new ElapsedTime();
 
   // Add mech code here
 
@@ -32,8 +30,6 @@ public class JudgingScriptAuto extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "frontRight");
         rightBack = hardwareMap.get(DcMotor.class, "backRight");
         leftBack = hardwareMap.get(DcMotor.class, "backLeft");
-
-        ledLights = hardwareMap.get(RevBlinkinLedDriver.class, "ledLights");
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -60,29 +56,19 @@ public class JudgingScriptAuto extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         waitForStart();
 
+        timer.startTime();
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            timer.reset();
-
             timer.startTime();
 
-            if (timer.seconds() > 5) {
-                // Add robot motion
-                ledLights(ledLights, "sparkle");
-                turnRight(leftFront, rightFront, leftBack, rightBack);
-            } else if (timer.seconds() > 7) {
-                turnLeft(leftFront, rightFront, leftBack, rightBack);
-            } else if (timer.seconds() > 9) {
-                ledLights(ledLights, "purple");
-                driveBack(leftFront, rightFront, leftBack, rightBack);
-            } else if (timer.seconds() > 11) {
-                driveForward(leftFront, rightFront, leftBack, rightBack);
-            } else {
-                leftFront.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
+            while (timer.seconds() < 5 ) {
+                if (timer.seconds() < 2 ) {
+                    turnLeft(leftFront, rightFront, rightFront, rightBack);
+                } else if (timer.seconds() >= 3 && timer.seconds() < 5) {
+                    turnRight(leftFront, rightFront, leftBack, rightBack);
+                }
             }
 
         }
@@ -93,37 +79,23 @@ public class JudgingScriptAuto extends LinearOpMode {
     }
 
     public void turnRight(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(1);
-        leftBack.setPower(1);
-        rightBack.setPower(-1);
-        rightFront.setPower(-1);
+        leftFront.setPower(0.5);
+        leftBack.setPower(0.5);
+        rightBack.setPower(-0.5);
+        rightFront.setPower(-0.5);
     }
     public void turnLeft(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(-1);
-        leftBack.setPower(-1);
-        rightBack.setPower(1);
-        rightFront.setPower(1);
+        leftFront.setPower(-0.5);
+        leftBack.setPower(-0.5);
+        rightBack.setPower(0.5);
+        rightFront.setPower(0.5);
     }
-    public void driveForward(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(1);
-        leftBack.setPower(1);
-        rightBack.setPower(1);
-        rightFront.setPower(1);
-    }
-    public void driveBack(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
-        leftFront.setPower(-1);
-        leftBack.setPower(-1);
-        rightBack.setPower(-1);
-        rightFront.setPower(-1);
+    public void stopMoving(DcMotor leftFront, DcMotor rightFront, DcMotor leftBack, DcMotor rightBack) {
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
     }
 
-    public void ledLights(RevBlinkinLedDriver blinkin, String color) {
-        if (Objects.equals(color, "purple")) {
-            blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
-        } else if (Objects.equals(color, "sparkle")) {
-            blinkin.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_TWINKLES);
 
-        }
-
-    }
 }
