@@ -15,22 +15,28 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * wait for a calibrated amount of time, stop, and start the next movement. It does not use Pure
  * Pursuit, Road Runner, wheel odometry, Pinpoint, an IMU, or AprilTags.</p>
  *
- * <p>Place the robot at the same starting pose as MainShoot: (-66, 12), facing 0 degrees. The
- * shooter runs after the robot crosses the field and before it enters the parking zone.</p>
+ * <p>Place the robot at the correct shooting pose and heading. The robot shoots while stationary,
+ * stops the intake and both flywheels, and only then begins the timed parking route.</p>
  */
 @Config
 @Autonomous(name = "Main Shoot - Timed", group = "No Localization")
 public class MainShootTimed extends LinearOpMode {
     // These are starting estimates, not measured values for your robot.
-    public static double FORWARD_POWER = 0.28;
-    public static double STRAFE_POWER = 0.68;
-    public static long FORWARD_30_IN_TIME_MS = 1450;
-    public static long STRAFE_LEFT_28_IN_TIME_MS = 1550;
-    public static long FORWARD_70_IN_TIME_MS = 5000;
+    public static double FORWARD_POWER = -0.30;
+    /** This robot needs the opposite sign for the forward parking leg after its strafe. */
+    public static double POST_STRAFE_FORWARD_POWER = -0.60;
+    public static double STRAFE_POWER = 0.30;
+    /** Short first parking move after shooting; tune this duration on the real field. */
+    public static long PARK_FORWARD_LITTLE_TIME_MS = 600;
+    public static long STRAFE_28_IN_TIME_MS = 2900;
+    public static long FORWARD_70_IN_TIME_MS = 1980;
+
+    public static long STRAFE_IN_TIME_MS = 2700;
     public static long PAUSE_BETWEEN_MOVES_MS = 200;
     /** Separate signed powers match the TeleOp and allow independent flywheel tuning. */
-    public static double SHOOTER_SMALL_POWER = 0.60;
-    public static double SHOOTER_BIG_POWER = -0.40;
+    public static double SHOOTER_SMALL_POWER = 0.30;
+    public static double SHOOTER_BIG_POWER = -0.30;
+    public static double INTAKE_SHOOT_POWER = -1.0;
     public static long SHOOTER_TIME_MS = 4000;
 
     private DcMotor frontLeft;
@@ -48,7 +54,8 @@ public class MainShootTimed extends LinearOpMode {
         initializeShooter();
 
         telemetry.addLine("Main Shoot - timed/no localization");
-        telemetry.addLine("Start at (-66, 12), facing 0 degrees");
+        telemetry.addLine("Start at the shooting pose, facing the target");
+        telemetry.addLine("Warms flywheels while moving; feeds only when stationary");
         telemetry.addLine("Test each duration at low power before a full run");
         telemetry.update();
 
@@ -58,25 +65,31 @@ public class MainShootTimed extends LinearOpMode {
         }
 
         try {
-            // (-66, 12) -> (-36, 12): approximately 30 inches forward.
-            driveFor("1/5: clear the starting wall", FORWARD_POWER, 0,
-                    FORWARD_30_IN_TIME_MS);
+            // Warm up only the flywheels. Do not feed pollen while the robot is moving.
+            stopIntake();
+            startShooter();
 
-            // Shoot immediately after the short opening move, then stop both flywheels.
-            runShooterFor("2/5: shoot pollen", SHOOTER_TIME_MS);
+            driveFor("1/5: move forward while warming flywheels", FORWARD_POWER, 0,
+                    PARK_FORWARD_LITTLE_TIME_MS);
 
-            // (-36, 12) -> (-36, 40): approximately 28 inches to robot-left.
-            driveFor("3/5: move around the Hive", 0, -STRAFE_POWER,
-                    STRAFE_LEFT_28_IN_TIME_MS);
+            // The robot has stopped; now start the intake and fire.
+            runShooterFor("2/5: shoot pollen while stationary", SHOOTER_TIME_MS);
 
-            // (-36, 40) -> (34, 40): approximately 70 inches forward.
-            driveFor("4/5: cross the field", FORWARD_POWER, 0,
+            driveFor("3/5: move around the Hive", 0, STRAFE_POWER,
+                    STRAFE_28_IN_TIME_MS);
+
+            driveFor("4/5: move forward into the parking area", POST_STRAFE_FORWARD_POWER, 0,
                     FORWARD_70_IN_TIME_MS);
+
+            driveFor("4/5: strafe to park", 0,  STRAFE_POWER,
+                    STRAFE_IN_TIME_MS);
+
 
 
         } finally {
             stopDrive();
             stopShooter();
+            stopIntake();
         }
 
         telemetry.addLine("Main Shoot timed route complete");
@@ -123,9 +136,8 @@ public class MainShootTimed extends LinearOpMode {
 
     private void runShooterFor(String stage, long timeMs) {
         ElapsedTime timer = new ElapsedTime();
-        shooterSmall.setPower(SHOOTER_SMALL_POWER);
-        shooterBig.setPower(SHOOTER_BIG_POWER);
-        intake.setPower(-1);
+        startShooter();
+        intake.setPower(INTAKE_SHOOT_POWER);
 
         while (opModeIsActive() && timer.milliseconds() < Math.max(0, timeMs)) {
             telemetry.addData("Stage", stage);
@@ -139,9 +151,15 @@ public class MainShootTimed extends LinearOpMode {
         }
 
         stopShooter();
+        stopIntake();
         if (opModeIsActive() && PAUSE_BETWEEN_MOVES_MS > 0) {
             sleep(PAUSE_BETWEEN_MOVES_MS);
         }
+    }
+
+    private void startShooter() {
+        shooterSmall.setPower(SHOOTER_SMALL_POWER);
+        shooterBig.setPower(SHOOTER_BIG_POWER);
     }
 
     private void stopShooter() {
@@ -150,6 +168,12 @@ public class MainShootTimed extends LinearOpMode {
         }
         if (shooterBig != null) {
             shooterBig.setPower(0);
+        }
+    }
+
+    private void stopIntake() {
+        if (intake != null) {
+            intake.setPower(0);
         }
     }
 
