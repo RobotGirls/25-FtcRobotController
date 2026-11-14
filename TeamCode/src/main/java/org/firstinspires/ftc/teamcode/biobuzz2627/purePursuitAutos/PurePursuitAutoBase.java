@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.biobuzz2627.PurePursuit.PurePursuitDrive;
+import org.firstinspires.ftc.teamcode.biobuzz2627.PurePursuit.PurePursuitConfig;
 import org.firstinspires.ftc.teamcode.purepursuit.Route;
 
 import java.util.Collections;
@@ -163,6 +164,17 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
         stageFinished = true;
     }
 
+    /** Stops the drivetrain and the OpMode instead of continuing after a localization/path fault. */
+    protected final void abortAutonomous(String reason) {
+        drive.stop();
+        stateAction = null;
+        telemetry.addLine("AUTO ABORTED");
+        telemetry.addLine(reason);
+        telemetry.addData("Last pose", drive.getPose());
+        telemetry.update();
+        requestOpModeStop();
+    }
+
     /** State-relative timeout helper, disabled while the OpMode is in init. */
     protected final boolean isTimedOut(long milliseconds) {
         return isStarted() && stateElapsedMillis() > milliseconds;
@@ -197,6 +209,13 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
                 telemetry.update();
             }
             if (isStopRequested()) {
+                return;
+            }
+            if (!PurePursuitConfig.LOCALIZATION_VERIFIED) {
+                drive.stop();
+                telemetry.addLine("AUTO BLOCKED: localization is not verified");
+                telemetry.update();
+                sleep(1500);
                 return;
             }
 

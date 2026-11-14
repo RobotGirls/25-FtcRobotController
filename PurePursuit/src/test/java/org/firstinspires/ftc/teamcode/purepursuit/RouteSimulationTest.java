@@ -66,6 +66,16 @@ public class RouteSimulationTest {
     }
 
     @Test
+    public void productionRoutesStayClearOfTheCenterStructure() {
+        for (Route route : Routes.ALL) {
+            RouteSimulation sim = new RouteSimulation(route, true);
+            sim.runToEnd(MAX_SECONDS);
+            assertEquals(route.name + " hit the center structure",
+                    0, sim.getCollisionSeconds(), 0);
+        }
+    }
+
+    @Test
     public void endHeadingIsReached() {
         for (boolean holonomic : new boolean[] {true, false}) {
             RouteSimulation sim = new RouteSimulation(TestRoutes.FIELD_LOOP, holonomic);
