@@ -1,6 +1,6 @@
 # BIOBUZZ HIVE TeleOp Path Planner — FTC Java Starter
 
-**Status: functioning pure-Java planner plus a drive-only FTC test OpMode. Field geometry and shooting poses remain locked until the team verifies them.**
+**Status: functioning pure-Java planner plus the Issue 40 drive-only FTC TeleOp. Field geometry and shooting poses remain locked until the team verifies them.**
 
 ## Official measurements and provenance (as of 2026-11-02)
 
@@ -38,8 +38,8 @@ sets that flag. Do not simply flip the flag to make the code run.
 
 - The code now requires an explicit `Alliance.RED` or `Alliance.BLUE` choice.
 - `AllianceGoals` holds separate, **surveyed and tested** shooting-position lists for red/blue and audience/far sides.
-- Limelight detections are filtered to the selected official AprilTag cluster: red scoring IDs 30–33, red audience 34–37, blue audience 38–41, or blue scoring 42–45.
-- A new path can begin only after a member of the selected cluster was seen recently. The generated path continues through a brief camera dropout because localization, not the camera image, follows the path.
+- The drivetrain route uses Pinpoint field localization only. It does not require seeing an
+  AprilTag or initialize the Limelight.
 - `DriveAssist` runs only while the assist button is held. Releasing it, pressing cancel, moving a drive stick, or losing localization stops the follower.
 - Empty goal lists disable assist for that alliance/side combination.
 - The HIVE obstacle geometry currently uses **one shared conservative exclusion model**; it must include both physical HIVE structures and their possible tipping envelopes if there are two distinct structures. Verify actual field layout before enabling movement.
@@ -59,15 +59,17 @@ assist.update(gamepad1.left_bumper, gamepad1.right_bumper);
 
 ## Driver controls in the test OpMode
 
-Select `TEST PP Hive Shooting Assist` on the Driver Station. This OpMode initializes only the drivetrain, odometry, and Limelight; it does not initialize or command the shooter, intake, or servos.
+Select `Issue 40 - Hold A Hive Assist` on the Driver Station. This OpMode initializes only the
+drivetrain and Pinpoint; it does not initialize or command Limelight, shooter, intake, turret, or
+servos.
 
 - `X`: blue cluster filter
 - `B`: red cluster filter
-- D-pad left: audience-side cluster and shooting poses
-- D-pad right: far/scoring-side cluster and shooting poses
-- Hold left bumper: generate and follow the best safe route
-- Release left bumper: stop path following
-- Right bumper or drive-stick movement: cancel immediately
+- Left bumper: remember the alliance/audience-side shooting destination
+- Right bumper: remember the far-side shooting destination
+- Hold A: generate and follow the best safe route from the current Pinpoint pose
+- Release A: cancel and send zero drivetrain power immediately
+- Drive-stick movement during assist: cancel; release A before driving manually again
 
 The dashboard/Driver Station telemetry shows the selected filter, matched tag, verification status, follower state, and field pose.
 
@@ -78,8 +80,6 @@ Before the first powered test, edit `HiveAssistConfig`, replace every estimated 
 - `PurePursuitHiveAssistTeleOp`: the single readable OpMode loop and telemetry.
 - `ManualMecanumDriver`: ordinary gamepad driving and driver-override detection.
 - `HiveTargetSelection`: color/side button state and AprilTag-cluster matching.
-- `LimelightHiveTargetTracker`: camera lifecycle and selected-target freshness.
-- `LimelightShootingRange`: selected-tag camera-space position, distance, angles, and calibrated shooting-window check.
 - `HiveDriveAssistRobot`: Road Runner adapter for the hardware-independent state machine.
 - `DynamicPurePursuitFollower`: nonblocking generated-path follower.
 - `HiveAssistConfig`: dashboard-tunable geometry, speeds, and candidate shooting poses.

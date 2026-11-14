@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.PinpointLocalizer;
 import org.ftc.hiveplanner.Alliance;
 import org.ftc.hiveplanner.DriveAssist;
 import org.ftc.hiveplanner.Point;
@@ -39,7 +40,9 @@ public final class HiveDriveAssistRobot implements DriveAssist.Robot {
     @Override
     public boolean localizationValid() {
         Pose2d pose = drive.localizer.getPose();
-        return Double.isFinite(pose.position.x) && Double.isFinite(pose.position.y)
+        return drive.localizer instanceof PinpointLocalizer
+                && ((PinpointLocalizer) drive.localizer).isReady()
+                && Double.isFinite(pose.position.x) && Double.isFinite(pose.position.y)
                 && Double.isFinite(pose.heading.toDouble());
     }
 

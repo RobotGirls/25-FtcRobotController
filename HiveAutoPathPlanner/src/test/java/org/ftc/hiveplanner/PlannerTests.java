@@ -32,12 +32,21 @@ public class PlannerTests {
         DriveAssist assist = new DriveAssist(robot,
             new GoalSelector(new AStarPlanner(new FieldMap(verified), verified.gridIn)),
             verified, ag, Alliance.RED);
-        assist.setSide(FieldSide.FAR);
-        assist.update(true,false);
+        assist.update(true,FieldSide.FAR);
         check(assist.active(),"Held assist starts a path");
         check(robot.followed.get(robot.followed.size()-1).x==22,"Assist uses selected FAR target");
-        assist.update(false,false);
+        assist.update(false,FieldSide.FAR);
         check(!assist.active()&&robot.cancelCount==1,"Button release immediately cancels");
+
+        assist.update(true,FieldSide.AUDIENCE);
+        check(assist.active(),"Left bumper request starts the audience path");
+        check(robot.followed.get(robot.followed.size()-1).x==20,"Audience target selected");
+        assist.update(true,FieldSide.FAR);
+        check(assist.active()&&robot.cancelCount==2,"Changing bumpers cancels the old path");
+        check(robot.followed.get(robot.followed.size()-1).x==22,
+            "Changing bumpers replans to the far target");
+        assist.update(false,FieldSide.FAR);
+        check(!assist.active()&&robot.cancelCount==3,"Releasing either bumper stops motors");
 
         System.out.println("PASS: obstacle, route, color/side selection, hold-to-run, verification gate");
         System.out.println("Example simulated route: "+path);

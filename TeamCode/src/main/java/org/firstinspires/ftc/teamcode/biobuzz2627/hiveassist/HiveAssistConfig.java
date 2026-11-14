@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.biobuzz2627.hiveassist;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.ftc.hiveplanner.AllianceGoals;
+import org.ftc.hiveplanner.Alliance;
 import org.ftc.hiveplanner.FieldConfig;
 import org.ftc.hiveplanner.Point;
 
@@ -17,10 +18,17 @@ public final class HiveAssistConfig {
     /** Converts planner coordinates (0..144) to Road Runner coordinates (-72..72). */
     public static final double ROAD_RUNNER_FIELD_OFFSET_IN = 72.0;
 
-    // Initial robot pose in the planner's 0..144 inch field coordinates.
+    // Initial robot pose in the planner's 0..144 inch field coordinates. Pinpoint measures motion
+    // from its reset location; it cannot discover this absolute field pose by itself.
     public static double START_FIELD_X_IN = 18;
     public static double START_FIELD_Y_IN = 18;
     public static double START_HEADING_DEG = 0;
+    public static double BLUE_START_FIELD_X_IN = 18;
+    public static double BLUE_START_FIELD_Y_IN = 18;
+    public static double BLUE_START_HEADING_DEG = 0;
+    public static double RED_START_FIELD_X_IN = 126;
+    public static double RED_START_FIELD_Y_IN = 18;
+    public static double RED_START_HEADING_DEG = 180;
 
     public static double ROBOT_BOUNDING_RADIUS_IN = 10;
     public static double EXTRA_CLEARANCE_IN = 4;
@@ -67,6 +75,18 @@ public final class HiveAssistConfig {
     public static double MAX_SHOOTING_X_METERS = 0;
 
     private HiveAssistConfig() {}
+
+    public static double startFieldX(Alliance alliance) {
+        return alliance == Alliance.RED ? RED_START_FIELD_X_IN : BLUE_START_FIELD_X_IN;
+    }
+
+    public static double startFieldY(Alliance alliance) {
+        return alliance == Alliance.RED ? RED_START_FIELD_Y_IN : BLUE_START_FIELD_Y_IN;
+    }
+
+    public static double startHeadingDegrees(Alliance alliance) {
+        return alliance == Alliance.RED ? RED_START_HEADING_DEG : BLUE_START_HEADING_DEG;
+    }
 
     public static FieldConfig fieldConfig() {
         return new FieldConfig(

@@ -17,18 +17,8 @@ public final class HiveTargetSelection {
 
     /** Returns true when the selected target cluster changed. */
     public boolean update(Gamepad gamepad, DriveAssist assist) {
-        boolean changed = false;
+        boolean changed = updateAlliance(gamepad, assist);
         if (!assist.active()) {
-            if (gamepad.x && !previousX && alliance != Alliance.BLUE) {
-                alliance = Alliance.BLUE;
-                assist.setAlliance(alliance);
-                changed = true;
-            }
-            if (gamepad.b && !previousB && alliance != Alliance.RED) {
-                alliance = Alliance.RED;
-                assist.setAlliance(alliance);
-                changed = true;
-            }
             if (gamepad.dpad_left && !previousDpadLeft && side != FieldSide.AUDIENCE) {
                 side = FieldSide.AUDIENCE;
                 assist.setSide(side);
@@ -41,10 +31,42 @@ public final class HiveTargetSelection {
             }
         }
 
-        previousX = gamepad.x;
-        previousB = gamepad.b;
         previousDpadLeft = gamepad.dpad_left;
         previousDpadRight = gamepad.dpad_right;
+        return changed;
+    }
+
+    /** X/B select BLUE/RED while idle. The Issue 40 TeleOp calls this only during INIT. */
+    public boolean updateAlliance(Gamepad gamepad, DriveAssist assist) {
+        boolean changed = false;
+        if (!assist.active()) {
+            if (gamepad.x && !previousX && alliance != Alliance.BLUE) {
+                alliance = Alliance.BLUE;
+                assist.setAlliance(alliance);
+                changed = true;
+            }
+            if (gamepad.b && !previousB && alliance != Alliance.RED) {
+                alliance = Alliance.RED;
+                assist.setAlliance(alliance);
+                changed = true;
+            }
+        }
+        previousX = gamepad.x;
+        previousB = gamepad.b;
+        return changed;
+    }
+
+    /** Left/right bumper select audience/alliance side or far side; the choice stays selected. */
+    public boolean updateSideFromBumpers(Gamepad gamepad) {
+        boolean changed = false;
+        if (gamepad.left_bumper && !gamepad.right_bumper && side != FieldSide.AUDIENCE) {
+            side = FieldSide.AUDIENCE;
+            changed = true;
+        }
+        if (gamepad.right_bumper && !gamepad.left_bumper && side != FieldSide.FAR) {
+            side = FieldSide.FAR;
+            changed = true;
+        }
         return changed;
     }
 

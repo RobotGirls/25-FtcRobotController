@@ -17,7 +17,9 @@ public final class DriveAssist {
     private final AllianceGoals goals;
     private Alliance alliance;
     private FieldSide side;
-    private boolean active=false, prevButton=false;
+    private boolean active=false;
+    private boolean previousAssistHeld;
+    private FieldSide previousRequest;
     public DriveAssist(Robot robot, GoalSelector selector, FieldConfig config,
                        AllianceGoals goals, Alliance alliance) {
         if (robot==null || selector==null || config==null || goals==null || alliance==null)
@@ -42,13 +44,29 @@ public final class DriveAssist {
         this.side=side;
     }
 
-    /** Call once per TeleOp loop; assist is hold-to-run and release always stops immediately. */
-    public void update(boolean assistButton, boolean cancelButton) {
-        boolean pressed=assistButton&&!prevButton;prevButton=assistButton;
-        if(!assistButton||cancelButton||robot.manualOverrideRequested()||!robot.localizationValid()) {
-            if(active){robot.cancelFollowerAndStop();active=false;}
+    /**
+     * Call once per TeleOp loop. The A button is hold-to-run; release cancels immediately. The
+     * bumpers select the requested side before (or during) the assist. A side change cancels the
+     * old route before a fresh route is generated from the current localized position.
+     */
+    public void update(boolean assistHeld, FieldSide requestedSide) {
+        if (requestedSide == null) throw new IllegalArgumentException("Choose AUDIENCE or FAR");
+        boolean pressed = assistHeld
+                && (!previousAssistHeld || requestedSide != previousRequest);
+        previousAssistHeld = assistHeld;
+        previousRequest = requestedSide;
+
+        if (!assistHeld || robot.manualOverrideRequested()
+                || !robot.localizationValid()) {
+            cancelActive();
             return;
         }
+
+        if (active && side != requestedSide) {
+            cancelActive();
+        }
+        side = requestedSide;
+
         if(pressed&&!active) {
             config.requireVerifiedForRobot();
             List<Point> selected=goals.forTarget(alliance,side);
@@ -59,6 +77,18 @@ public final class DriveAssist {
         if(active){
             robot.updateFollower();
             if(robot.followerFinished()){robot.cancelFollowerAndStop();active=false;}
+        }
+    }
+
+    /** Backwards-compatible two-button API for older callers. */
+    public void update(boolean assistButton, boolean cancelButton) {
+        update(assistButton && !cancelButton, side);
+    }
+
+    private void cancelActive() {
+        if (active) {
+            robot.cancelFollowerAndStop();
+            active = false;
         }
     }
 }

@@ -58,6 +58,11 @@ public final class PinpointLocalizer implements Localizer {
         return txWorldPinpoint.times(txPinpointRobot);
     }
 
+    /** True only when the Pinpoint is actively returning usable localization data. */
+    public boolean isReady() {
+        return driver.getDeviceStatus() == GoBildaPinpointDriver.DeviceStatus.READY;
+    }
+
     @Override
     public PoseVelocity2d update() {
         driver.update();

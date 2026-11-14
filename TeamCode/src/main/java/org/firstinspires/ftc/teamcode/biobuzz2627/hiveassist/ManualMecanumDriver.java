@@ -19,7 +19,10 @@ public final class ManualMecanumDriver {
                 new Vector2d(-gamepad.left_stick_y, -gamepad.left_stick_x)
                         .times(HiveAssistConfig.MANUAL_DRIVE_SPEED),
                 -gamepad.right_stick_x * HiveAssistConfig.MANUAL_DRIVE_SPEED));
-        drive.updatePoseEstimate();
+    }
+
+    public void stop() {
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
     }
 
     public boolean overrideRequested(Gamepad gamepad) {
