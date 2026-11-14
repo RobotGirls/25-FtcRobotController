@@ -118,14 +118,20 @@ public final class BioBuzzRoutes {
             .description("Drive around the Hive, shoot, then enter the parking zone.")
             .follow(PurePursuitPath.builder().name("drive around hive")
                     .to(-36, 12)
-                    .to(-36, 40)
-                    .to(0, 40)
-                    .to(34, 40)
+                    // Back away before going around so the fixed-forward robot footprint and
+                    // Pure Pursuit's rounded corner stay clear of the Hive.
+                    .to(-42, 12)
+                    .to(-42, 46)
+                    .to(0, 46)
+                    .to(34, 46)
+                    // Keep the front of the mecanum robot facing field-forward (+X).
+                    .fixedHeading(Math.toRadians(0))
                     .timeout(12)
                     .build())
             .follow(PurePursuitPath.builder().name("enter parking zone")
                     .moveSpeed(0.5)
                     .to(34, 60)
+                    .fixedHeading(Math.toRadians(0))
                     .timeout(5)
                     .build())
             .build();

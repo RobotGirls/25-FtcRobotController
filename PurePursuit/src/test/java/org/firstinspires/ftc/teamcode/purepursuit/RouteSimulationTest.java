@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.purepursuit.paths.Routes;
 import org.firstinspires.ftc.teamcode.purepursuit.paths.TestRoutes;
+import org.firstinspires.ftc.teamcode.purepursuit.paths.BioBuzzRoutes;
 import org.junit.Test;
 
 /** Drives every route in the simulator, the same way the FieldViewer does. */
@@ -73,6 +74,22 @@ public class RouteSimulationTest {
             assertEquals(route.name + " hit the center structure",
                     0, sim.getCollisionSeconds(), 0);
         }
+    }
+
+    @Test
+    public void mainShootIsMecanumAndFacesFieldForward() {
+        Route route = BioBuzzRoutes.MAIN_SHOOT;
+        assertTrue("fixed-forward shooter path must be stored as mecanum",
+                route.requiresHolonomic);
+        RouteSimulation sim = new RouteSimulation(route, true);
+        double worstHeadingError = 0;
+        while (!sim.isFinished() && sim.getTime() < MAX_SECONDS) {
+            sim.loop();
+            worstHeadingError = Math.max(worstHeadingError,
+                    Math.abs(PurePursuitMath.angleWrap(sim.getPose().heading.toDouble())));
+        }
+        assertTrue("shooter route turned " + Math.toDegrees(worstHeadingError) + " deg",
+                worstHeadingError < Math.toRadians(5));
     }
 
     @Test
