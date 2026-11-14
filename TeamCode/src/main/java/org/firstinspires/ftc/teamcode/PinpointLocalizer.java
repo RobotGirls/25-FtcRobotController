@@ -27,7 +27,7 @@ public final class PinpointLocalizer implements Localizer {
         /** Flip if pushing the robot forward makes its reported X position decrease. */
         public boolean reverseParallelEncoder = false;
         /** Flip if pushing the robot left makes its reported Y position decrease. */
-        public boolean reversePerpendicularEncoder = false;
+        public boolean reversePerpendicularEncoder = true;
     }
 
     public static Params PARAMS = new Params();
@@ -68,6 +68,14 @@ public final class PinpointLocalizer implements Localizer {
 
     public String getStatus() {
         return String.valueOf(driver.getDeviceStatus());
+    }
+
+    public int getParallelEncoderTicks() {
+        return driver.getEncoderX();
+    }
+
+    public int getPerpendicularEncoderTicks() {
+        return driver.getEncoderY();
     }
 
     @Override

@@ -188,6 +188,9 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
                 telemetry.addData("Start pose", activeRoute.startPose);
                 telemetry.addData("Localizer pose", drive.getPose());
                 telemetry.addData("Pinpoint", drive.getLocalizationStatus());
+                telemetry.addData("Pinpoint parallel ticks", drive.getParallelEncoderTicks());
+                telemetry.addData("Pinpoint perpendicular ticks",
+                        drive.getPerpendicularEncoderTicks());
                 if (!drive.isLocalizationReady()) {
                     telemetry.addLine("STOP: Pinpoint must say READY before this auto can drive");
                 }

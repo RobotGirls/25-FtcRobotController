@@ -61,6 +61,14 @@ public final class PurePursuitDrive {
         default String localizationStatus() {
             return "ready";
         }
+
+        default int parallelEncoderTicks() {
+            return 0;
+        }
+
+        default int perpendicularEncoderTicks() {
+            return 0;
+        }
     }
 
     public final Hardware hardware;
@@ -181,6 +189,18 @@ public final class PurePursuitDrive {
                         ? ((org.firstinspires.ftc.teamcode.PinpointLocalizer) drive.localizer).getStatus()
                         : drive.localizer.getClass().getSimpleName();
             }
+
+            @Override
+            public int parallelEncoderTicks() {
+                return ((org.firstinspires.ftc.teamcode.PinpointLocalizer) drive.localizer)
+                        .getParallelEncoderTicks();
+            }
+
+            @Override
+            public int perpendicularEncoderTicks() {
+                return ((org.firstinspires.ftc.teamcode.PinpointLocalizer) drive.localizer)
+                        .getPerpendicularEncoderTicks();
+            }
         }, true);
     }
 
@@ -227,9 +247,22 @@ public final class PurePursuitDrive {
         return hardware.localizationStatus();
     }
 
+    public int getParallelEncoderTicks() {
+        return hardware.parallelEncoderTicks();
+    }
+
+    public int getPerpendicularEncoderTicks() {
+        return hardware.perpendicularEncoderTicks();
+    }
+
     private void fault(String message) {
         fault = message;
         stop();
+    }
+
+    /** Immediately stop and latch a fatal autonomous fault. */
+    public void stopWithFault(String message) {
+        fault(message);
     }
 
     /** Coasting lets the wheels roll freely so the robot can be pushed by hand; otherwise brake. */
