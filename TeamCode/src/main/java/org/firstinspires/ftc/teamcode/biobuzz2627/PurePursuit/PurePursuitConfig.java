@@ -9,27 +9,17 @@ import org.firstinspires.ftc.teamcode.purepursuit.PurePursuitFollower;
 public final class PurePursuitConfig {
     private PurePursuitConfig() {}
 
-    public enum DriveType {
-        /** BioBuzz starter bot: TankDrive with the Pinpoint localizer. */
-        TANK,
-        /** MecanumDrive using the four drive-motor encoders plus the Control Hub IMU. */
-        MECANUM,
-        /** Competition mecanum drive using drive-motor encoders plus the Control Hub IMU. */
-        COMP_MECANUM
-    }
-
-    /** Which drive class (and therefore which Road Runner localizer) the pure pursuit OpModes use. */
-    public static DriveType DRIVE_TYPE = DriveType.MECANUM;
-
-    /**
-     * Safety gate. Keep false until LocalizationTest reports correct forward, strafe, and heading
-     * distances. It can be enabled temporarily from FTC Dashboard during testing.
-     */
-    public static boolean LOCALIZATION_VERIFIED = false;
-
     /** Follower tuning shared by every path. */
     public static PurePursuitFollower.Params FOLLOWER = new PurePursuitFollower.Params();
 
+    /** Stop if a path requests translation but makes no meaningful progress for this long. */
+    public static double NO_PROGRESS_TIMEOUT_SECONDS = 1.25;
+    /** Progress needed to reset the no-progress timer. */
+    public static double MIN_PROGRESS_INCHES = 0.35;
+    /** A real turn also proves that Pinpoint and the robot are responding at a path corner. */
+    public static double MIN_HEADING_PROGRESS_DEGREES = 3.0;
+    /** Ignore the watchdog while translation power is below this value. */
+    public static double WATCHDOG_MIN_TRANSLATION_POWER = 0.12;
     /** Send frames to the FieldViewer laptop app when it's connected. */
     public static boolean STREAM_TO_FIELD_VIEWER = true;
 

@@ -106,6 +106,9 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
 
     /** Initializes and runs one shared route step, then advances when that step is complete. */
     protected final void runRouteStepThen(int stepIndex, S next) {
+        if (stopForDriveFault()) {
+            return;
+        }
         if (stageFinished) {
             if (stepIndex < 0 || stepIndex >= activeRoute.steps.size()) {
                 throw new IllegalArgumentException("Route step index out of range: " + stepIndex);
@@ -113,22 +116,43 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
             initializeStateVariables(drive.runStep(activeRoute.steps.get(stepIndex), markerActions));
         }
         if (updateStateAction()) {
-            if (drive.consumeLastFollowTimedOut()) {
-                abortAutonomous("Path timed out in state " + programState);
-            } else {
-                nextState(next);
-            }
+            finishActionOrStop(next);
         }
     }
 
     /** Initializes and runs any custom Action, then advances when that Action is complete. */
     protected final void runActionThen(Supplier<Action> actionFactory, S next) {
+        if (stopForDriveFault()) {
+            return;
+        }
         if (stageFinished) {
             initializeStateVariables(actionFactory.get());
         }
         if (updateStateAction()) {
-            nextState(next);
+            finishActionOrStop(next);
         }
+    }
+
+    /** A localization or follower fault is fatal: stop instead of entering the next state. */
+    private void finishActionOrStop(S next) {
+        if (!drive.hasFault()) {
+            nextState(next);
+            return;
+        }
+
+        stopForDriveFault();
+    }
+
+    /** Safe to call repeatedly while the SDK finishes processing an OpMode stop request. */
+    private boolean stopForDriveFault() {
+        if (!drive.hasFault()) {
+            return false;
+        }
+        drive.stop();
+        telemetry.addData("AUTONOMOUS STOPPED", drive.getFault());
+        telemetry.update();
+        requestOpModeStop();
+        return true;
     }
 
     /** Change states. The new state's entry block runs on the next OpMode loop. */
@@ -175,9 +199,12 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
                 }
                 telemetry.addData("Start pose", activeRoute.startPose);
                 telemetry.addData("Localizer pose", drive.getPose());
-                if (!PurePursuitConfig.LOCALIZATION_VERIFIED) {
-                    telemetry.addLine("AUTO LOCKED: run LocalizationTest, then set");
-                    telemetry.addLine("PurePursuitConfig.LOCALIZATION_VERIFIED = true");
+                telemetry.addData("Pinpoint", drive.getLocalizationStatus());
+                telemetry.addData("Pinpoint parallel ticks", drive.getParallelEncoderTicks());
+                telemetry.addData("Pinpoint perpendicular ticks",
+                        drive.getPerpendicularEncoderTicks());
+                if (!drive.isLocalizationReady()) {
+                    telemetry.addLine("STOP: Pinpoint must say READY before this auto can drive");
                 }
                 telemetry.update();
             }
@@ -199,10 +226,16 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
 
             while (opModeIsActive()) {
                 mainStateMachine();
+                if (drive.hasFault()) {
+                    break;
+                }
                 telemetry.addData("State", programState);
                 telemetry.addData("State time (ms)", stateElapsedMillis());
                 telemetry.addData("Program time (ms)", programElapsedMillis());
-                telemetry.addData("Localizer pose", drive.getPose());
+                telemetry.addData("Pinpoint", drive.getLocalizationStatus());
+                if (drive.hasFault()) {
+                    telemetry.addData("AUTONOMOUS STOPPED", drive.getFault());
+                }
                 telemetry.update();
 
                 if (stageFinished) {

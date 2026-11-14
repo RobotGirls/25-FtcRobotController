@@ -12,7 +12,6 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.CompMechanumDrive;
@@ -36,7 +35,7 @@ import java.util.Map;
 
 /**
  * Road Runner for localization, pure pursuit for following.
- * Wraps one of the existing drive classes (TankDrive, MecanumDrive, Comp5218MecanumDrive) and
+ * Wraps one of the existing drive classes (TankDrive, MecanumDrive, CompMechanumDrive) and
  * uses only its Road Runner localizer and setDrivePowers(); the tuned drive classes themselves
  * are untouched. Paths run as Road Runner Actions so they still mix with SequentialAction,
  * ParallelAction and mechanism Actions like before.
@@ -53,7 +52,23 @@ public final class PurePursuitDrive {
 
         void setDrivePowers(PoseVelocity2d powers);
 
-        List<DcMotorEx> driveMotors();
+        List<DcMotor> driveMotors();
+
+        default boolean localizationReady() {
+            return true;
+        }
+
+        default String localizationStatus() {
+            return "ready";
+        }
+
+        default int parallelEncoderTicks() {
+            return 0;
+        }
+
+        default int perpendicularEncoderTicks() {
+            return 0;
+        }
     }
 
     public final Hardware hardware;
@@ -62,24 +77,16 @@ public final class PurePursuitDrive {
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
     private String routeName = "";
-    private boolean lastFollowTimedOut;
+    private String fault = "";
 
     public PurePursuitDrive(Hardware hardware, boolean holonomic) {
         this.hardware = hardware;
         this.holonomic = holonomic;
     }
 
-    /** Builds whichever drive {@link PurePursuitConfig#DRIVE_TYPE} says this robot has. */
+    /** Builds the BioBuzz four-motor mecanum drive used by every Pure Pursuit OpMode. */
     public static PurePursuitDrive create(HardwareMap hardwareMap, Pose2d startPose) {
-        switch (PurePursuitConfig.DRIVE_TYPE) {
-            case MECANUM:
-                return mecanum(new MecanumDrive(hardwareMap, startPose));
-            case COMP_MECANUM:
-                return compMecanum(new CompMechanumDrive(hardwareMap, startPose));
-            case TANK:
-            default:
-                return tank(new TankDrive(hardwareMap, startPose));
-        }
+        return compMecanum(new CompMechanumDrive(hardwareMap, startPose));
     }
 
     public static PurePursuitDrive tank(final TankDrive drive) {
@@ -105,8 +112,8 @@ public final class PurePursuitDrive {
             }
 
             @Override
-            public List<DcMotorEx> driveMotors() {
-                List<DcMotorEx> motors = new ArrayList<>(drive.leftMotors);
+            public List<DcMotor> driveMotors() {
+                List<DcMotor> motors = new ArrayList<>(drive.leftMotors);
                 motors.addAll(drive.rightMotors);
                 return motors;
             }
@@ -136,8 +143,9 @@ public final class PurePursuitDrive {
             }
 
             @Override
-            public List<DcMotorEx> driveMotors() {
-                return Arrays.asList(drive.leftFront, drive.leftBack, drive.rightBack, drive.rightFront);
+            public List<DcMotor> driveMotors() {
+                return Arrays.<DcMotor>asList(
+                        drive.frontLeft, drive.backLeft, drive.backRight, drive.frontRight);
             }
         }, true);
     }
@@ -165,8 +173,33 @@ public final class PurePursuitDrive {
             }
 
             @Override
-            public List<DcMotorEx> driveMotors() {
-                return Arrays.asList(drive.leftFront, drive.leftBack, drive.rightBack, drive.rightFront);
+            public List<DcMotor> driveMotors() {
+                return Arrays.asList(drive.frontLeft, drive.backLeft, drive.backRight, drive.frontRight);
+            }
+
+            @Override
+            public boolean localizationReady() {
+                return drive.localizer instanceof org.firstinspires.ftc.teamcode.PinpointLocalizer
+                        && ((org.firstinspires.ftc.teamcode.PinpointLocalizer) drive.localizer).isReady();
+            }
+
+            @Override
+            public String localizationStatus() {
+                return drive.localizer instanceof org.firstinspires.ftc.teamcode.PinpointLocalizer
+                        ? ((org.firstinspires.ftc.teamcode.PinpointLocalizer) drive.localizer).getStatus()
+                        : drive.localizer.getClass().getSimpleName();
+            }
+
+            @Override
+            public int parallelEncoderTicks() {
+                return ((org.firstinspires.ftc.teamcode.PinpointLocalizer) drive.localizer)
+                        .getParallelEncoderTicks();
+            }
+
+            @Override
+            public int perpendicularEncoderTicks() {
+                return ((org.firstinspires.ftc.teamcode.PinpointLocalizer) drive.localizer)
+                        .getPerpendicularEncoderTicks();
             }
         }, true);
     }
@@ -198,18 +231,45 @@ public final class PurePursuitDrive {
         hardware.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
     }
 
-    /** Returns and clears whether the most recently completed follow action hit its safety timeout. */
-    public boolean consumeLastFollowTimedOut() {
-        boolean timedOut = lastFollowTimedOut;
-        lastFollowTimedOut = false;
-        return timedOut;
+    public boolean hasFault() {
+        return !fault.isEmpty();
+    }
+
+    public String getFault() {
+        return fault;
+    }
+
+    public boolean isLocalizationReady() {
+        return hardware.localizationReady();
+    }
+
+    public String getLocalizationStatus() {
+        return hardware.localizationStatus();
+    }
+
+    public int getParallelEncoderTicks() {
+        return hardware.parallelEncoderTicks();
+    }
+
+    public int getPerpendicularEncoderTicks() {
+        return hardware.perpendicularEncoderTicks();
+    }
+
+    private void fault(String message) {
+        fault = message;
+        stop();
+    }
+
+    /** Immediately stop and latch a fatal autonomous fault. */
+    public void stopWithFault(String message) {
+        fault(message);
     }
 
     /** Coasting lets the wheels roll freely so the robot can be pushed by hand; otherwise brake. */
     public void setCoasting(boolean coasting) {
         DcMotor.ZeroPowerBehavior behavior = coasting
                 ? DcMotor.ZeroPowerBehavior.FLOAT : DcMotor.ZeroPowerBehavior.BRAKE;
-        for (DcMotorEx motor : hardware.driveMotors()) {
+        for (DcMotor motor : hardware.driveMotors()) {
             motor.setZeroPowerBehavior(behavior);
         }
     }
@@ -272,6 +332,9 @@ public final class PurePursuitDrive {
         private final double timeoutSeconds;
         private final String name;
         private long startNanos = -1;
+        private long lastProgressNanos = -1;
+        private double lastProgress;
+        private double lastProgressHeading = Double.NaN;
 
         FollowAction(PurePursuitFollower follower, double timeoutSeconds, String name) {
             this.follower = follower;
@@ -283,21 +346,64 @@ public final class PurePursuitDrive {
         public boolean run(@NonNull TelemetryPacket p) {
             if (startNanos < 0) {
                 startNanos = System.nanoTime();
-                lastFollowTimedOut = false;
+                lastProgressNanos = startNanos;
             }
+
+            if (!hardware.localizationReady()) {
+                fault(name + " stopped: Pinpoint is " + hardware.localizationStatus());
+                p.put("FAULT", fault);
+                report(p, follower, null, name + ": LOCALIZATION FAULT - STOPPED");
+                return false;
+            }
+
             PoseVelocity2d velocity = updatePoseEstimate();
             PurePursuitFollower.Output out = follower.update(getPose(), velocity);
 
-            double elapsed = (System.nanoTime() - startNanos) / 1e9;
+            long now = System.nanoTime();
+            double elapsed = (now - startNanos) / 1e9;
             boolean timedOut = timeoutSeconds > 0 && elapsed > timeoutSeconds;
-            if (out.isDone() || timedOut) {
+            if (timedOut) {
+                fault(String.format("%s timed out after %.1f seconds", name, timeoutSeconds));
+                p.put("FAULT", fault);
+                report(p, follower, out, name + ": TIMED OUT - STOPPED");
+                return false;
+            }
+            if (out.isDone()) {
                 stop();
-                lastFollowTimedOut = timedOut;
-                report(p, follower, out, name + (timedOut ? ": TIMED OUT" : ": done"));
+                report(p, follower, out, name + ": done");
+                return false;
+            }
+
+            double heading = getPose().heading.toDouble();
+            if (Double.isNaN(lastProgressHeading)) {
+                lastProgressHeading = heading;
+            }
+            double headingProgress = Math.abs(Math.atan2(
+                    Math.sin(heading - lastProgressHeading),
+                    Math.cos(heading - lastProgressHeading)));
+            boolean advancedAlongPath = out.progress >= lastProgress
+                    + PurePursuitConfig.MIN_PROGRESS_INCHES;
+            boolean madeTurningProgress = headingProgress >= Math.toRadians(
+                    PurePursuitConfig.MIN_HEADING_PROGRESS_DEGREES);
+            if (advancedAlongPath || madeTurningProgress) {
+                lastProgress = out.progress;
+                lastProgressHeading = heading;
+                lastProgressNanos = now;
+            }
+
+            double translationPower = out.powers.linearVel.norm();
+            double noProgressSeconds = (now - lastProgressNanos) / 1e9;
+            if (translationPower >= PurePursuitConfig.WATCHDOG_MIN_TRANSLATION_POWER
+                    && noProgressSeconds > PurePursuitConfig.NO_PROGRESS_TIMEOUT_SECONDS) {
+                fault(String.format("%s stopped: no Pinpoint motion for %.2f seconds",
+                        name, noProgressSeconds));
+                p.put("FAULT", fault);
+                report(p, follower, out, name + ": NO PROGRESS - STOPPED");
                 return false;
             }
 
             setPowers(out.powers);
+            p.put("no useful motion (s)", noProgressSeconds);
             report(p, follower, out, name + " (" + out.phase.name().toLowerCase() + ")");
             return true;
         }
@@ -362,7 +468,14 @@ public final class PurePursuitDrive {
         p.put("x", pose.position.x);
         p.put("y", pose.position.y);
         p.put("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        p.put("localization", hardware.localizationStatus());
+        if (hasFault()) {
+            p.put("FAULT", fault);
+        }
         if (out != null) {
+            p.put("command forward", out.powers.linearVel.x);
+            p.put("command left", out.powers.linearVel.y);
+            p.put("command turn", out.powers.angVel);
             p.put("distance to end", out.distanceToEnd);
             p.put("progress", out.progress + " / " + out.length);
             p.put("heading error (deg)", Math.toDegrees(out.headingError));

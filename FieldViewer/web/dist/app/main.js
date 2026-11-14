@@ -470,7 +470,6 @@ function onLiveStatus(status) {
 }
 function syncLimelightStream(shouldRun) {
     const feed = $('limelight-feed');
-    const placeholder = activeLimelightPlaceholder();
     window.clearTimeout(limelightRetry);
     if (!shouldRun) {
         feed.dataset.active = 'false';
@@ -478,6 +477,7 @@ function syncLimelightStream(shouldRun) {
         feed.hidden = true;
         setLimelightPlaceholders(true);
         setLimelightBadges(false);
+        activeLimelightPlaceholder().textContent = 'Limelight video appears here';
         $('limelight-status').textContent = 'Connect to the robot to view video';
         return;
     }
@@ -485,18 +485,17 @@ function syncLimelightStream(shouldRun) {
         return;
     feed.dataset.active = 'true';
     feed.hidden = true;
-    setLimelightPlaceholders(false);
-    placeholder.hidden = false;
-    placeholder.textContent = 'Connecting to Limelight…';
+    setLimelightPlaceholders(true);
+    activeLimelightPlaceholder().textContent = 'Connecting to Limelight…';
     $('limelight-status').textContent = 'Opening robot camera relay…';
     feed.src = `/api/live/limelight?time=${Date.now()}`;
 }
 function activeLimelightPlaceholder() {
     return state.liveLayout === 'field' ? $('limelight-placeholder') : $('limelight-stage-placeholder');
 }
-function setLimelightPlaceholders(showActive) {
-    $('limelight-placeholder').hidden = !(showActive && state.liveLayout === 'field');
-    $('limelight-stage-placeholder').hidden = !(showActive && state.liveLayout !== 'field');
+function setLimelightPlaceholders(show) {
+    $('limelight-placeholder').hidden = !(show && state.liveLayout === 'field');
+    $('limelight-stage-placeholder').hidden = !(show && state.liveLayout !== 'field');
 }
 function setLimelightBadges(show) {
     $('limelight-live').hidden = !(show && state.liveLayout === 'field');
@@ -508,16 +507,37 @@ function setLiveLayout(layout) {
     document.body.classList.add(`live-layout-${layout}`);
     document.querySelectorAll('#video-layout button').forEach((button) => button.classList.toggle('active', button.dataset.videoLayout === layout));
     const feed = $('limelight-feed');
-    const target = layout === 'field' ? $('limelight-preview') : $('limelight-stage-target');
-    target.prepend(feed);
+    (layout === 'field' ? $('limelight-preview') : $('limelight-stage-target')).prepend(feed);
     const loaded = feed.dataset.active === 'true' && !feed.hidden;
     setLimelightPlaceholders(!loaded);
     setLimelightBadges(loaded);
     invalidate();
 }
+const ROBOT_TUNING_KEY = 'fieldviewer.robotTuning.v1';
+/** Applies each tuning set sent by the robot once, leaving later manual slider edits alone. */
+function applyRobotTuning(robot) {
+    if (!tuning)
+        return;
+    const id = JSON.stringify(robot);
+    let applied = null;
+    try {
+        applied = localStorage.getItem(ROBOT_TUNING_KEY);
+    }
+    catch { /* storage unavailable */ }
+    if (applied === id)
+        return;
+    try {
+        localStorage.setItem(ROBOT_TUNING_KEY, id);
+    }
+    catch { /* storage unavailable */ }
+    tuning.applyRobotTuning(robot);
+    toast(`Simulator now uses the robot's tuning${robot.savedAt ? ` (saved ${robot.savedAt})` : ''}`);
+}
 function onLiveFrame(frame) {
     const live = state.live;
     recorder.add(frame);
+    if (frame.tuning)
+        applyRobotTuning(frame.tuning);
     if (frame.route !== live.route) {
         live.route = frame.route;
         live.trail = [];
@@ -760,7 +780,10 @@ function stepLabel(step) {
     switch (step.type) {
         case 'follow': return step.name;
         case 'marker': return step.name;
-        case 'turn': return `turn to ${Math.round((step.heading * 180) / Math.PI)}°`;
+        case 'turn': {
+            const degrees = Math.round((step.heading * 180) / Math.PI);
+            return step.relative ? `turn ${degrees > 0 ? '+' : ''}${degrees}°` : `turn to ${degrees}°`;
+        }
     }
 }
 function stepDetail(step) {
@@ -777,7 +800,7 @@ function stepDetail(step) {
                 parts.push(`→ ${Math.round((step.endHeading * 180) / Math.PI)}°`);
             return parts.join(' · ');
         }
-        case 'marker': return `${step.seconds.toFixed(1)} s`;
+        case 'marker': return step.parallel ? 'while driving' : `${step.seconds.toFixed(1)} s`;
         case 'turn': return 'in place';
     }
 }
@@ -962,6 +985,8 @@ function wireControls() {
         $('limelight-status').textContent = 'Live video';
     });
     limelight.addEventListener('error', () => {
+        if (limelight.dataset.active !== 'true')
+            return;
         limelight.dataset.active = 'false';
         limelight.hidden = true;
         setLimelightPlaceholders(true);

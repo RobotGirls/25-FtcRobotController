@@ -76,10 +76,10 @@
 //
 //    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 //
-//    public DcMotor  leftFront   = null;
-//    public DcMotor  rightFront  = null;
-//    public DcMotor  rightBack  = null;
-//    public DcMotor  leftBack  = null;
+//    public DcMotor  frontLeft   = null;
+//    public DcMotor  frontRight  = null;
+//    public DcMotor  backRight  = null;
+//    public DcMotor  backLeft  = null;
 //
 //    private static final int ALIGN_THRESHOLD = 10;
 //
@@ -133,18 +133,18 @@
 //    @Override
 //    public void runOpMode()
 //    {
-//        leftFront = hardwareMap.get(DcMotor.class, "frontLeft");
-//        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-//        rightBack = hardwareMap.get(DcMotor.class, "backRight");
-//        leftBack = hardwareMap.get(DcMotor.class, "backLeft");
+//        frontLeft = hardwareMap.get(DcMotor.class, "backRight");
+//        frontRight = hardwareMap.get(DcMotor.class, "frontLeft");
+//        backRight = hardwareMap.get(DcMotor.class, "backLeft");
+//        backLeft = hardwareMap.get(DcMotor.class, "frontRight");
 //
-//        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //
-//        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 //
 //        initAprilTag();
 //
@@ -186,17 +186,17 @@
 ////                            double power = 0.0009 * offset;
 ////                            power = Math.max(-0.3, Math.min(0.3, power));
 //                        lastError = offset;
-//                        leftFront.setPower(-power);
-//                        leftBack.setPower(-power);
-//                        rightFront.setPower(power);
-//                        rightBack.setPower(power);
+//                        frontLeft.setPower(-power);
+//                        backLeft.setPower(-power);
+//                        frontRight.setPower(power);
+//                        backRight.setPower(power);
 //                        timer.reset();
 //
 //                    } else {
-//                        leftFront.setPower(0); // aligned
-//                        rightBack.setPower(0);
-//                        leftBack.setPower(0);
-//                        rightFront.setPower(0);
+//                        frontLeft.setPower(0); // aligned
+//                        backRight.setPower(0);
+//                        backLeft.setPower(0);
+//                        frontRight.setPower(0);
 //                        if (detection.metadata != null) {
 //                            telemetry.addData("Tag X", detection.center.x);
 //                            telemetry.addData("Offset", offset);

@@ -92,4 +92,9 @@ public class IntakePurePursuit {
     public Action outtakeArtifact() {
         return new IntakePurePursuit.OuttakeArtifact();
     }
+
+    /** Immediately stops the intake, including when an autonomous is stopped early. */
+    public void stop() {
+        intake.setPower(0);
+    }
 }

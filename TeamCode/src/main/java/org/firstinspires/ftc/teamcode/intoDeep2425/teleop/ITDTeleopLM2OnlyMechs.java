@@ -11,10 +11,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class ITDTeleopLM2OnlyMechs extends LinearOpMode {
 
     /* Declare OpMode members. */
-    public DcMotor  leftFront   = null;
-    public DcMotor  rightFront  = null;
-    public DcMotor  rightBack  = null;
-    public DcMotor  leftBack  = null;
+    public DcMotor  frontLeft   = null;
+    public DcMotor  frontRight  = null;
+    public DcMotor  backRight  = null;
+    public DcMotor  backLeft  = null;
 
     public DcMotor lift;
     public CRServo claw;

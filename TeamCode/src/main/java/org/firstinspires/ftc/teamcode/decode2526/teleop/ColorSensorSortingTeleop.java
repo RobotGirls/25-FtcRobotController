@@ -26,10 +26,10 @@
 //    private HSVColorSensor.DetectedColor artifactColor2 = HSVColorSensor.DetectedColor.UNKNOWN;
 //    private HSVColorSensor.DetectedColor artifactColor3 = HSVColorSensor.DetectedColor.UNKNOWN;
 //
-//    public DcMotor  leftFront   = null;
-//    public DcMotor  rightFront  = null;
-//    public DcMotor  rightBack  = null;
-//    public DcMotor  leftBack  = null;
+//    public DcMotor  frontLeft   = null;
+//    public DcMotor  frontRight  = null;
+//    public DcMotor  backRight  = null;
+//    public DcMotor  backLeft  = null;
 //    private Servo ballServo1;
 //    private Servo ballServo2;
 //    private Servo ballServo3;
@@ -100,10 +100,10 @@
 //        double frontRightPower = (y - x - rx) / denominator;
 //        double backRightPower = (y + x - rx) / denominator;
 //
-//        leftFront.setPower(frontLeftPower);
-//        leftBack.setPower(backLeftPower);
-//        rightFront.setPower(frontRightPower);
-//        rightBack.setPower(backRightPower);
+//        frontLeft.setPower(frontLeftPower);
+//        backLeft.setPower(backLeftPower);
+//        frontRight.setPower(frontRightPower);
+//        backRight.setPower(backRightPower);
 //    }
 //
 //    public void mechanismControls() {

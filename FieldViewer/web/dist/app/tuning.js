@@ -75,6 +75,19 @@ export class TuningPanel {
     robotSize() {
         return [this.values.robot.length, this.values.robot.width];
     }
+    /** Makes the simulator use the latest values saved by the robot's auto tuner. */
+    applyRobotTuning(tuning) {
+        for (const group of ['follower', 'drive']) {
+            for (const [key, value] of Object.entries(tuning[group])) {
+                if (key in this.defaults[group] && Number.isFinite(value)) {
+                    this.values[group][key] = value;
+                }
+            }
+        }
+        this.save();
+        this.refresh();
+        this.onChange();
+    }
     changedCount() {
         const t = this.tuning();
         return Object.keys(t.follower).length + Object.keys(t.drive).length + (t.robot ? 1 : 0);

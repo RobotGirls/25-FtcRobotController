@@ -10,7 +10,6 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -22,7 +21,6 @@ public class ShooterRoadrunner {
 
     private DcMotorEx shooter;
 
-    private Servo shooterHood;
     private ElapsedTime timer1;
     private Telemetry telemetry1;
     public double shooterSpeed;
@@ -31,7 +29,6 @@ public class ShooterRoadrunner {
 
     public ShooterRoadrunner(HardwareMap hardwareMap, Telemetry telemetry) {
         shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        shooterHood = hardwareMap.get(Servo.class, "shooterHood");
 
         shooter.setVelocityPIDFCoefficients(10,3,3,2);
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -48,7 +45,6 @@ public class ShooterRoadrunner {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 shooter.setVelocity(-1325);
-                shooterHood.setPosition(0.25);
 
                 initialized = true;
                 timer1.reset();
@@ -76,7 +72,6 @@ public class ShooterRoadrunner {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 shooter.setVelocity(1340);
-                shooterHood.setPosition(0.25);
                 initialized = true;
                 timer1.reset();
             }
@@ -102,7 +97,6 @@ public class ShooterRoadrunner {
         public boolean run(@NonNull TelemetryPacket packet) {
 
             shooter.setVelocity(-1310);
-            shooterHood.setPosition(0.25);
             telemetry1.addData("velo ", shooter.getVelocity());
             telemetry1.update();
 
@@ -120,7 +114,6 @@ public class ShooterRoadrunner {
         public boolean run(@NonNull TelemetryPacket packet) {
 
             shooter.setVelocity(0);
-            shooterHood.setPosition(0.25);
 
 
             return false;
@@ -137,7 +130,6 @@ public class ShooterRoadrunner {
         public boolean run(@NonNull TelemetryPacket packet) {
 
             shooter.setVelocity(-1710);
-            // shooterHood.setPosition(0.1);
             telemetry1.addData("velo ", shooter.getVelocity());
             telemetry1.update();
 
