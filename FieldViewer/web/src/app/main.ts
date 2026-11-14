@@ -148,7 +148,8 @@ async function init(): Promise<void> {
   wireCanvas();
   wireKeys();
   subscribeLive(onLiveFrame, onLiveStatus);
-  void selectRoute(state.routes[0]?.name ?? SKETCH);
+  const initialRoute = state.routes.find((route) => route.requiresHolonomic === state.holonomic);
+  void selectRoute(initialRoute?.name ?? SKETCH);
   requestAnimationFrame(tick);
 }
 
@@ -167,6 +168,7 @@ function buildRouteList(): void {
   };
 
   for (const route of state.routes) {
+    if (route.requiresHolonomic !== state.holonomic) continue;
     if (query && !`${route.name} ${route.description}`.toLowerCase().includes(query)) continue;
     addGroup(route.group);
     const item = routeItem(route.name, route.alliance, route.name.replace(/^TEST /, ''), describeSteps(route.steps));
@@ -175,10 +177,11 @@ function buildRouteList(): void {
   }
   for (const [id, recording] of state.recordings) {
     const name = recording.route || 'Unknown route';
+    const planned = state.routes.find((r) => r.name === recording.route);
+    if (planned && planned.requiresHolonomic !== state.holonomic) continue;
     if (query && !name.toLowerCase().includes(query)) continue;
     addGroup('Recordings');
     const seconds = recording.frames[recording.frames.length - 1].t - recording.frames[0].t;
-    const planned = state.routes.find((r) => r.name === recording.route);
     const item = routeItem(id, planned?.alliance ?? 'NONE', name,
       `${new Date(recording.recordedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · ${seconds.toFixed(1)} s`);
     item.append(el('span', 'rec', 'REC'));
@@ -937,11 +940,7 @@ function wireControls(): void {
     button.addEventListener('click', () => setLiveLayout(button.dataset.videoLayout as LiveLayout)));
 
   document.querySelectorAll<HTMLButtonElement>('#drive button').forEach((b) =>
-    b.addEventListener('click', () => {
-      state.holonomic = b.dataset.drive === 'mecanum';
-      document.querySelectorAll('#drive button').forEach((x) => x.classList.toggle('active', x === b));
-      void rerun();
-    }));
+    b.addEventListener('click', () => setDriveType(b.dataset.drive === 'mecanum')));
 
   document.querySelectorAll<HTMLButtonElement>('#speed button').forEach((b) =>
     b.addEventListener('click', () => {
@@ -1626,7 +1625,8 @@ function wireEditor(): void {
       }
       state.sketch[field] = toggle.checked ? Number(input.value) || 0 : null;
       if (key === 'fixed' && toggle.checked && !state.holonomic) {
-        toast('Strafing needs a mecanum drive, so this path will simulate as mecanum');
+        setDriveType(true, false);
+        toast('Fixed heading needs mecanum; moved this sketch to the Mecanum tab');
       }
       scheduleSketch(0);
     });
@@ -1639,6 +1639,27 @@ function wireEditor(): void {
   input('sk-start').disabled = true;
   input('sk-end').disabled = true;
   input('sk-fixed').disabled = true;
+}
+
+/** Switches both the simulator drivetrain and the route library shown in the sidebar. */
+function setDriveType(holonomic: boolean, rerunCurrent = true): void {
+  if (state.holonomic === holonomic) {
+    if (rerunCurrent) void rerun();
+    return;
+  }
+
+  state.holonomic = holonomic;
+  document.querySelectorAll<HTMLButtonElement>('#drive button').forEach((button) =>
+    button.classList.toggle('active', (button.dataset.drive === 'mecanum') === holonomic));
+  buildRouteList();
+
+  const selectedRoute = state.routes.find((route) => route.name === state.selected);
+  if (selectedRoute && selectedRoute.requiresHolonomic !== holonomic) {
+    const first = state.routes.find((route) => route.requiresHolonomic === holonomic);
+    void selectRoute(first?.name ?? SKETCH);
+  } else if (rerunCurrent) {
+    void rerun();
+  }
 }
 
 /** What the start heading is when it isn't set: facing the first waypoint. */
