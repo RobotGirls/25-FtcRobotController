@@ -75,6 +75,26 @@ The dashboard/Driver Station telemetry shows the selected filter, matched tag, v
 
 Before the first powered test, edit `HiveAssistConfig`, replace every estimated obstacle and shooting coordinate with measured values, verify the coordinate transform against Road Runner, and only then set `GEOMETRY_AND_GOALS_VERIFIED = true`. The default `false` value intentionally prevents autonomous movement.
 
+## Issue 41 continuous turret
+
+Select `Issue 41 - Pinpoint + LL Turret` for the Issue 40 drivetrain controls plus automatic
+turret aiming. The selection controls are shared: X/B choose the alliance during INIT, left bumper
+selects the alliance-side Hive, right bumper selects the far-side Hive, and holding A runs the
+generated drive path. Turret aiming runs continuously after START whether or not A is held.
+
+The controller has two stages:
+
+1. Pinpoint field pose and the turret motor encoder turn the shooter/Limelight assembly toward the
+   selected Hive before an AprilTag is visible.
+2. Once a tag from the selected cluster is visible, Limelight `tx` becomes the fine PID error. The
+   last small vision trim is retained during tag loss.
+
+A normal motor encoder is relative, not absolute. Before INIT, physically point the turret,
+shooter, and Limelight robot-forward; INIT resets that position to zero. Tune the four aim-point
+coordinates, turret offset, gear ratio, encoder/power signs, and PID values in `HiveAssistConfig`.
+Only then set `TURRET_AIMING_VERIFIED = true`. A 360-degree continuous turret has no software end
+stops, but wiring still needs enough slack or a slip ring for unlimited rotation.
+
 ### FTC class organization
 
 - `PurePursuitHiveAssistTeleOp`: the single readable OpMode loop and telemetry.

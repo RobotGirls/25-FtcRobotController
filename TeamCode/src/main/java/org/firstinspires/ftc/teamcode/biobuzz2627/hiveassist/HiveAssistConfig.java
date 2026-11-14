@@ -67,6 +67,37 @@ public final class HiveAssistConfig {
     public static double TURRET_MAX_POWER = 0.35;
     public static double TURRET_ALIGNMENT_TOLERANCE_DEG = 2.0;
 
+    // Issue 41 field-relative turret. At INIT, physically point the shooter/Limelight straight
+    // forward before the encoder is zeroed. Set TURRET_AIMING_VERIFIED only after checking the
+    // signs at low power. MOTOR_REVS_PER_TURRET_REV includes any external gearing.
+    public static String TURRET_MOTOR_NAME = "turret";
+    public static double TURRET_MOTOR_REVS_PER_TURRET_REV = 1.0;
+    public static double TURRET_ENCODER_SIGN = 1.0;
+    public static double TURRET_POWER_SIGN = 1.0;
+    public static double TURRET_FORWARD_OFFSET_DEG = 0.0;
+    public static double TURRET_COARSE_KP = 0.012;
+    public static double TURRET_COARSE_KI = 0.0;
+    public static double TURRET_COARSE_KD = 0.0008;
+    public static double TURRET_VISION_KP = 0.014;
+    public static double TURRET_VISION_KI = 0.0;
+    public static double TURRET_VISION_KD = 0.0008;
+    public static double TURRET_INTEGRAL_LIMIT_DEG_SECONDS = 30.0;
+    public static double TURRET_COARSE_TOLERANCE_DEG = 3.0;
+    public static double TURRET_MAX_VISION_TRIM_DEG = 15.0;
+    public static double TURRET_OFFSET_FORWARD_IN = 0.0;
+    public static double TURRET_OFFSET_LEFT_IN = 0.0;
+
+    // Separate coordinates let each selected AprilTag cluster have a surveyed aim point. The
+    // defaults aim at the same alliance Hive center until the four cluster centers are measured.
+    public static double RED_ALLIANCE_AIM_X_IN = 60.0;
+    public static double RED_ALLIANCE_AIM_Y_IN = 72.0;
+    public static double RED_FAR_AIM_X_IN = 60.0;
+    public static double RED_FAR_AIM_Y_IN = 72.0;
+    public static double BLUE_ALLIANCE_AIM_X_IN = 84.0;
+    public static double BLUE_ALLIANCE_AIM_Y_IN = 72.0;
+    public static double BLUE_FAR_AIM_X_IN = 84.0;
+    public static double BLUE_FAR_AIM_Y_IN = 72.0;
+
     // Calibrate these from measured shots. The range indicator stays locked until verified.
     public static boolean SHOOTING_RANGE_LIMITS_VERIFIED = false;
     public static double MIN_SHOOTING_DISTANCE_METERS = 0;
