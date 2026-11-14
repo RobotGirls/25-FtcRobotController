@@ -14,10 +14,10 @@ public class BIOBUZZTeleopNoMech extends LinearOpMode {
     public void runOpMode() {
 
         // Define and Initialize Motors
-        frontLeft = hardwareMap.get(DcMotor.class, "backRight");
-        frontRight = hardwareMap.get(DcMotor.class, "frontLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backLeft");
-        backLeft = hardwareMap.get(DcMotor.class, "frontRight");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
 
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);

@@ -111,18 +111,30 @@ public final class CompMechanumDrive {
 
         // TODO: make sure your config has motors with these names (or change them)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        frontLeft = hardwareMap.get(DcMotor.class, "backRight");
-        backLeft = hardwareMap.get(DcMotor.class, "frontRight");
-        backRight = hardwareMap.get(DcMotor.class, "backLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontLeft");
+        // Hardware names must describe the physical wheel. Do not cross-map these names in code;
+        // changing a Control Hub port in the Robot Configuration should change that same wheel.
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // The hardware-map assignments above now point at the physical wheel positions. Match the
-        // verified TeleOp convention: reverse the physical left side and leave the right side forward.
+        // FTC motor-controller state survives between OpModes. Force every wheel into the same
+        // open-loop mode so one wheel isn't velocity-regulated while another is raw-power driven.
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
+
+        // Reverse the physical left side and leave the physical right side forward.
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.FORWARD);

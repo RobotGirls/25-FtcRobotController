@@ -225,15 +225,27 @@ public final class MecanumDrive {
 
         // TODO: make sure your config has motors with these names (or change them)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        frontLeft = hardwareMap.get(DcMotorEx.class, "backRight");
-        backLeft = hardwareMap.get(DcMotorEx.class, "frontRight");
-        backRight = hardwareMap.get(DcMotorEx.class, "backLeft");
-        frontRight = hardwareMap.get(DcMotorEx.class, "frontLeft");
+        // Keep Java's logical wheel names identical to the physical Robot Configuration names.
+        // This is also the mapping used by MecanumMotorDirectionDebugger.
+        frontLeft = hardwareMap.get(DcMotorEx.class, "frontLeft");
+        backLeft = hardwareMap.get(DcMotorEx.class, "backLeft");
+        backRight = hardwareMap.get(DcMotorEx.class, "backRight");
+        frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Start every wheel in the same open-loop controller mode.
+        frontLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
+        frontRight.setPower(0);
 
         // TODO: reverse motor directions if needed
         //   frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);

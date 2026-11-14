@@ -440,6 +440,9 @@ public final class PurePursuitDrive {
             p.put("FAULT", fault);
         }
         if (out != null) {
+            p.put("command forward", out.powers.linearVel.x);
+            p.put("command left", out.powers.linearVel.y);
+            p.put("command turn", out.powers.angVel);
             p.put("distance to end", out.distanceToEnd);
             p.put("progress", out.progress + " / " + out.length);
             p.put("heading error (deg)", Math.toDegrees(out.headingError));
