@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 
-import org.firstinspires.ftc.teamcode.purepursuit.paths.BioBuzzRoutes;
 import org.firstinspires.ftc.teamcode.purepursuit.paths.Routes;
 import org.firstinspires.ftc.teamcode.purepursuit.paths.TestRoutes;
 import org.junit.Test;
@@ -52,7 +51,10 @@ public class RouteSimulationTest {
     @Test
     public void reversedLegsKeepTheRobotFacingTheSameWay() {
         // the Road Runner version backed up without turning around; pure pursuit should too
-        RouteSimulation sim = new RouteSimulation(BioBuzzRoutes.BLUE_CORNER_PARK, false);
+        Route reversed = Route.builder("reversed", Route.Alliance.NONE, new Pose2d(0, -48, 0))
+                .follow(PurePursuitPath.builder().to(-48, -48).reversed().fixedHeading(0).build())
+                .build();
+        RouteSimulation sim = new RouteSimulation(reversed, false);
         double maxHeadingChange = 0;
         while (!sim.isFinished()) {
             sim.loop();
@@ -90,22 +92,65 @@ public class RouteSimulationTest {
     }
 
     @Test
-    public void markerStepWaitsItsTime() {
-        Pose2d start = new Pose2d(0, 0, 0);
-        PurePursuitPath path = PurePursuitPath.builder().to(24, 0).build();
-        Route withMarker = Route.builder("with marker", Route.Alliance.NONE, start)
-                .follow(path)
-                .marker("test", 3.5)
+    public void relativeTurnOf180GoesCounterClockwiseLikeRoadRunner() {
+        Route route = Route.builder("turn 180", Route.Alliance.NONE, new Pose2d(0, -48, 0))
+                .turn(Math.PI)
                 .build();
-        Route withoutMarker = Route.builder("without marker", Route.Alliance.NONE, start)
-                .follow(path)
-                .build();
+        RouteSimulation sim = new RouteSimulation(route, true);
+        double lowest = 0;
+        while (!sim.isFinished()) {
+            sim.loop();
+            lowest = Math.min(lowest, PurePursuitMath.angleWrap(sim.getPose().heading.toDouble()));
+            if (Math.abs(sim.getPose().heading.toDouble()) > 3) {
+                break; // reached the far side, past the wrap
+            }
+        }
+        sim.runToEnd(MAX_SECONDS);
+        assertTrue("turned clockwise to " + Math.toDegrees(lowest) + " deg", lowest > Math.toRadians(-5));
+        assertEquals(Math.PI, Math.abs(sim.getPose().heading.toDouble()), Math.toRadians(4));
+    }
 
-        RouteSimulation with = new RouteSimulation(withMarker, false);
+    @Test
+    public void linearHeadingTurnsEvenlyAlongTheLeg() {
+        Route route = Route.builder("linear", Route.Alliance.NONE, new Pose2d(-48, -48, 0))
+                .follow(PurePursuitPath.builder().to(48, -48)
+                        .linearHeading(0, Math.toRadians(90)).build())
+                .build();
+        RouteSimulation sim = new RouteSimulation(route, true);
+        while (!sim.isFinished() && sim.getPose().position.x < 0) {
+            sim.loop();
+        }
+        // halfway along, the heading should be about halfway round
+        assertEquals(45, Math.toDegrees(sim.getPose().heading.toDouble()), 12);
+        sim.runToEnd(MAX_SECONDS);
+        assertEquals(90, Math.toDegrees(sim.getPose().heading.toDouble()), 5);
+    }
+
+    @Test
+    public void parallelMarkerDoesNotStopTheRobot() {
+        Route.Builder base = Route.builder("p", Route.Alliance.NONE, new Pose2d(-24, -48, 0));
+        RouteSimulation with = new RouteSimulation(base.parallelMarker("intake", 2)
+                .follow(PurePursuitPath.builder().to(24, -48).build()).build(), false);
         with.runToEnd(MAX_SECONDS);
-        RouteSimulation without = new RouteSimulation(withoutMarker, false);
+        RouteSimulation without = new RouteSimulation(TestRoutes.STRAIGHT, false);
         without.runToEnd(MAX_SECONDS);
-        assertEquals(3.5, with.getRouteDoneTime() - without.getRouteDoneTime(), 0.1);
+        assertEquals(without.getRouteDoneTime(), with.getRouteDoneTime(), 0.05);
+    }
+
+    @Test
+    public void markerStepWaitsItsTime() {
+        RouteSimulation withShooter = new RouteSimulation(
+                Route.builder("with shooter", Route.Alliance.NONE, new Pose2d(-48, -48, 0))
+                        .follow(PurePursuitPath.builder().to(0, -48).build())
+                        .marker("shoot", 3.5)
+                        .build(), false);
+        withShooter.runToEnd(MAX_SECONDS);
+        RouteSimulation without = new RouteSimulation(
+                Route.builder("without shooter", Route.Alliance.NONE, new Pose2d(-48, -48, 0))
+                        .follow(PurePursuitPath.builder().to(0, -48).build())
+                        .build(), false);
+        without.runToEnd(MAX_SECONDS);
+        assertEquals(3.5, withShooter.getRouteDoneTime() - without.getRouteDoneTime(), 0.1);
     }
 
     private static void checkRoute(Route route, boolean holonomic) {

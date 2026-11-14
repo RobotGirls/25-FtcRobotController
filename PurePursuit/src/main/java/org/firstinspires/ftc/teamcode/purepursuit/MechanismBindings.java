@@ -1,63 +1,79 @@
 package org.firstinspires.ftc.teamcode.purepursuit;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * Connect simulation marker names to the real robot's separate mechanism classes.
+ * Connects a route's marker names to the mechanism code that runs at them, so mechanism classes
+ * (Intake, Launcher, ...) stay in TeamCode while the routes stay simulatable here.
  *
- * <p>This core module stays platform independent. On Android, instantiate this with
- * Road Runner Action as T and register factories from your Intake, Shooter, etc classes.
- * Markers retain their estimated durations ONLY for simulation; execution uses the
- * Action returned by the factory and finishes based on the real mechanism.
+ * <pre>
+ * new MechanismBindings&lt;Action&gt;()
+ *         .register(BioBuzzRoutes.SHOOT, launcher::launcherForward)
+ *         .register(BioBuzzRoutes.INTAKE, intake::intakeIn);
+ * </pre>
  *
- * @param <T> robot command type, e.g. com.acmerobotics.roadrunner.Action
+ * Each marker step gets a fresh command from its factory, so a route can shoot twice. The
+ * simulator only uses a marker's estimated seconds; on the robot the command decides when the
+ * marker is done.
+ *
+ * @param <T> the robot's command type, Road Runner's Action on the robot
  */
 public final class MechanismBindings<T> {
-    private final Map<String, Supplier<? extends T>> commands = new LinkedHashMap<>();
+    private final Map<String, Supplier<? extends T>> factories = new LinkedHashMap<>();
 
-    /** Registers a marker with a factory that creates a FRESH command each time. */
+    /** Runs factory's command at every marker with this name. */
     public MechanismBindings<T> register(String markerName, Supplier<? extends T> factory) {
         if (markerName == null || markerName.trim().isEmpty() || factory == null) {
-            throw new IllegalArgumentException("Marker name and mechanism factory are required");
+            throw new IllegalArgumentException("a marker name and a mechanism are both needed");
         }
-        if (commands.containsKey(markerName)) {
-            throw new IllegalArgumentException("Already registered marker: " + markerName);
+        if (factories.containsKey(markerName)) {
+            throw new IllegalArgumentException("marker '" + markerName + "' is already registered");
         }
-        commands.put(markerName, factory);
+        factories.put(markerName, factory);
         return this;
     }
 
-    /** Converts a simulated marker to a robot command, or throws on an unknown marker. */
-    public T create(Route.Marker marker) {
-        if (marker == null) throw new IllegalArgumentException("marker is required");
-        Supplier<? extends T> factory = commands.get(marker.name);
+    public boolean supports(String markerName) {
+        return factories.containsKey(markerName);
+    }
+
+    public Set<String> names() {
+        return Collections.unmodifiableSet(factories.keySet());
+    }
+
+    /** A fresh command for one marker step. */
+    public T create(String markerName) {
+        Supplier<? extends T> factory = factories.get(markerName);
         if (factory == null) {
-            throw new IllegalArgumentException("No mechanism bound for: " + marker.name);
+            throw new IllegalArgumentException("no mechanism registered for marker '" + markerName + "'");
         }
         T command = factory.get();
         if (command == null) {
-            throw new IllegalStateException("Mechanism factory returned null: " + marker.name);
+            throw new IllegalStateException("the mechanism for marker '" + markerName + "' returned null");
         }
         return command;
     }
 
-    /** Materialize commands for an existing PurePursuitAutoBase.markers() override. */
-    public Map<String, T> createAll() {
-        Map<String, T> result = new LinkedHashMap<>();
-        for (Map.Entry<String, Supplier<? extends T>> entry : commands.entrySet()) {
-            T command = entry.getValue().get();
-            if (command == null) {
-                throw new IllegalStateException("Mechanism factory returned null: " + entry.getKey());
+    /**
+     * Marker names in the route with nothing registered (waits don't count). On the robot those
+     * markers just wait, so a name here is usually a typo.
+     */
+    public List<String> unbound(Route route) {
+        List<String> missing = new ArrayList<>();
+        for (Route.Step step : route.steps) {
+            if (step instanceof Route.Marker) {
+                String name = ((Route.Marker) step).name;
+                if (!name.equals(Route.WAIT) && !supports(name) && !missing.contains(name)) {
+                    missing.add(name);
+                }
             }
-            result.put(entry.getKey(), command);
         }
-        return Collections.unmodifiableMap(result);
-    }
-
-    public boolean supports(String markerName) {
-        return commands.containsKey(markerName);
+        return missing;
     }
 }
