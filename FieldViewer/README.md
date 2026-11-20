@@ -20,6 +20,20 @@ npm start
 `npm start` builds the UI, builds and starts the Java backend with Gradle, and opens the
 window. The first launch takes a little longer while Gradle and Electron download.
 
+### Path Planner Academy
+
+The Academy is a separate, beginner-friendly learning game. It uses the same Java Pure
+Pursuit simulation as FieldViewer, but presents it as six guided missions and a final
+build-your-own-path sandbox. Its source has its own top-level `PathPlannerAcademy` folder.
+From that folder, run:
+
+```
+npm start
+```
+
+Hold **Drive** to move the practice robot; releasing the button pauses it immediately.
+The normal FieldViewer still starts with `npm start`.
+
 Prefer a browser? Run `./gradlew :FieldViewer:run` from the repo root and it opens
 http://localhost:2525 (run `npm run build` in `web/` once first).
 

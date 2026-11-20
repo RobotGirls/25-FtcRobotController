@@ -5,10 +5,11 @@
   "description": "Team 25 FieldViewer: pure pursuit simulator and live robot view for the BioBuzz field",
   "main": "dist/electron/main.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig.electron.json && node scripts/copy-static.mjs",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.electron.json && tsc -p ../../PathPlannerAcademy/tsconfig.json && node scripts/copy-static.mjs",
     "start": "npm run build && electron .",
+    "academy": "npm run build && electron . --academy",
     "watch": "node scripts/copy-static.mjs && tsc -p tsconfig.json --watch",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.electron.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.electron.json --noEmit && tsc -p ../../PathPlannerAcademy/tsconfig.json --noEmit"
   },
   "devDependencies": {
     "electron": "^44.10.1",

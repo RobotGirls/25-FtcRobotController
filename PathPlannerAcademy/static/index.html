@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'">
+  <title>Path Planner Academy</title>
+  <link rel="stylesheet" href="academy.css">
+  <script type="module" src="academy.js"></script>
+</head>
+<body>
+<div class="stars stars-a"></div><div class="stars stars-b"></div>
+<div class="academy-shell">
+  <header class="academy-header">
+    <div class="academy-brand">
+      <div class="bot-logo" aria-hidden="true"><span class="bot-eye left"></span><span class="bot-eye right"></span><i></i></div>
+      <div><p>TEAM 25 LEARNING LAB</p><h1>Path Planner Academy</h1></div>
+    </div>
+    <div class="header-tools">
+      <button class="about-open" id="about-open">About Team 25</button>
+      <span class="truth-pill"><i></i> Real Pure Pursuit math</span>
+      <span class="star-score" aria-label="Lessons completed"><b id="star-count">0</b> / <span id="star-total">7</span> ★</span>
+    </div>
+  </header>
+
+  <aside class="lesson-rail" aria-label="Lesson map">
+    <div class="rail-intro"><span>YOUR MISSION</span><strong>Teach Buzzy to navigate!</strong></div>
+    <nav id="lesson-list"></nav>
+    <div class="rail-tip"><b>New to robots?</b><br>Perfect. Every new word gets explained.</div>
+  </aside>
+
+  <main class="lesson-stage">
+    <section class="lesson-copy">
+      <div class="lesson-kicker" id="lesson-kicker">MISSION 1 OF 7</div>
+      <h2 id="lesson-title">Give the robot a destination</h2>
+      <p id="lesson-description"></p>
+      <div class="word-card" id="word-card"><span>ROBOT WORD</span><b id="word-name"></b><p id="word-meaning"></p></div>
+      <section class="explain-grid" aria-label="How this concept flows">
+        <article class="explain-card purple"><span>PLAN</span><b id="plan-text"></b><p id="plan-detail"></p></article>
+        <article class="explain-card cyan"><span>LOOK</span><b id="look-text"></b><p id="look-detail"></p></article>
+        <article class="explain-card gold"><span>MOVE</span><b id="move-text"></b><p id="move-detail"></p></article>
+      </section>
+      <section class="mission-brief" aria-label="Mission instructions and learning goals">
+        <article class="pass-card"><span>HOW TO PASS</span><p id="pass-text"></p></article>
+        <article class="goal-card"><span>LEARNING GOALS</span><ul id="goal-list"></ul></article>
+      </section>
+    </section>
+
+    <section class="sim-card" id="sim-card">
+      <div class="sim-topbar">
+        <div><span class="live-dot"></span><b id="sim-title">Learning Field</b><small id="sim-status">Getting the robot ready…</small></div>
+        <div class="coordinate-readout" id="coordinate-readout">X 0.0 · Y 0.0 · 0°</div>
+      </div>
+      <div class="field-wrap" id="field-wrap">
+        <canvas id="academy-field" aria-label="Interactive robot field"></canvas>
+        <div class="canvas-callout" id="canvas-callout"></div>
+        <div class="touch-hint" id="touch-hint">Tap the field to begin</div>
+      </div>
+      <div class="mission-controls" id="mission-controls"></div>
+      <div class="drive-row">
+        <button class="hold-button" id="hold-drive"><span class="hold-icon">▶</span><span><b>HOLD SPACE TO DRIVE</b><small>Or hold this button · release to stop</small></span></button>
+        <button class="round-button" id="reset-run" title="Return robot to the start" aria-label="Reset run">↺</button>
+      </div>
+    </section>
+
+    <section class="coach-card">
+      <div class="coach-bot" aria-hidden="true"><span></span><i></i></div>
+      <div><span>BUZZY SAYS</span><p id="coach-message"></p></div>
+      <button id="complete-lesson">I understand! <b>Next</b></button>
+    </section>
+  </main>
+</div>
+
+<dialog class="onboarding-dialog" id="onboarding-dialog" aria-labelledby="onboarding-title">
+  <div class="onboarding-bot" aria-hidden="true"><div class="bot-logo"><span class="bot-eye left"></span><span class="bot-eye right"></span><i></i></div></div>
+  <p class="about-kicker">WELCOME TO PATH PLANNER ACADEMY</p>
+  <h2 id="onboarding-title">How familiar are you with FTC?</h2>
+  <p class="onboarding-lede">Choose the learning path that fits you. Both paths teach the same robot navigation skills.</p>
+  <div class="learner-choices">
+    <button id="onboarding-ftc"><span>🤖</span><b>I am a part of FTC</b><small>Start with waypoints and robot pathing.</small></button>
+    <button id="onboarding-new"><span>✨</span><b>I’m brand new</b><small>Begin with a quick introduction to FIRST.</small></button>
+  </div>
+  <p class="onboarding-note">You can close and reopen the Academy later without losing progress in either path.</p>
+</dialog>
+
+<dialog class="about-dialog" id="about-dialog" aria-labelledby="about-title">
+  <button class="about-close" id="about-close" aria-label="Close About Team 25">×</button>
+  <div class="about-badge"><div class="bot-logo" aria-hidden="true"><span class="bot-eye left"></span><span class="bot-eye right"></span><i></i></div><span>FTC TEAM 25</span></div>
+  <p class="about-kicker">ROCK N’ ROLL ROBOTS</p>
+  <h2 id="about-title">We build robots—and future problem solvers.</h2>
+  <p class="about-lede">We are a Girl Scout FIRST Tech Challenge team from Pasadena, California. Since 2007, Team 25 students have designed, built, programmed, documented, and competed with robots while sharing what we learn through outreach.</p>
+  <div class="about-values">
+    <article><b>Student-built</b><p>Young engineers turn ideas into mechanisms, software, strategy, and a competition-ready robot.</p></article>
+    <article><b>Learn together</b><p>We test, make mistakes, improve our designs, and help one another grow.</p></article>
+    <article><b>Share STEM</b><p>Our outreach introduces more people to robotics through mentoring, demonstrations, and hands-on learning.</p></article>
+  </div>
+  <div class="about-links">
+    <a href="https://sites.google.com/rocknrollrobots25.com/25rnrr/outreach?authuser=0" target="_blank" rel="noreferrer">Explore our outreach</a>
+    <a class="secondary" href="https://sites.google.com/rocknrollrobots25.com/25rnrr" target="_blank" rel="noreferrer">Visit Team 25 online</a>
+  </div>
+</dialog>
+
+<dialog class="completion-dialog" id="completion-dialog" aria-labelledby="completion-title">
+  <button class="about-close" id="completion-close" aria-label="Close graduation summary">×</button>
+  <div class="completion-hero">
+    <div class="completion-stars" id="completion-stars" aria-hidden="true">★ ★ ★ ★ ★ ★ ★</div>
+    <p class="about-kicker">PATH PLANNER ACADEMY GRADUATE</p>
+    <h2 id="completion-title">You taught Buzzy how to find its way!</h2>
+    <p>You planned, tested, repaired, and drove a real Pure Pursuit simulation. That is a big piece of robot navigation—but it is not the whole robot.</p>
+  </div>
+
+  <section class="learned-summary" aria-labelledby="learned-title">
+    <h3 id="learned-title">What you learned</h3>
+    <div class="learned-grid">
+      <article><span>●</span><div><b>Waypoints make a route</b><p>The robot travels through ordered dots instead of magically knowing where to go.</p></div></article>
+      <article><span>◯</span><div><b>Lookahead guides each correction</b><p>Pure Pursuit repeatedly chooses a point ahead and steers toward it.</p></div></article>
+      <article><span>⌖</span><div><b>Localization tells us where we are</b><p>Pinpoint estimates the robot’s X, Y, and heading so the follower can correct its motion.</p></div></article>
+      <article><span>▦</span><div><b>Safe paths need room</b><p>The route planner must leave enough clearance for the whole robot around the Hive.</p></div></article>
+      <article><span>↔</span><div><b>Drivetrains move differently</b><p>Mecanum wheels can drive sideways. A tank drive must turn before it can move in a new direction.</p></div></article>
+      <article><span>⌁</span><div><b>Heading controls where the front points</b><p>A mecanum robot can follow one route while facing a chosen field direction.</p></div></article>
+    </div>
+  </section>
+
+  <section class="robot-stack" aria-labelledby="stack-title">
+    <div class="stack-heading">
+      <div><p class="about-kicker">THE FULL ROBOT</p><h3 id="stack-title">Pathing is one teammate in a bigger system.</h3></div>
+      <span>Accurate, simplified map</span>
+    </div>
+    <div class="stack-flow" aria-label="Robot software flow">
+      <article><small>1</small><b>Choose a goal</b><p>Alliance, Hive side, and safe waypoints</p></article>
+      <article><small>2</small><b>Know the pose</b><p>Pinpoint measures X, Y, and heading</p></article>
+      <article><small>3</small><b>Follow the path</b><p>Pure Pursuit calculates drive corrections</p></article>
+      <article><small>4</small><b>Move the chassis</b><p>Mecanum code turns corrections into four motor powers</p></article>
+    </div>
+    <div class="mechanism-note">
+      <div class="mechanism-icon" aria-hidden="true">⚙</div>
+      <div><b>What about mechanisms?</b><p>The shooter, intake, transfer, turret, and Limelight aiming are separate systems. A higher-level OpMode or state machine coordinates them with navigation—for example, warming up the shooter while driving, aiming the turret, shooting at the destination, then continuing to park. They do not belong inside the Pure Pursuit math.</p></div>
+    </div>
+  </section>
+
+  <section class="team-finale">
+    <div>
+      <p class="about-kicker">MEET THE BUILDERS</p>
+      <h3>Rock N’ Roll Robots · FTC Team 25</h3>
+      <p>We are a Girl Scout FIRST Tech Challenge team from Pasadena, California. Since 2007, students have built competition robots, learned through testing, and shared STEM with our community.</p>
+    </div>
+    <div class="question-card">
+      <b>Still curious?</b>
+      <p>Questions are welcome. Tell us what you tried, what surprised you, or what you want to build next.</p>
+      <div class="about-links">
+        <a href="https://sites.google.com/rocknrollrobots25.com/25rnrr/contact-us" target="_blank" rel="noreferrer">Ask Team 25 a question</a>
+        <a class="secondary" href="https://sites.google.com/rocknrollrobots25.com/25rnrr/outreach?authuser=0" target="_blank" rel="noreferrer">See our outreach</a>
+      </div>
+    </div>
+  </section>
+</dialog>
+
+<div class="toast" id="academy-toast" role="status"></div>
+</body>
+</html>

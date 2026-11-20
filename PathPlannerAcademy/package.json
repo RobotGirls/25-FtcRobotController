@@ -1,0 +1,11 @@
+{
+  "name": "path-planner-academy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A beginner-friendly Pure Pursuit learning game",
+  "scripts": {
+    "start": "npm --prefix ../FieldViewer/web run academy",
+    "build": "npm --prefix ../FieldViewer/web run build",
+    "typecheck": "npm --prefix ../FieldViewer/web run typecheck"
+  }
+}

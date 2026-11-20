@@ -46,6 +46,8 @@ const requestedPort = Number(process.env.FIELDVIEWER_PORT);
 const PORT = Number.isInteger(requestedPort) && requestedPort > 1024 && requestedPort < 65536
     ? requestedPort : 25000 + (process.pid % 10000);
 const BACKEND_URL = `http://localhost:${PORT}`;
+const ACADEMY_MODE = process.argv.includes('--academy');
+const APP_URL = `${BACKEND_URL}/${ACADEMY_MODE ? 'academy/index.html' : ''}`;
 // dist/electron -> dist -> web -> FieldViewer -> repo root
 const WEB_DIST = path.resolve(__dirname, '..');
 const FIELD_VIEWER_DIR = path.resolve(__dirname, '..', '..', '..');
@@ -181,9 +183,11 @@ async function createWindow() {
         height: 920,
         minWidth: 1000,
         minHeight: 640,
-        title: 'FieldViewer',
+        title: ACADEMY_MODE ? 'Path Planner Academy' : 'FieldViewer',
         backgroundColor: '#0e0919',
-        titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
+        // The editor uses an inset title bar, but the Academy needs an unmistakable boundary:
+        // dragging anywhere below the normal macOS title bar must interact with the lesson.
+        titleBarStyle: process.platform === 'darwin' && !ACADEMY_MODE ? 'hiddenInset' : 'default',
         autoHideMenuBar: true,
         webPreferences: {
             contextIsolation: true,
@@ -204,17 +208,21 @@ async function createWindow() {
     // if the page ever crashes, note why and bring it back instead of leaving a blank window
     window.webContents.on('render-process-gone', (_event, details) => {
         log(`window crashed (${details.reason}); reloading`);
-        setTimeout(() => void window?.loadURL(BACKEND_URL), 500);
+        setTimeout(() => void window?.loadURL(APP_URL), 500);
     });
-    await window.loadFile(path.join(WEB_DIST, 'loading.html'));
+    await window.loadFile(path.join(WEB_DIST, 'loading.html'), {
+        query: ACADEMY_MODE ? { academy: '1' } : {},
+    });
     try {
         await ensureBackend(true, true);
-        await window.loadURL(BACKEND_URL);
+        await window.loadURL(APP_URL);
         superviseBackend();
     }
     catch (e) {
         const message = `${e.message}\n\n${backendLog.slice(-15).join('\n')}`;
-        await window.loadFile(path.join(WEB_DIST, 'loading.html'), { query: { error: message } });
+        await window.loadFile(path.join(WEB_DIST, 'loading.html'), {
+            query: { error: message, ...(ACADEMY_MODE ? { academy: '1' } : {}) },
+        });
     }
 }
 function stopBackend() {
