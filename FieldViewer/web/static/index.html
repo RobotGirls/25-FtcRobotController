@@ -200,6 +200,26 @@
           <input type="range" id="sk-pt-look" min="4" max="30" step="1">
           <b class="mono" id="sk-pt-look-val"></b>
         </label>
+        <div class="segment-setting" id="sk-direction-row">
+          <span><b>Travel into this point</b><small>The robot may follow this segment forward or backward.</small></span>
+          <select class="input" id="sk-pt-direction" aria-label="Direction for segment ending at this point">
+            <option value="default">Path default</option>
+            <option value="forward">Forward</option>
+            <option value="backward">Backward</option>
+          </select>
+        </div>
+        <div class="wait-setting">
+          <button class="btn wait-button" id="sk-wait-open" aria-expanded="false">+ Add wait here</button>
+          <div class="wait-popover" id="sk-wait-panel" hidden>
+            <label for="sk-wait"><b>Wait after arriving</b><small>The robot stops before following the next segment.</small></label>
+            <div class="wait-input-row">
+              <input class="input mono" type="number" id="sk-wait" min="0" max="60" step="0.25" value="1">
+              <span>seconds</span>
+              <button class="btn small-btn" id="sk-wait-apply">Apply</button>
+              <button class="btn small-btn" id="sk-wait-clear">Clear</button>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <button class="btn small-btn" id="sk-up" title="Move earlier in the path">↑ Up</button>
           <button class="btn small-btn" id="sk-down" title="Move later in the path">↓ Down</button>

@@ -33,6 +33,10 @@ interface SketchPoint {
   y: number;
   speed: number | null;
   lookahead: number | null;
+  /** Direction of the segment ending here; null uses the path-wide default. */
+  backwards: boolean | null;
+  /** Seconds to remain stopped after reaching this waypoint. */
+  wait: number;
 }
 const REC = 'rec:';
 
@@ -417,7 +421,7 @@ async function runSketch(): Promise<void> {
   const radians = (deg: number | null) => (deg === null ? null : (deg * Math.PI) / 180);
   await runSim(() => simulateSketch({
     name: sk.name,
-    points: sk.points.map((p) => [p.x, p.y, p.speed, p.lookahead]),
+    points: sk.points.map((p) => [p.x, p.y, p.speed, p.lookahead, p.backwards, p.wait]),
     reversed: sk.reversed,
     moveSpeed: sk.speed,
     followDistance: sk.lookahead,
@@ -470,24 +474,34 @@ function editAsSketch(route: RouteInfo): void {
   const sk = state.sketch;
   sk.speed = follows[0]?.speed ?? 0.6;
   sk.lookahead = follows[0]?.lookahead ?? 16;
-  // each leg's speed / lookahead becomes a per-point setting where it differs from the first leg
-  sk.points = [{ x: route.start[0], y: route.start[1], speed: null, lookahead: null },
-    ...follows.flatMap((leg) => leg.points.map((p) => ({
-      x: p[0], y: p[1],
-      speed: leg.speed === sk.speed ? null : leg.speed,
-      lookahead: leg.lookahead === sk.lookahead ? null : leg.lookahead,
-    })))];
+  sk.points = [{ x: route.start[0], y: route.start[1], speed: null, lookahead: null, backwards: null, wait: 0 }];
+  let dropped = false;
+  for (const step of route.steps) {
+    if (step.type === 'follow') {
+      for (const p of step.points) {
+        sk.points.push({
+          x: p[0], y: p[1],
+          speed: step.speed === sk.speed ? null : step.speed,
+          lookahead: step.lookahead === sk.lookahead ? null : step.lookahead,
+          backwards: step.reversed,
+          wait: 0,
+        });
+      }
+    } else if (step.type === 'marker' && step.name === 'wait' && !step.parallel) {
+      sk.points[sk.points.length - 1].wait += step.seconds;
+    } else {
+      dropped = true;
+    }
+  }
   sk.name = `${route.name} copy`;
-  sk.reversed = follows[0]?.reversed ?? false;
+  sk.reversed = false;
   sk.startHeading = Math.round((route.start[2] * 180) / Math.PI);
   const last = follows[follows.length - 1];
   sk.endHeading = last?.endHeading == null ? null : Math.round((last.endHeading * 180) / Math.PI);
   sk.fixedHeading = follows[0]?.fixedHeading == null ? null : Math.round((follows[0].fixedHeading * 180) / Math.PI);
   state.selectedPoint = -1;
   syncPathSettings();
-  if (follows.length > 1 || route.steps.some((s) => s.type !== 'follow')) {
-    toast('The editor makes one path: legs were joined and markers / turns dropped');
-  }
+  if (dropped) toast('Mechanism markers and turns are not editable here and were dropped');
   void selectRoute(SKETCH);
 }
 
@@ -1204,7 +1218,7 @@ function wireCanvas(): void {
         remember();
         const a = state.sketch.points[mid];
         const b = state.sketch.points[mid + 1];
-        state.sketch.points.splice(mid + 1, 0, { x: round((a.x + b.x) / 2), y: round((a.y + b.y) / 2), speed: null, lookahead: null });
+        state.sketch.points.splice(mid + 1, 0, { x: round((a.x + b.x) / 2), y: round((a.y + b.y) / 2), speed: null, lookahead: null, backwards: null, wait: 0 });
         selectPoint(mid + 1);
         state.drag = mid + 1;
         gesture = { kind: 'point', x: e.clientX, y: e.clientY, moved: true };
@@ -1213,7 +1227,7 @@ function wireCanvas(): void {
         remember();
         const [x, y] = snapAt(point, 'new', e.altKey);
         state.snapPreview = null;
-        state.sketch.points.push({ x, y, speed: null, lookahead: null });
+        state.sketch.points.push({ x, y, speed: null, lookahead: null, backwards: null, wait: 0 });
         selectPoint(state.sketch.points.length - 1);
         void runSketch();
       }
@@ -1470,7 +1484,7 @@ function insertAfter(index: number): void {
     y = a.y + (dy / length) * 12;
   }
   remember();
-  points.splice(index + 1, 0, { x: clampField(round(x)), y: clampField(round(y)), speed: null, lookahead: null });
+  points.splice(index + 1, 0, { x: clampField(round(x)), y: clampField(round(y)), speed: null, lookahead: null, backwards: null, wait: 0 });
   state.selectedPoint = index + 1;
   void runSketch();
 }

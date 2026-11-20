@@ -518,6 +518,19 @@ kbd {
 .override input[type=range]:disabled { opacity: 0.3; }
 .override b { text-align: right; font-weight: 500; font-size: 11px; }
 .override-name { color: var(--muted); }
+.segment-setting { display: grid; grid-template-columns: 1fr 118px; gap: 8px; align-items: center; }
+.segment-setting span, .wait-popover label { display: grid; gap: 2px; font-size: 12px; }
+.segment-setting small, .wait-popover small { color: var(--faint); font-size: 10px; line-height: 1.35; }
+.segment-setting select { padding: 6px 7px; font-size: 11px; }
+.segment-setting select:disabled { opacity: 0.4; }
+.wait-setting { position: relative; }
+.wait-button { width: 100%; padding: 7px; border-color: rgba(244, 114, 182, 0.35); color: var(--sketch); }
+.wait-button.has-wait { color: var(--amber); border-color: rgba(251, 191, 36, 0.45); }
+.wait-popover { display: grid; gap: 8px; margin-top: 6px; padding: 9px; border-radius: 8px;
+  background: #101620; border: 1px solid var(--border-strong); }
+.wait-popover[hidden] { display: none; }
+.wait-input-row { display: grid; grid-template-columns: 62px auto 1fr 1fr; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); }
+.wait-input-row input { min-width: 0; padding: 5px 6px; text-align: right; }
 .btn.danger:hover { border-color: rgba(251, 113, 133, 0.5); color: var(--red); }
 .row .small-btn { padding: 6px 4px; white-space: nowrap; font-size: 11.5px; }
 

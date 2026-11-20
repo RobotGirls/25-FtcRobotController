@@ -296,12 +296,17 @@ final class WebServer {
         if (request.get("sketch") instanceof Map) {
             Map<String, Object> s = (Map<String, Object>) request.get("sketch");
             Sketch sketch = new Sketch();
-            // each point is [x, y] or [x, y, speed or null, lookahead or null]
+            // [x, y, speed?, lookahead?, backwards?, wait-after-arrival?]
             for (Object p : (List<Object>) s.get("points")) {
                 List<Object> point = (List<Object>) p;
+                double wait = point.size() > 5 && point.get(5) instanceof Number
+                        ? ((Number) point.get(5)).doubleValue() : 0;
+                if (!Double.isFinite(wait)) wait = 0;
                 sketch.add(((Number) point.get(0)).doubleValue(), ((Number) point.get(1)).doubleValue(),
                         point.size() > 2 ? optionalNumber(point.get(2)) : null,
-                        point.size() > 3 ? optionalNumber(point.get(3)) : null);
+                        point.size() > 3 ? optionalNumber(point.get(3)) : null,
+                        point.size() > 4 && point.get(4) instanceof Boolean ? (Boolean) point.get(4) : null,
+                        Math.max(0, Math.min(60, wait)));
             }
             sketch.reversed = Boolean.TRUE.equals(s.get("reversed"));
             sketch.name = s.get("name") instanceof String ? (String) s.get("name") : "";

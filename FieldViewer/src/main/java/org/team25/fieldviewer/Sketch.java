@@ -19,12 +19,18 @@ final class Sketch {
     static final class Point {
         final double x, y;
         final Double speed, lookahead;
+        /** Overrides the path-wide direction for the segment ending here. */
+        final Boolean backwards;
+        /** Seconds to wait after arriving at this waypoint. */
+        final double wait;
 
-        Point(double x, double y, Double speed, Double lookahead) {
+        Point(double x, double y, Double speed, Double lookahead, Boolean backwards, double wait) {
             this.x = x;
             this.y = y;
             this.speed = speed;
             this.lookahead = lookahead;
+            this.backwards = backwards;
+            this.wait = wait;
         }
     }
 
@@ -36,8 +42,8 @@ final class Sketch {
     /** Field headings in radians; null means "not set". */
     Double startHeading, endHeading, fixedHeading;
 
-    void add(double x, double y, Double speed, Double lookahead) {
-        points.add(new Point(x, y, speed, lookahead));
+    void add(double x, double y, Double speed, Double lookahead, Boolean backwards, double wait) {
+        points.add(new Point(x, y, speed, lookahead, backwards, wait));
     }
 
     boolean isUsable() {
@@ -50,7 +56,7 @@ final class Sketch {
             return startHeading;
         }
         Point a = points.get(0), b = points.get(1);
-        double heading = Math.atan2(b.y - a.y, b.x - a.x) + (reversed ? Math.PI : 0);
+        double heading = Math.atan2(b.y - a.y, b.x - a.x) + (isBackwards(b) ? Math.PI : 0);
         return Math.atan2(Math.sin(heading), Math.cos(heading));
     }
 
@@ -60,26 +66,37 @@ final class Sketch {
 
     Route toRoute() {
         Point start = points.get(0);
-        PurePursuitPath.Builder path = PurePursuitPath.builder().name(displayName());
-        for (int i = 1; i < points.size(); i++) {
-            Point p = points.get(i);
-            path.moveSpeed(p.speed != null ? p.speed : moveSpeed)
-                    .followDistance(p.lookahead != null ? p.lookahead : followDistance)
-                    .to(p.x, p.y);
+        Route.Builder route = Route.builder("Sketch", Route.Alliance.NONE,
+                        new Pose2d(start.x, start.y, startHeading()))
+                .description("Built in the FieldViewer");
+        if (start.wait > 0) route.waitSeconds(start.wait);
+
+        int leg = 1;
+        for (int first = 1; first < points.size();) {
+            boolean backwards = isBackwards(points.get(first));
+            int last = first;
+            while (last + 1 < points.size()
+                    && points.get(last).wait <= 0
+                    && isBackwards(points.get(last + 1)) == backwards) {
+                last++;
+            }
+            PurePursuitPath.Builder path = PurePursuitPath.builder()
+                    .name(displayName() + (hasMultipleLegs() ? " leg " + leg : ""));
+            for (int i = first; i <= last; i++) {
+                Point p = points.get(i);
+                path.moveSpeed(p.speed != null ? p.speed : moveSpeed)
+                        .followDistance(p.lookahead != null ? p.lookahead : followDistance)
+                        .to(p.x, p.y);
+            }
+            if (backwards) path.reversed();
+            if (fixedHeading != null) path.fixedHeading(fixedHeading);
+            if (last == points.size() - 1 && endHeading != null) path.endHeading(endHeading);
+            route.follow(path.build());
+            if (points.get(last).wait > 0) route.waitSeconds(points.get(last).wait);
+            first = last + 1;
+            leg++;
         }
-        if (reversed) {
-            path.reversed();
-        }
-        if (endHeading != null) {
-            path.endHeading(endHeading);
-        }
-        if (fixedHeading != null) {
-            path.fixedHeading(fixedHeading);
-        }
-        return Route.builder("Sketch", Route.Alliance.NONE, new Pose2d(start.x, start.y, startHeading()))
-                .description("Built in the FieldViewer")
-                .follow(path.build())
-                .build();
+        return route.build();
     }
 
     /** Java to paste into BioBuzzRoutes / TestRoutes. */
@@ -94,38 +111,57 @@ final class Sketch {
         sb.append("public static final Route ").append(constant).append(" = Route.builder(\n")
                 .append("                \"").append(displayName().replace("\"", "'")).append("\", Alliance.NONE, new Pose2d(")
                 .append(num(start.x)).append(", ").append(num(start.y)).append(", Math.toRadians(")
-                .append(num(Math.toDegrees(startHeading()))).append(")))\n")
-                .append("        .follow(PurePursuitPath.builder().name(\"")
-                .append(displayName().toLowerCase(Locale.US).replace("\"", "'")).append("\")\n");
+                .append(num(Math.toDegrees(startHeading()))).append(")))\n");
+        if (start.wait > 0) sb.append("        .waitSeconds(").append(num(start.wait)).append(")\n");
 
-        // only write a setting when it changes, like you would by hand
-        double speed = 0.6, lookahead = 16;
-        for (int i = 1; i < points.size(); i++) {
-            Point p = points.get(i);
-            double wantSpeed = p.speed != null ? p.speed : moveSpeed;
-            double wantLookahead = p.lookahead != null ? p.lookahead : followDistance;
-            if (Math.abs(wantSpeed - speed) > 1e-9) {
-                sb.append("                .moveSpeed(").append(num(wantSpeed)).append(")\n");
-                speed = wantSpeed;
+        int leg = 1;
+        for (int first = 1; first < points.size();) {
+            boolean backwards = isBackwards(points.get(first));
+            int last = first;
+            while (last + 1 < points.size() && points.get(last).wait <= 0
+                    && isBackwards(points.get(last + 1)) == backwards) last++;
+            sb.append("        .follow(PurePursuitPath.builder().name(\"")
+                    .append(displayName().toLowerCase(Locale.US).replace("\"", "'"));
+            if (hasMultipleLegs()) sb.append(" leg ").append(leg);
+            sb.append("\")\n");
+            double speed = 0.6, lookahead = 16;
+            for (int i = first; i <= last; i++) {
+                Point p = points.get(i);
+                double wantSpeed = p.speed != null ? p.speed : moveSpeed;
+                double wantLookahead = p.lookahead != null ? p.lookahead : followDistance;
+                if (Math.abs(wantSpeed - speed) > 1e-9) {
+                    sb.append("                .moveSpeed(").append(num(wantSpeed)).append(")\n");
+                    speed = wantSpeed;
+                }
+                if (Math.abs(wantLookahead - lookahead) > 1e-9) {
+                    sb.append("                .followDistance(").append(num(wantLookahead)).append(")\n");
+                    lookahead = wantLookahead;
+                }
+                sb.append("                .to(").append(num(p.x)).append(", ").append(num(p.y)).append(")\n");
             }
-            if (Math.abs(wantLookahead - lookahead) > 1e-9) {
-                sb.append("                .followDistance(").append(num(wantLookahead)).append(")\n");
-                lookahead = wantLookahead;
-            }
-            sb.append("                .to(").append(num(p.x)).append(", ").append(num(p.y)).append(")\n");
+            if (backwards) sb.append("                .reversed()\n");
+            if (fixedHeading != null) sb.append("                .fixedHeading(Math.toRadians(")
+                    .append(num(Math.toDegrees(fixedHeading))).append("))\n");
+            if (last == points.size() - 1 && endHeading != null) sb.append("                .endHeading(Math.toRadians(")
+                    .append(num(Math.toDegrees(endHeading))).append("))\n");
+            sb.append("                .build())\n");
+            if (points.get(last).wait > 0) sb.append("        .waitSeconds(").append(num(points.get(last).wait)).append(")\n");
+            first = last + 1;
+            leg++;
         }
-        if (reversed) {
-            sb.append("                .reversed()\n");
-        }
-        if (fixedHeading != null) {
-            sb.append("                .fixedHeading(Math.toRadians(").append(num(Math.toDegrees(fixedHeading))).append("))\n");
-        }
-        if (endHeading != null) {
-            sb.append("                .endHeading(Math.toRadians(").append(num(Math.toDegrees(endHeading))).append("))\n");
-        }
-        sb.append("                .build())\n")
-                .append("        .build();\n");
+        sb.append("        .build();\n");
         return sb.toString();
+    }
+
+    private boolean isBackwards(Point point) {
+        return point.backwards != null ? point.backwards : reversed;
+    }
+
+    private boolean hasMultipleLegs() {
+        for (int i = 1; i < points.size() - 1; i++) {
+            if (points.get(i).wait > 0 || isBackwards(points.get(i)) != isBackwards(points.get(i + 1))) return true;
+        }
+        return false;
     }
 
     /** Up to two decimals, no trailing zeros: 90, 0.65, 12.5 (89.99999 from degree math prints 90). */

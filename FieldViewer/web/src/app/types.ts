@@ -128,8 +128,8 @@ export interface LiveStatus {
 
 export interface SketchRequest {
   name: string;
-  /** [x, y, speed override or null, lookahead override or null] */
-  points: [number, number, number | null, number | null][];
+  /** [x, y, speed override, lookahead override, backwards override, wait after arrival] */
+  points: [number, number, number | null, number | null, boolean | null, number][];
   reversed: boolean;
   moveSpeed: number;
   followDistance: number;
