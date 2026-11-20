@@ -23,6 +23,8 @@ public final class BioBuzzRoutes {
      */
     public static final String SHOOT = "shoot";
 
+    public static final String INTAKE = "intake";
+
     /** Shared Flower Park targets used by both the simulator route and the real robot action. */
     public static final double FLOWER_FORWARD_DISTANCE = 4.5;
     public static final double FLOWER_CLEAR_Y = 69 - FLOWER_FORWARD_DISTANCE;
@@ -142,6 +144,30 @@ public final class BioBuzzRoutes {
                     .fixedHeading(Math.toRadians(-90))
                     .build())
             .build();
+
+    public static final Route GARDEN_SHOOT = Route.builder(
+                    "My Route", Alliance.NONE, new Pose2d(-72, 12, Math.toRadians(0)))
+            .follow(PurePursuitPath.builder().name("my route")
+                    .to(-60, 12)
+                    .build())
+            .marker(SHOOT, 3.5)
+            .follow(PurePursuitPath.builder().name("to hive")
+                    .to(-60, 56)
+                    .to(-72, 56)
+                    .build())
+            .marker(INTAKE,3.5)
+            .follow(PurePursuitPath.builder().name("intake garden")
+                    .to(-56, 56)
+                    .to(-56, 12)
+                    .build())
+            .marker(INTAKE,3.5)
+            .follow(PurePursuitPath.builder().name("shoot again")
+                    .to(-29, 48)
+                    .to(28, 60)
+                    .build())
+            .build();
+
+
 
 
 }
