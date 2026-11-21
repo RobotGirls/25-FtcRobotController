@@ -7,14 +7,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-
-
-@TeleOp(name = "BIOBUZZ TELEOP esther")
-public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
+@TeleOp(name = "BIOBUZZ TELEOP LM0")
+public class BIOBUZZTeleopLM0 extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor frontLeft = null;
@@ -37,7 +33,7 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
         OFF
     }
 
-    BIOBUZZTeleopLM0Blue1.FlywheelState flywheelState = BIOBUZZTeleopLM0Blue1.FlywheelState.OFF;
+    BIOBUZZTeleopLM0.FlywheelState flywheelState = BIOBUZZTeleopLM0.FlywheelState.OFF;
 
 
     @Override
@@ -123,17 +119,6 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
             } else {
                 intake.setPower(0);
             }
-
-//            if (gamepad2.aWasPressed()) {
-//                leftTransfer.setPower(1);
-//                rightTransfer.setPower(1);
-//            } else if (gamepad2.bWasPressed()) {
-//                leftTransfer.setPower(-1);
-//                rightTransfer.setPower(-1);
-//            } else {
-//                leftTransfer.setPower(0);
-//                rightTransfer.setPower(0);
-//            }
 
                 if (opModeIsActive()) {
                     if (gamepad2.a) {

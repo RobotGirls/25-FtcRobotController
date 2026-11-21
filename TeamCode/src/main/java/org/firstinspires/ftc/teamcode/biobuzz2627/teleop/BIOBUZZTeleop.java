@@ -7,13 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
 @TeleOp(name = "BIOBUZZ TELEOP")
-public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
+public class BIOBUZZTeleop extends LinearOpMode {
 
     /* Declare OpMode members. */
     public DcMotor frontLeft = null;
@@ -45,7 +43,7 @@ public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
         OFF
     }
 
-    BIOBUZZTeleopLM0Blue.FlywheelState flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.OFF;
+    BIOBUZZTeleop.FlywheelState flywheelState = BIOBUZZTeleop.FlywheelState.OFF;
 
 
     @Override
@@ -135,10 +133,10 @@ public class BIOBUZZTeleopLM0Blue extends LinearOpMode {
 
             if (gamepad2.x) {
                 shooter.setPower(-0.72);
-                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
+                flywheelState = BIOBUZZTeleop.FlywheelState.ON;
             } else if (gamepad2.b) {
                 shooter.setPower(-0.44);
-                flywheelState = BIOBUZZTeleopLM0Blue.FlywheelState.ON;
+                flywheelState = BIOBUZZTeleop.FlywheelState.ON;
             } else if (gamepad2.a) {
                 shooter.setPower(0.5);
             }

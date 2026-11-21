@@ -7,6 +7,8 @@ import org.firstinspires.ftc.teamcode.purepursuit.PurePursuitFollower;
 /** Pure pursuit settings, live editable from FTC Dashboard (192.168.43.1:8080/dash). */
 @Config
 public final class PurePursuitConfig {
+    public static final boolean LOCALIZATION_VERIFIED = true;
+
     private PurePursuitConfig() {}
 
     /** Follower tuning shared by every path. */

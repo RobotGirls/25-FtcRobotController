@@ -116,25 +116,23 @@ public final class BioBuzzRoutes {
                     .build())
             .build();
     public static final Route MAIN_SHOOT = Route.builder(
-                    "BLUE Garden Park + Shooter copy", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
-            .description("Drive around the Hive, shoot, then enter the parking zone.")
-            .follow(PurePursuitPath.builder().name("drive around hive")
-                    .to(-36, 12)
-                    .to(-36, 40)
+                    "Main shooter auto", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
+            .follow(PurePursuitPath.builder().name("drive to hive")
+                    .to(-43, 12)
+                    .build())
+            .marker(SHOOT, 3.5)
+            .follow(PurePursuitPath.builder().name("park")
+                    .to(-43, 40)
                     .to(0, 40)
                     .to(34, 40)
-                    .timeout(12)
-                    .build())
-            .follow(PurePursuitPath.builder().name("enter parking zone")
-                    .moveSpeed(0.5)
                     .to(34, 60)
-                    .timeout(5)
                     .build())
             .build();
 
+
     public static final Route FLOWER_PARK = Route.builder(
-                    "BLUE Garden Park copy", Alliance.NONE, new Pose2d(-12, 69, Math.toRadians(-90)))
-            .follow(PurePursuitPath.builder().name("blue garden park copy")
+                    "Main park auto", Alliance.NONE, new Pose2d(-12, 69, Math.toRadians(-90)))
+            .follow(PurePursuitPath.builder().name("Main park auto")
                     .followDistance(4)
                     .to(-12, 58)
                     .to(12, 58)
@@ -145,27 +143,34 @@ public final class BioBuzzRoutes {
                     .build())
             .build();
 
+
     public static final Route GARDEN_SHOOT = Route.builder(
-                    "My Route", Alliance.NONE, new Pose2d(-72, 12, Math.toRadians(0)))
-            .follow(PurePursuitPath.builder().name("my route")
+                    "Garden shoot auto", Alliance.NONE, new Pose2d(-63, 12, Math.toRadians(0)))
+            .follow(PurePursuitPath.builder().name("drive to hive")
+                    .followDistance(14)
                     .to(-60, 12)
                     .build())
             .marker(SHOOT, 3.5)
-            .follow(PurePursuitPath.builder().name("to hive")
-                    .to(-60, 56)
-                    .to(-72, 56)
+            .follow(PurePursuitPath.builder().name("drive to garden")
+                    .followDistance(14)
+                    .to(-55, 60)
+                    .to(-63, 60)
                     .build())
-            .marker(INTAKE,3.5)
-            .follow(PurePursuitPath.builder().name("intake garden")
-                    .to(-56, 56)
-                    .to(-56, 12)
+            .marker(INTAKE, 3.5)
+            .follow(PurePursuitPath.builder().name("drive back to hive")
+                    .followDistance(14)
+                    .to(-55, 12)
+                    .reversed()
                     .build())
-            .marker(INTAKE,3.5)
-            .follow(PurePursuitPath.builder().name("shoot again")
-                    .to(-29, 48)
-                    .to(28, 60)
+            .marker(SHOOT, 3.5)
+            .follow(PurePursuitPath.builder().name("park")
+                    .followDistance(14)
+                    .to(-19, 48)
+                    .to(29, 57)
                     .build())
             .build();
+
+
 
 
 
