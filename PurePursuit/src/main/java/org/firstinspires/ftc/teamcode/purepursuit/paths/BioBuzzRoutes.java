@@ -23,10 +23,14 @@ public final class BioBuzzRoutes {
      */
     public static final String SHOOT = "shoot";
 
-    /** Shared Flower Park targets used by both the simulator route and the real robot action. */
+    /** Red-side Flower Park targets used by both the simulator and the real robot. */
+    public static final double FLOWER_START_X = 12;
+    public static final double FLOWER_START_Y = -62;
     public static final double FLOWER_FORWARD_DISTANCE = 4.5;
-    public static final double FLOWER_CLEAR_Y = 69 - FLOWER_FORWARD_DISTANCE;
-    public static final double FLOWER_PARK_X = 46;
+    /** Facing +90 degrees, driving forward toward center makes field Y increase. */
+    public static final double FLOWER_CLEAR_Y = FLOWER_START_Y + FLOWER_FORWARD_DISTANCE;
+    /** Facing +90 degrees, robot-left is negative field X. */
+    public static final double FLOWER_PARK_X = -50;
 
 //    public static final Route FLOWER_PARK = Route.builder(
 //                    "BLUE Garden Park", Alliance.NONE, new Pose2d(-12, 69, Math.toRadians(-90)))
@@ -137,17 +141,24 @@ public final class BioBuzzRoutes {
             .build();
 
     public static final Route FLOWER_PARK = Route.builder(
-                    "BLUE Garden Park copy", Alliance.NONE, new Pose2d(-12, 69, Math.toRadians(-90)))
-            .follow(PurePursuitPath.builder().name("blue garden park copy")
+                    "RED Flower Park",
+                    Alliance.RED,
+                    new Pose2d(FLOWER_START_X, FLOWER_START_Y, Math.toRadians(90)))
+            .description("Move forward 4.5 inches, then strafe left into the red parking zone.")
+            .follow(PurePursuitPath.builder()
+                    .name("clear flower start")
                     .followDistance(4)
-                    .to(-12, 58)
-                    .to(12, 58)
                     .moveSpeed(0.3)
+                    .to(FLOWER_START_X, FLOWER_CLEAR_Y)
+                    .fixedHeading(Math.toRadians(90))
+                    .build())
+            .follow(PurePursuitPath.builder()
+                    .name("strafe left into red parking zone")
                     .followDistance(6)
-                    .to(29, 63)
-                    .fixedHeading(Math.toRadians(-90))
+                    .moveSpeed(0.3)
+                    .to(FLOWER_PARK_X, FLOWER_CLEAR_Y)
+                    .fixedHeading(Math.toRadians(90))
                     .build())
             .build();
-
 
 }

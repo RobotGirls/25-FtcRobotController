@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.biobuzz2627.purePursuitAutos;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.biobuzz2627.PurePursuit.PurePursuitDrive;
@@ -148,7 +149,14 @@ public abstract class PurePursuitAutoBase<S extends Enum<S>> extends LinearOpMod
             return false;
         }
         drive.stop();
+        Pose2d stopped = drive.getPose();
         telemetry.addData("AUTONOMOUS STOPPED", drive.getFault());
+        telemetry.addData("STOP X", "%.2f in", stopped.position.x);
+        telemetry.addData("STOP Y", "%.2f in", stopped.position.y);
+        telemetry.addData("STOP HEADING", "%.1f deg",
+                Math.toDegrees(stopped.heading.toDouble()));
+        telemetry.addData("STOP PARALLEL TICKS", drive.getParallelEncoderTicks());
+        telemetry.addData("STOP PERPENDICULAR TICKS", drive.getPerpendicularEncoderTicks());
         telemetry.update();
         requestOpModeStop();
         return true;

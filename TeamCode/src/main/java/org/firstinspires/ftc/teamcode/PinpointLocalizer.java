@@ -25,7 +25,7 @@ public final class PinpointLocalizer implements Localizer {
         /** Forward offset of the sideways/perpendicular pod from the tracking point. */
         public double perpendicularPodXOffsetInches = 0.0;
         /** Flip if pushing the robot forward makes its reported X position decrease. */
-        public boolean reverseParallelEncoder = false;
+        public boolean reverseParallelEncoder = true;
         /** Flip if pushing the robot left makes its reported Y position decrease. */
         public boolean reversePerpendicularEncoder = true;
     }
@@ -44,7 +44,7 @@ public final class PinpointLocalizer implements Localizer {
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         driver.setEncoderResolution(
-                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         driver.setOffsets(PARAMS.parallelPodYOffsetInches,
                 PARAMS.perpendicularPodXOffsetInches, DistanceUnit.INCH);
 

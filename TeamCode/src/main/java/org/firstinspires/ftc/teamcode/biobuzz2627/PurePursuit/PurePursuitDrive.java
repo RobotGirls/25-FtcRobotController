@@ -40,7 +40,7 @@ import java.util.Map;
  * are untouched. Paths run as Road Runner Actions so they still mix with SequentialAction,
  * ParallelAction and mechanism Actions like before.
  */
-public final class PurePursuitDrive {
+public final class  PurePursuitDrive {
     /** The parts of a Road Runner drive class pure pursuit needs. */
     public interface Hardware {
         /** Updates the localizer and returns the robot relative velocity. */
