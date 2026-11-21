@@ -23,14 +23,18 @@ final class Sketch {
         final Boolean backwards;
         /** Seconds to wait after arriving at this waypoint. */
         final double wait;
+        /** Turn 180 degrees in place after arriving at this waypoint. */
+        final boolean turnAround;
 
-        Point(double x, double y, Double speed, Double lookahead, Boolean backwards, double wait) {
+        Point(double x, double y, Double speed, Double lookahead, Boolean backwards, double wait,
+              boolean turnAround) {
             this.x = x;
             this.y = y;
             this.speed = speed;
             this.lookahead = lookahead;
             this.backwards = backwards;
             this.wait = wait;
+            this.turnAround = turnAround;
         }
     }
 
@@ -42,8 +46,9 @@ final class Sketch {
     /** Field headings in radians; null means "not set". */
     Double startHeading, endHeading, fixedHeading;
 
-    void add(double x, double y, Double speed, Double lookahead, Boolean backwards, double wait) {
-        points.add(new Point(x, y, speed, lookahead, backwards, wait));
+    void add(double x, double y, Double speed, Double lookahead, Boolean backwards, double wait,
+             boolean turnAround) {
+        points.add(new Point(x, y, speed, lookahead, backwards, wait, turnAround));
     }
 
     boolean isUsable() {
@@ -69,6 +74,7 @@ final class Sketch {
         Route.Builder route = Route.builder("Sketch", Route.Alliance.NONE,
                         new Pose2d(start.x, start.y, startHeading()))
                 .description("Built in the FieldViewer");
+        if (start.turnAround) route.turn(Math.PI);
         if (start.wait > 0) route.waitSeconds(start.wait);
 
         int leg = 1;
@@ -76,7 +82,7 @@ final class Sketch {
             boolean backwards = isBackwards(points.get(first));
             int last = first;
             while (last + 1 < points.size()
-                    && points.get(last).wait <= 0
+                    && points.get(last).wait <= 0 && !points.get(last).turnAround
                     && isBackwards(points.get(last + 1)) == backwards) {
                 last++;
             }
@@ -92,6 +98,7 @@ final class Sketch {
             if (fixedHeading != null) path.fixedHeading(fixedHeading);
             if (last == points.size() - 1 && endHeading != null) path.endHeading(endHeading);
             route.follow(path.build());
+            if (points.get(last).turnAround) route.turn(Math.PI);
             if (points.get(last).wait > 0) route.waitSeconds(points.get(last).wait);
             first = last + 1;
             leg++;
@@ -112,13 +119,14 @@ final class Sketch {
                 .append("                \"").append(displayName().replace("\"", "'")).append("\", Alliance.NONE, new Pose2d(")
                 .append(num(start.x)).append(", ").append(num(start.y)).append(", Math.toRadians(")
                 .append(num(Math.toDegrees(startHeading()))).append(")))\n");
+        if (start.turnAround) sb.append("        .turn(Math.PI)\n");
         if (start.wait > 0) sb.append("        .waitSeconds(").append(num(start.wait)).append(")\n");
 
         int leg = 1;
         for (int first = 1; first < points.size();) {
             boolean backwards = isBackwards(points.get(first));
             int last = first;
-            while (last + 1 < points.size() && points.get(last).wait <= 0
+            while (last + 1 < points.size() && points.get(last).wait <= 0 && !points.get(last).turnAround
                     && isBackwards(points.get(last + 1)) == backwards) last++;
             sb.append("        .follow(PurePursuitPath.builder().name(\"")
                     .append(displayName().toLowerCase(Locale.US).replace("\"", "'"));
@@ -145,6 +153,7 @@ final class Sketch {
             if (last == points.size() - 1 && endHeading != null) sb.append("                .endHeading(Math.toRadians(")
                     .append(num(Math.toDegrees(endHeading))).append("))\n");
             sb.append("                .build())\n");
+            if (points.get(last).turnAround) sb.append("        .turn(Math.PI)\n");
             if (points.get(last).wait > 0) sb.append("        .waitSeconds(").append(num(points.get(last).wait)).append(")\n");
             first = last + 1;
             leg++;
@@ -159,7 +168,8 @@ final class Sketch {
 
     private boolean hasMultipleLegs() {
         for (int i = 1; i < points.size() - 1; i++) {
-            if (points.get(i).wait > 0 || isBackwards(points.get(i)) != isBackwards(points.get(i + 1))) return true;
+            if (points.get(i).wait > 0 || points.get(i).turnAround
+                    || isBackwards(points.get(i)) != isBackwards(points.get(i + 1))) return true;
         }
         return false;
     }

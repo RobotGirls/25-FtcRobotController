@@ -296,7 +296,7 @@ final class WebServer {
         if (request.get("sketch") instanceof Map) {
             Map<String, Object> s = (Map<String, Object>) request.get("sketch");
             Sketch sketch = new Sketch();
-            // [x, y, speed?, lookahead?, backwards?, wait-after-arrival?]
+            // [x, y, speed?, lookahead?, backwards?, wait-after-arrival?, turn-180-here?]
             for (Object p : (List<Object>) s.get("points")) {
                 List<Object> point = (List<Object>) p;
                 double wait = point.size() > 5 && point.get(5) instanceof Number
@@ -306,7 +306,8 @@ final class WebServer {
                         point.size() > 2 ? optionalNumber(point.get(2)) : null,
                         point.size() > 3 ? optionalNumber(point.get(3)) : null,
                         point.size() > 4 && point.get(4) instanceof Boolean ? (Boolean) point.get(4) : null,
-                        Math.max(0, Math.min(60, wait)));
+                        Math.max(0, Math.min(60, wait)),
+                        point.size() > 6 && Boolean.TRUE.equals(point.get(6)));
             }
             sketch.reversed = Boolean.TRUE.equals(s.get("reversed"));
             sketch.name = s.get("name") instanceof String ? (String) s.get("name") : "";

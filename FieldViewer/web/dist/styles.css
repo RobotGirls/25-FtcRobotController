@@ -531,6 +531,9 @@ kbd {
 .wait-popover[hidden] { display: none; }
 .wait-input-row { display: grid; grid-template-columns: 62px auto 1fr 1fr; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); }
 .wait-input-row input { min-width: 0; padding: 5px 6px; text-align: right; }
+.turn-around-setting { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 7px 0; }
+.turn-around-setting > span:first-child { display: grid; gap: 2px; font-size: 12px; }
+.turn-around-setting small { color: var(--faint); font-size: 10px; line-height: 1.35; }
 .btn.danger:hover { border-color: rgba(251, 113, 133, 0.5); color: var(--red); }
 .row .small-btn { padding: 6px 4px; white-space: nowrap; font-size: 11.5px; }
 

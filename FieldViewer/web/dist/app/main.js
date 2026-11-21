@@ -372,7 +372,7 @@ async function runSketch() {
     const radians = (deg) => (deg === null ? null : (deg * Math.PI) / 180);
     await runSim(() => simulateSketch({
         name: sk.name,
-        points: sk.points.map((p) => [p.x, p.y, p.speed, p.lookahead, p.backwards, p.wait]),
+        points: sk.points.map((p) => [p.x, p.y, p.speed, p.lookahead, p.backwards, p.wait, p.turnAround]),
         reversed: sk.reversed,
         moveSpeed: sk.speed,
         followDistance: sk.lookahead,
@@ -422,7 +422,7 @@ function editAsSketch(route) {
     const sk = state.sketch;
     sk.speed = follows[0]?.speed ?? 0.6;
     sk.lookahead = follows[0]?.lookahead ?? 16;
-    sk.points = [{ x: route.start[0], y: route.start[1], speed: null, lookahead: null, backwards: null, wait: 0 }];
+    sk.points = [{ x: route.start[0], y: route.start[1], speed: null, lookahead: null, backwards: null, wait: 0, turnAround: false }];
     let dropped = false;
     for (const step of route.steps) {
         if (step.type === 'follow') {
@@ -433,11 +433,15 @@ function editAsSketch(route) {
                     lookahead: step.lookahead === sk.lookahead ? null : step.lookahead,
                     backwards: step.reversed,
                     wait: 0,
+                    turnAround: false,
                 });
             }
         }
         else if (step.type === 'marker' && step.name === 'wait' && !step.parallel) {
             sk.points[sk.points.length - 1].wait += step.seconds;
+        }
+        else if (step.type === 'turn' && step.relative && Math.abs(Math.abs(step.heading) - Math.PI) < 0.01) {
+            sk.points[sk.points.length - 1].turnAround = true;
         }
         else {
             dropped = true;
@@ -1137,7 +1141,7 @@ function wireCanvas() {
                 remember();
                 const a = state.sketch.points[mid];
                 const b = state.sketch.points[mid + 1];
-                state.sketch.points.splice(mid + 1, 0, { x: round((a.x + b.x) / 2), y: round((a.y + b.y) / 2), speed: null, lookahead: null, backwards: null, wait: 0 });
+                state.sketch.points.splice(mid + 1, 0, { x: round((a.x + b.x) / 2), y: round((a.y + b.y) / 2), speed: null, lookahead: null, backwards: null, wait: 0, turnAround: false });
                 selectPoint(mid + 1);
                 state.drag = mid + 1;
                 gesture = { kind: 'point', x: e.clientX, y: e.clientY, moved: true };
@@ -1147,7 +1151,7 @@ function wireCanvas() {
                 remember();
                 const [x, y] = snapAt(point, 'new', e.altKey);
                 state.snapPreview = null;
-                state.sketch.points.push({ x, y, speed: null, lookahead: null, backwards: null, wait: 0 });
+                state.sketch.points.push({ x, y, speed: null, lookahead: null, backwards: null, wait: 0, turnAround: false });
                 selectPoint(state.sketch.points.length - 1);
                 void runSketch();
             }
@@ -1426,7 +1430,7 @@ function insertAfter(index) {
         y = a.y + (dy / length) * 12;
     }
     remember();
-    points.splice(index + 1, 0, { x: clampField(round(x)), y: clampField(round(y)), speed: null, lookahead: null, backwards: null, wait: 0 });
+    points.splice(index + 1, 0, { x: clampField(round(x)), y: clampField(round(y)), speed: null, lookahead: null, backwards: null, wait: 0, turnAround: false });
     state.selectedPoint = index + 1;
     void runSketch();
 }
@@ -1464,7 +1468,13 @@ function renderEditor() {
             label.append(input);
             row.append(label);
         }
-        row.append(p.speed !== null || p.lookahead !== null ? el('span', 'wp-flag') : el('span'));
+        const customized = p.speed !== null || p.lookahead !== null || p.backwards !== null || p.wait > 0 || p.turnAround;
+        const flag = customized ? el('span', 'wp-flag') : el('span');
+        if (customized) {
+            flag.title = [p.backwards === true ? 'backward' : p.backwards === false ? 'forward' : '',
+                p.wait > 0 ? `wait ${p.wait}s` : '', p.turnAround ? 'turn 180°' : ''].filter(Boolean).join(', ') || 'custom settings';
+        }
+        row.append(flag);
         const del = el('button', 'wp-del', '×');
         del.title = 'Delete this point';
         del.addEventListener('click', (e) => {
@@ -1519,6 +1529,14 @@ function renderPointDetail() {
     look.value = String(p.lookahead ?? state.sketch.lookahead);
     setText('sk-pt-speed-val', (p.speed ?? state.sketch.speed).toFixed(2));
     setText('sk-pt-look-val', `${p.lookahead ?? state.sketch.lookahead} in`);
+    const direction = $('sk-pt-direction');
+    direction.disabled = isStart;
+    direction.value = p.backwards === null ? 'default' : p.backwards ? 'backward' : 'forward';
+    const waitButton = $('sk-wait-open');
+    waitButton.textContent = p.wait > 0 ? `Wait here: ${p.wait} seconds` : '+ Add wait here';
+    waitButton.classList.toggle('has-wait', p.wait > 0);
+    $('sk-wait').value = String(p.wait > 0 ? p.wait : 1);
+    $('sk-turn-around').checked = p.turnAround;
     $('sk-up').disabled = i <= 0;
     $('sk-down').disabled = i >= state.sketch.points.length - 1;
 }
@@ -1568,6 +1586,51 @@ function wireEditor() {
     };
     wireOverride('speed', 'sk-pt-speed-on', 'sk-pt-speed');
     wireOverride('lookahead', 'sk-pt-look-on', 'sk-pt-look');
+    $('sk-pt-direction').addEventListener('change', (e) => {
+        const i = state.selectedPoint;
+        if (i <= 0)
+            return;
+        remember();
+        const value = e.target.value;
+        state.sketch.points[i] = { ...state.sketch.points[i], backwards: value === 'default' ? null : value === 'backward' };
+        renderEditor();
+        scheduleSketch(0);
+    });
+    const waitPanel = $('sk-wait-panel');
+    const waitButton = $('sk-wait-open');
+    waitButton.addEventListener('click', () => {
+        waitPanel.hidden = !waitPanel.hidden;
+        waitButton.setAttribute('aria-expanded', String(!waitPanel.hidden));
+        if (!waitPanel.hidden)
+            $('sk-wait').select();
+    });
+    const setWait = (seconds) => {
+        const i = state.selectedPoint;
+        if (i < 0)
+            return;
+        remember();
+        const wait = Math.max(0, Math.min(60, Number.isFinite(seconds) ? seconds : 0));
+        state.sketch.points[i] = { ...state.sketch.points[i], wait };
+        waitPanel.hidden = true;
+        waitButton.setAttribute('aria-expanded', 'false');
+        renderEditor();
+        scheduleSketch(0);
+    };
+    $('sk-wait-apply').addEventListener('click', () => setWait(Number($('sk-wait').value)));
+    $('sk-wait-clear').addEventListener('click', () => setWait(0));
+    $('sk-wait').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter')
+            setWait(Number(e.target.value));
+    });
+    $('sk-turn-around').addEventListener('change', (e) => {
+        const i = state.selectedPoint;
+        if (i < 0)
+            return;
+        remember();
+        state.sketch.points[i] = { ...state.sketch.points[i], turnAround: e.target.checked };
+        renderEditor();
+        scheduleSketch(0);
+    });
     $('sk-up').addEventListener('click', () => movePoint(state.selectedPoint, state.selectedPoint - 1));
     $('sk-down').addEventListener('click', () => movePoint(state.selectedPoint, state.selectedPoint + 1));
     $('sk-insert').addEventListener('click', () => insertAfter(state.selectedPoint));
@@ -1603,7 +1666,8 @@ function autoStartHeading() {
     const [a, b] = state.sketch.points;
     if (!a || !b)
         return 0;
-    let heading = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI + (state.sketch.reversed ? 180 : 0);
+    const startsBackwards = b.backwards ?? state.sketch.reversed;
+    let heading = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI + (startsBackwards ? 180 : 0);
     heading = ((heading + 540) % 360) - 180;
     return Math.round(heading);
 }
