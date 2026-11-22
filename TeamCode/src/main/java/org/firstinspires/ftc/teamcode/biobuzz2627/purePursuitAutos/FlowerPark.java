@@ -20,7 +20,7 @@ public class FlowerPark extends PurePursuitAutoBase<FlowerPark.State> {
 
     @Override
     protected Route route() {
-        return BioBuzzRoutes.FLOWER_PARK;
+        return BioBuzzRoutes.RED_FLOWER_PARK;
     }
 
     @Override

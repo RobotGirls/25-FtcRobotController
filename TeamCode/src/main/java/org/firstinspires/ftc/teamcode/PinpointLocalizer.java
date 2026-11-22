@@ -21,9 +21,9 @@ import java.util.Objects;
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
         /** Sideways offset of the forward/parallel pod from the tracking point. */
-        public double parallelPodYOffsetInches = 0.0;
+        public double parallelPodYOffsetInches = 6.0;
         /** Forward offset of the sideways/perpendicular pod from the tracking point. */
-        public double perpendicularPodXOffsetInches = 0.0;
+        public double perpendicularPodXOffsetInches = 6.5;
         /** Flip if pushing the robot forward makes its reported X position decrease. */
         public boolean reverseParallelEncoder = true;
         /** Flip if pushing the robot left makes its reported Y position decrease. */

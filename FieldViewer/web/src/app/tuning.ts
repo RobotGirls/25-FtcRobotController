@@ -71,7 +71,8 @@ export class TuningPanel {
   private readonly inputs = new Map<string, { range: HTMLInputElement; number: HTMLInputElement; row: HTMLElement }>();
 
   constructor(private readonly container: HTMLElement, private readonly defaults: Defaults,
-              private readonly onChange: () => void) {
+              private readonly onChange: () => void,
+              private readonly robotContainer?: HTMLElement) {
     this.values = {
       follower: { ...defaults.follower },
       drive: { ...defaults.drive },
@@ -154,14 +155,16 @@ export class TuningPanel {
 
   private build(): void {
     this.container.replaceChildren();
+    this.robotContainer?.replaceChildren();
     for (const group of ['follower', 'drive', 'robot'] as Group[]) {
+      const target = group === 'robot' && this.robotContainer ? this.robotContainer : this.container;
       const title = document.createElement('div');
       title.className = 'tune-group';
       title.textContent = GROUP_TITLES[group];
-      this.container.append(title);
+      if (!(group === 'robot' && this.robotContainer)) target.append(title);
       for (const spec of SPECS.filter((s) => s.group === group)) {
         if (group !== 'robot' && !(spec.key in this.defaults[group])) continue;
-        this.container.append(this.row(spec));
+        target.append(this.row(spec));
       }
     }
     this.refresh();
@@ -182,6 +185,8 @@ export class TuningPanel {
     const number = document.createElement('input');
     number.type = 'number';
     number.className = 'tune-number mono';
+    number.min = String(spec.min);
+    number.max = String(spec.max);
     number.step = String(spec.step);
     const unit = document.createElement('span');
     unit.className = 'tune-unit';

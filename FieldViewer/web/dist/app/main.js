@@ -92,7 +92,7 @@ async function init() {
             }
             field = new FieldView(canvas, data.field);
             field.onChange = invalidate;
-            tuning = new TuningPanel($('tuning'), defaults, onTuningChanged);
+            tuning = new TuningPanel($('tuning'), defaults, onTuningChanged, $('robot-size'));
             break;
         }
         catch {

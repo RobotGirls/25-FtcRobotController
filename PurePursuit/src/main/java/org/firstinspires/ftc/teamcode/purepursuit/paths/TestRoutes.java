@@ -29,6 +29,17 @@ public final class TestRoutes {
                     .build())
             .build();
 
+    public static final Route STRAFE_LEFT_24 = Route.builder(
+                    "TEST Strafe Left 24in", Alliance.NONE, new Pose2d(0, -48, 0))
+            .description("Mecanum only: strafe exactly one tile left while holding heading 0.")
+            .follow(PurePursuitPath.builder().name("strafe left 24")
+                    .moveSpeed(0.3)
+                    .followDistance(6)
+                    .to(0, -24)
+                    .fixedHeading(0)
+                    .build())
+            .build();
+
     public static final Route OUT_AND_BACK = Route.builder(
                     "TEST Out and Back", Alliance.NONE, new Pose2d(-48, -40, Math.toRadians(90)))
             .description("Drive up the left side and back up to the start. Repeat to check drift.")

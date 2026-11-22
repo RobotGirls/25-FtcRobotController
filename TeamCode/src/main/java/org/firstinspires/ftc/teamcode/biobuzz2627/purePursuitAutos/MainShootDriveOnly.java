@@ -1,0 +1,45 @@
+package org.firstinspires.ftc.teamcode.biobuzz2627.purePursuitAutos;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.firstinspires.ftc.teamcode.purepursuit.Route;
+import org.firstinspires.ftc.teamcode.purepursuit.paths.BioBuzzRoutes;
+
+/**
+ * Drive-only copy of Main Shoot. It follows the same Pure Pursuit route but intentionally does
+ * not initialize or command the shooter, intake, feeder, servos, or any other mechanism.
+ */
+@Autonomous(name = "Main Shoot - Drive", group = "Pure Pursuit")
+public class MainShootDriveOnly extends PurePursuitAutoBase<MainShootDriveOnly.State> {
+
+    enum State {
+        DRIVE_ACROSS_FIELD,
+        DRIVE_INTO_ZONE,
+        END
+    }
+
+    @Override
+    protected Route route() {
+        return BioBuzzRoutes.BLUE_GARDEN_PARK_SHOOTER;
+    }
+
+    @Override
+    protected State initialState() {
+        return State.DRIVE_ACROSS_FIELD;
+    }
+
+    @Override
+    protected void mainStateMachine() {
+        switch (getState()) {
+            case DRIVE_ACROSS_FIELD:
+                runRouteStepThen(0, State.DRIVE_INTO_ZONE);
+                break;
+            case DRIVE_INTO_ZONE:
+                runRouteStepThen(1, State.END);
+                break;
+            case END:
+                drive.stop();
+                break;
+        }
+    }
+}

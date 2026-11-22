@@ -32,91 +32,20 @@ public final class BioBuzzRoutes {
     /** Facing +90 degrees, robot-left is negative field X. */
     public static final double FLOWER_PARK_X = -50;
 
-//    public static final Route FLOWER_PARK = Route.builder(
-//                    "BLUE Garden Park", Alliance.NONE, new Pose2d(-12, 69, Math.toRadians(-90)))
-//            .description("Move forward clear of the start, stop, then strafe into the zone.")
-//            .follow(PurePursuitPath.builder().name("clear flower start")
-//                    .followDistance(4)
-//                    .to(-12, FLOWER_CLEAR_Y)
-//                    .fixedHeading(Math.toRadians(-90))
-//                    .timeout(3)
-//                    .build())
-//            .follow(PurePursuitPath.builder().name("strafe into flower parking zone")
-//                    .followDistance(6)
-//                    .moveSpeed(0.3)
-//                    .to(FLOWER_PARK_X, FLOWER_CLEAR_Y)
-//                    .fixedHeading(Math.toRadians(-90))
-//                    .timeout(8)
-//                    .build())
-//            .build();
+    /** Blue-side targets mirror the red route through the center of the field. */
+    public static final double BLUE_FLOWER_START_X = -FLOWER_START_X;
+    public static final double BLUE_FLOWER_START_Y = -FLOWER_START_Y;
+    /** Facing -90 degrees, driving forward toward center makes field Y decrease. */
+    public static final double BLUE_FLOWER_CLEAR_Y =
+            BLUE_FLOWER_START_Y - FLOWER_FORWARD_DISTANCE;
+    /** Facing -90 degrees, robot-left is positive field X. */
+    public static final double BLUE_FLOWER_PARK_X = -FLOWER_PARK_X;
 
-//    public static final Route BLUE_CORNER_PARK = Route.builder(
-//                    "BLUE Corner Park", Alliance.BLUE, new Pose2d(66, 60, 0))
-//            .description("Back out of the corner into the blue zone.")
-//            .follow(PurePursuitPath.builder().name("to park")
-//                    .to(40, 60)
-//                    .reversed()
-//                    .build())
-//            .build();
+    public static final double X_OFFSET = 25;
 
-//    public static final Route RED_FLOWER_PARK = Route.builder(
-//                    "RED Flower Park", Alliance.RED, new Pose2d(10, -60, 0))
-//            .description("Back up along the red wall into the red zone.")
-//            .follow(PurePursuitPath.builder().name("to park")
-//                    .to(-30, -60)
-//                    .reversed()
-//                    .build())
-//            .build();
+    public static final double Y_OFFSET = 12;
 
-//    public static final Route RED_GARDEN_PARK = Route.builder(
-//                    "RED Garden Park", Alliance.RED, new Pose2d(66, -34, 0))
-//            .description("Back up below the center structure, then drive into the red zone.")
-//            .follow(PurePursuitPath.builder().name("across the field")
-//                    .to(-34, -34)
-//                    .reversed()
-//                    .build())
-//            .marker("collect", 4.0)
-//            .follow(PurePursuitPath.builder().name("into zone")
-//                    .moveSpeed(0.5)
-//                    .to(-34, -60)
-//                    .build())
-//            .build();
 
-//    public static final Route RED_CORNER_PARK = Route.builder(
-//                    "RED Corner Park", Alliance.RED, new Pose2d(-60, -66, 0))
-//            .description("Drive out of the corner into the red zone.")
-//            .follow(PurePursuitPath.builder().name("to park")
-//                    .to(-40, -66)
-//                    .build())
-//            .build();
-
-    public static final Route BLUE_GARDEN_SHOOTER = Route.builder(
-                    "BLUE Garden Park + Shooter", Alliance.BLUE, new Pose2d(-66, 12, 0))
-            .description("BLUE Garden Park, then spin up the launcher and feed artifacts.")
-            .follow(PurePursuitPath.builder().name("to hive")
-                    .to(-36, 12)
-                    .build())
-
-            .marker(SHOOT, 3.5)
-
-            .follow(PurePursuitPath.builder().name("to hive")
-                    .to(-36, 40)
-                    .to(0, 40)
-                    .to(34, 40)
-                    .moveSpeed(0.5)
-                    .to(34, 60)
-                    .build())
-            .build();
-
-    public static final Route RNRR_BLUE_SHOOT = Route.builder(
-                    "RNRR_BLUE_SHOOT", Alliance.BLUE, new Pose2d(-63, 12, Math.toRadians(0)))
-            .description("BLUE Garden Park, then spin up the launcher and feed artifacts.")
-            .follow(PurePursuitPath.builder().name("Near blue garden and shooter")
-                    .to(-42, 12)
-                    .to(-42, 53)
-                    .to(36, 57)
-                    .build())
-            .build();
     public static final Route MAIN_SHOOT = Route.builder(
                     "BLUE Garden Park + Shooter copy", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
             .description("Drive around the Hive, shoot, then enter the parking zone.")
@@ -140,7 +69,7 @@ public final class BioBuzzRoutes {
                     .build())
             .build();
 
-    public static final Route FLOWER_PARK = Route.builder(
+    public static final Route RED_FLOWER_PARK = Route.builder(
                     "RED Flower Park",
                     Alliance.RED,
                     new Pose2d(FLOWER_START_X, FLOWER_START_Y, Math.toRadians(90)))
@@ -160,5 +89,42 @@ public final class BioBuzzRoutes {
                     .fixedHeading(Math.toRadians(90))
                     .build())
             .build();
+
+    public static final Route BLUE_FLOWER_PARK = Route.builder(
+                    "BLUE Flower Park",
+                    Alliance.BLUE,
+                    new Pose2d(BLUE_FLOWER_START_X, BLUE_FLOWER_START_Y,
+                            Math.toRadians(-90)))
+            .description("Move forward 4.5 inches, then strafe left into the blue parking zone.")
+            .follow(PurePursuitPath.builder()
+                    .name("clear blue flower start")
+                    .followDistance(4)
+                    .moveSpeed(0.3)
+                    .to(BLUE_FLOWER_START_X, BLUE_FLOWER_CLEAR_Y)
+                    .fixedHeading(Math.toRadians(-90))
+                    .build())
+            .follow(PurePursuitPath.builder()
+                    .name("strafe left into blue parking zone")
+                    .followDistance(6)
+                    .moveSpeed(0.3)
+                    .to(BLUE_FLOWER_PARK_X, BLUE_FLOWER_CLEAR_Y)
+                    .fixedHeading(Math.toRadians(-90))
+                    .build())
+            .build();
+
+    public static final Route BLUE_GARDEN_PARK_SHOOTER = Route.builder(
+                    "BLUE Garden Park + Shooter", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
+            .follow(PurePursuitPath.builder().name("blue garden park + shooter copy copy")
+                    .to(-36, 12)
+                    .to(-42, 12)
+                    .to(-42, 52)
+                    .to(0, 52)
+                    .to(53, 52)
+                    .to(53+X_OFFSET, 70+Y_OFFSET)
+                    .fixedHeading(Math.toRadians(0))
+                    .build())
+            .build();
+
+
 
 }
