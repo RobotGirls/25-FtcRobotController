@@ -137,8 +137,8 @@ public class BIOBUZZTeleopLM0Blue1 extends LinearOpMode {
 
                 if (opModeIsActive()) {
                     if (gamepad2.a) {
-                        shooterSmall.setPower(0.3);
-                        shooterBig.setPower(-0.35);
+                        shooterSmall.setPower(0.35);
+                        shooterBig.setPower(-0.3);
                     } else if (gamepad2.b) {
                         shooterSmall.setPower(-0.35);
                         shooterBig.setPower(0.3);
