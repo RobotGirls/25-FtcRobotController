@@ -21,7 +21,7 @@ public final class Routes {
             //BioBuzzRoutes.RED_CORNER_PARK,
             //BioBuzzRoutes.RNRR_BLUE_SHOOT,
             BioBuzzRoutes.MAIN_SHOOT,
-            BioBuzzRoutes.BLUE_GARDEN_PARK_SHOOTER
+            BioBuzzRoutes.BLUE_GARDEN_PARK_SHOOTER_COPY
     ));
 
     /** Looks a route up by name, or returns null. */

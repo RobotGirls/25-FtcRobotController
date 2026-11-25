@@ -12,15 +12,16 @@ import org.firstinspires.ftc.teamcode.purepursuit.paths.BioBuzzRoutes;
 @Autonomous(name = "Main Shoot - Drive", group = "Pure Pursuit")
 public class MainShootDriveOnly extends PurePursuitAutoBase<MainShootDriveOnly.State> {
 
-    enum State {
+    public enum State {
         DRIVE_ACROSS_FIELD,
+        WAIT_AT_HIVE,
         DRIVE_INTO_ZONE,
         END
     }
 
     @Override
     protected Route route() {
-        return BioBuzzRoutes.BLUE_GARDEN_PARK_SHOOTER;
+        return BioBuzzRoutes.BLUE_GARDEN_PARK_SHOOTER_COPY;
     }
 
     @Override
@@ -32,10 +33,13 @@ public class MainShootDriveOnly extends PurePursuitAutoBase<MainShootDriveOnly.S
     protected void mainStateMachine() {
         switch (getState()) {
             case DRIVE_ACROSS_FIELD:
-                runRouteStepThen(0, State.DRIVE_INTO_ZONE);
+                runRouteStepThen(0, State.WAIT_AT_HIVE);
+                break;
+            case WAIT_AT_HIVE:
+                runRouteStepThen(1, State.DRIVE_INTO_ZONE);
                 break;
             case DRIVE_INTO_ZONE:
-                runRouteStepThen(1, State.END);
+                runRouteStepThen(2, State.END);
                 break;
             case END:
                 drive.stop();

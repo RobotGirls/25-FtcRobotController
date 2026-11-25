@@ -112,18 +112,21 @@ public final class BioBuzzRoutes {
                     .build())
             .build();
 
-    public static final Route BLUE_GARDEN_PARK_SHOOTER = Route.builder(
-                    "BLUE Garden Park + Shooter", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
-            .follow(PurePursuitPath.builder().name("blue garden park + shooter copy copy")
-                    .to(-36, 12)
-                    .to(-42, 12)
-                    .to(-42, 52)
-                    .to(0, 52)
-                    .to(53, 52)
-                    .to(53+X_OFFSET, 70+Y_OFFSET)
+    public static final Route BLUE_GARDEN_PARK_SHOOTER_COPY = Route.builder(
+                    "BLUE Garden Park + Shooter copy", Alliance.NONE, new Pose2d(-66, 12, Math.toRadians(0)))
+            .follow(PurePursuitPath.builder().name("blue garden park + shooter copy")
+                    .to(-53, 12)
+                    .fixedHeading(Math.toRadians(0))
+                    .build())
+            .marker(SHOOT, 3.5)
+            .follow(PurePursuitPath.builder().name("drive around hive")
+                    .to(-48, 39)
+                    .to(3, 57)
+                    .to(63, 80)
                     .fixedHeading(Math.toRadians(0))
                     .build())
             .build();
+
 
 
 
