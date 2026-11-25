@@ -22,6 +22,7 @@ public final class BioBuzzRoutes {
      * Marker name the shooter auto maps to its launch Action.
      */
     public static final String SHOOT = "shoot";
+    public static final String INTAKE = "intake";
 
     /** Red-side Flower Park targets used by both the simulator and the real robot. */
     public static final double FLOWER_START_X = 12;
